@@ -25,12 +25,12 @@ namespace NeuronalNetworkReverseEngineering
         }
         public void PopulateAllRandomly(int? seed)
         {
-            var Rand = seed == null ? new Random() : new Random((int)seed);
+            var rand = seed == null ? new Random() : new Random((int)seed);
             for (int i = 0; i < numRow; i++)
             {
                 for (int j = 0; j < numCol; j++)
                 {
-                    content[i, j] = (Rand.NextDouble() - 0.5) * 2;
+                    content[i, j] = (rand.NextDouble() - 0.5) * 2;
                 }
             }
         }
@@ -38,7 +38,7 @@ namespace NeuronalNetworkReverseEngineering
 
         public static Matrix Multiplication(Matrix leftMatrix, Matrix rightMatrix)
         {
-            if(leftMatrix.numCol != rightMatrix.numRow || leftMatrix.numRow != rightMatrix.numCol)
+            if(leftMatrix.numCol != rightMatrix.numRow)
             {
                 return null;
             }
