@@ -15,13 +15,13 @@ namespace NeuronalNetworkReverseEngineering
             this.numCol = numCol;
         }
 
-        private double[,] content;
+        private double[,] content { get; }
         public int numRow { get; }
         public int numCol { get; }
 
-        public void SetValue(int x, int y, double value)
+        public void SetValue(int rowIndex, int colIndex, double value)
         {
-            content[x, y] = value;
+            content[rowIndex, colIndex] = value;
         }
 
 
@@ -33,13 +33,24 @@ namespace NeuronalNetworkReverseEngineering
                 return null;
             }
 
-            for (int i = 0; i < leftMatrix.numCol; i++)
-            {
+            var retMatrix = new Matrix(leftMatrix.numRow, rightMatrix.numCol);
+            var leftContent = leftMatrix.content;
+            var rightContent = rightMatrix.content;
 
+            for (int i = 0; i < leftMatrix.numRow; i++)
+            {
+                for (int j = 0; j < rightMatrix.numCol; j++)
+                {
+                    double tempVal = 0;
+                    for (int n = 0; n < leftMatrix.numCol; n++)
+                    {
+                        tempVal += leftContent[i, n] * rightContent[n, j];
+                    }
+                    retMatrix.SetValue(i, j, tempVal);
+                }
             }
 
-
-            return new Matrix(3, 2);
+            return retMatrix;
         }
     }
 
