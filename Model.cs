@@ -19,17 +19,37 @@ namespace NeuronalNetworkReverseEngineering
             {
                 var tempMat = new Matrix(topology[i], topology[i + 1]);
                 tempMat.PopulateAllRandomly(i);
-                this.weigthMatrices.Add(tempMat);
+                weigthMatrices.Add(tempMat);
 
                 var tempVec = new Matrix(1, topology[i + 1]);
                 tempVec.PopulateAllRandomly(i + 100);
-                this.biasVectors.Add(tempVec);
+                biasVectors.Add(tempVec);
             }
+            this.topology = topology;
         }
 
         private List<Matrix> weigthMatrices = new List<Matrix>();
         private List<Matrix> biasVectors = new List<Matrix>();
+        public int[] topology { get; }
+        public List<Matrix> neuronValues {get;}
 
+
+
+        public Matrix Use(Matrix input)
+        {
+            if(input.numRow != 1 || input.numCol != this.topology.First())
+            {
+                return null;
+            }
+
+            neuronValues.Add(input);
+            for (int i = 0; i < topology.Length; i++)
+            {
+                var temp = Matrix.Multiplication(neuronValues[i], weigthMatrices[i]);
+            }
+
+
+        } 
 
 
     }
