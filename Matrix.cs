@@ -23,7 +23,17 @@ namespace NeuronalNetworkReverseEngineering
         {
             content[rowIndex, colIndex] = value;
         }
-
+        public void PopulateAllRandomly(int? seed)
+        {
+            var Rand = seed == null ? new Random() : new Random((int)seed);
+            for (int i = 0; i < numRow; i++)
+            {
+                for (int j = 0; j < numCol; j++)
+                {
+                    content[i, j] = (Rand.NextDouble() - 0.5) * 2;
+                }
+            }
+        }
 
 
         public static Matrix Multiplication(Matrix leftMatrix, Matrix rightMatrix)
