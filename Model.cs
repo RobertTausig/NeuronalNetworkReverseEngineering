@@ -17,12 +17,18 @@ namespace NeuronalNetworkReverseEngineering
 
             for (int i = 0; i < topology.Length - 1; i++)
             {
-                var temp = new Matrix(topology[i], topology[i + 1]);
-                this.matrices.Add(temp);
+                var tempMat = new Matrix(topology[i], topology[i + 1]);
+                tempMat.PopulateAllRandomly(i);
+                this.weigthMatrices.Add(tempMat);
+
+                var tempVec = new Matrix(1, topology[i + 1]);
+                tempVec.PopulateAllRandomly(i + 100);
+                this.biasVectors.Add(tempVec);
             }
         }
 
-        private List<Matrix> matrices = new List<Matrix>(); 
+        private List<Matrix> weigthMatrices = new List<Matrix>();
+        private List<Matrix> biasVectors = new List<Matrix>();
 
 
 
