@@ -31,7 +31,7 @@ namespace NeuronalNetworkReverseEngineering
         private List<Matrix> weigthMatrices = new List<Matrix>();
         private List<Matrix> biasVectors = new List<Matrix>();
         public int[] topology { get; }
-        public List<Matrix> neuronValues {get;}
+        public List<Matrix> neuronValues { get; } = new List<Matrix>();
 
 
 
@@ -43,13 +43,17 @@ namespace NeuronalNetworkReverseEngineering
             }
 
             neuronValues.Add(input);
-            for (int i = 0; i < topology.Length; i++)
+            for (int i = 0; i < topology.Length - 1; i++)
             {
-                var temp = Matrix.Multiplication(neuronValues[i], weigthMatrices[i]);
+                var temp = Matrix.Addition(Matrix.Multiplication(neuronValues[i], weigthMatrices[i]), biasVectors[i]);
+                if (i != topology.Length - 2)
+                {
+                    temp.ReLuOnSelf();
+                }
+                neuronValues.Add(temp);
             }
 
-
-            return new Matrix(1,1);
+            return neuronValues.Last();
         } 
 
 

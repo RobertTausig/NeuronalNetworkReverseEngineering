@@ -34,6 +34,19 @@ namespace NeuronalNetworkReverseEngineering
                 }
             }
         }
+        public void ReLuOnSelf()
+        {
+            for (int i = 0; i < numRow; i++)
+            {
+                for (int j = 0; j < numCol; j++)
+                {
+                    if (content[i, j] < 0)
+                    {
+                        content[i, j] = 0;
+                    }
+                }
+            }
+        }
 
 
         public static Matrix Multiplication(Matrix leftMatrix, Matrix rightMatrix)
