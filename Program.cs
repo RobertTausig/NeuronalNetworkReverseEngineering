@@ -22,13 +22,14 @@ namespace NeuronalNetworkReverseEngineering
             //var Mat4 = Matrix.Addition(Mat1, Mat2);
 
             var model = new Model(new int[4] { 7, 5, 6, 4 });
-            for (int i = 0; i < 20_000; i++)
+            for (int i = 0; i < 1_000_000; i++)
             {
                 var input = new Matrix(1, 7);
                 input.PopulateAllRandomly(600+i);
                 model.Use(input);
             }
 
+            // -1.7129931129705003
 
             Console.WriteLine("Hello World!");
         }
