@@ -41,6 +41,7 @@ namespace NeuronalNetworkReverseEngineering
             {
                 return null;
             }
+            neuronValues.Clear();
 
             neuronValues.Add(input);
             for (int i = 0; i < topology.Length - 1; i++)
