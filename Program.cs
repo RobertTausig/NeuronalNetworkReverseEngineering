@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 
 namespace NeuronalNetworkReverseEngineering
 {
@@ -21,6 +22,8 @@ namespace NeuronalNetworkReverseEngineering
 
             //var Mat4 = Matrix.Addition(Mat1, Mat2);
 
+            var clock = new Stopwatch();
+            clock.Start();
             var model = new Model(new int[4] { 7, 5, 6, 4 });
             for (int i = 0; i < 1_000_000; i++)
             {
@@ -28,10 +31,12 @@ namespace NeuronalNetworkReverseEngineering
                 input.PopulateAllRandomly(600+i);
                 model.Use(input);
             }
+            clock.Stop();
 
             // -1.7129931129705003
 
-            Console.WriteLine("Hello World!");
+            Console.WriteLine("Time passed: " + clock.Elapsed.TotalMilliseconds);
+            Console.ReadLine();
         }
     }
 }
