@@ -15,15 +15,15 @@ namespace NeuronalNetworkReverseEngineering
                 return;
             }
 
-            var rand = new Random(0);
+            RandomGenerator = new Random(0);
             for (int i = 0; i < topology.Length - 1; i++)
             {
                 var tempMat = new Matrix(topology[i], topology[i + 1]);
-                tempMat.PopulateAllRandomly(rand);
+                tempMat.PopulateAllRandomly(RandomGenerator);
                 weigthMatrices.Add(tempMat);
 
                 var tempVec = new Matrix(1, topology[i + 1]);
-                tempVec.PopulateAllRandomly(rand);
+                tempVec.PopulateAllRandomly(RandomGenerator);
                 biasVectors.Add(tempVec);
             }
             this.topology = topology;
@@ -33,6 +33,7 @@ namespace NeuronalNetworkReverseEngineering
         private List<Matrix> biasVectors = new List<Matrix>();
         public int[] topology { get; }
         public List<Matrix> neuronValues { get; } = new List<Matrix>();
+        public Random RandomGenerator { get; }
 
 
 
