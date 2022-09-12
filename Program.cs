@@ -24,13 +24,16 @@ namespace NeuronalNetworkReverseEngineering
 
             var clock = new Stopwatch();
             clock.Start();
+
+            var rand = new Random(1);
             var model = new Model(new int[4] { 7, 5, 6, 4 });
             for (int i = 0; i < 1_000_000; i++)
             {
                 var input = new Matrix(1, 7);
-                input.PopulateAllRandomly(600+i);
+                input.PopulateAllRandomly(rand);
                 model.Use(input);
             }
+
             clock.Stop();
 
             // -1.7129931129705003
