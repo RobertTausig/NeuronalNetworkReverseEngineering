@@ -8,7 +8,7 @@ namespace NeuronalNetworkReverseEngineering
 {
     class SamplingLine
     {
-        SamplingLine(Model model)
+        public SamplingLine(Model model)
         {
             this.model = model;
         }
@@ -21,6 +21,8 @@ namespace NeuronalNetworkReverseEngineering
             firstVector.PopulateAllRandomly(model.RandomGenerator);
             var secondVector = new Matrix(1, model.topology.First());
             secondVector.PopulateAllRandomly(model.RandomGenerator);
+
+            var aa = Matrix.NormalizeVector(firstVector);
 
             return new List<double[]>();
         }

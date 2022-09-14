@@ -96,6 +96,49 @@ namespace NeuronalNetworkReverseEngineering
             return retMatrix;
         }
 
+        public static Matrix NormalizeVector(Matrix matrix, double norm = 1)
+        {
+            var currentNorm = GetEuclideanNormForVector(matrix);
+            if (currentNorm == null)
+            {
+                return null;
+            }
+
+            double stretchFactor = norm / (double)currentNorm;
+            var retMatrix = new Matrix(matrix.numRow, matrix.numCol);
+            var content = matrix.content;
+            for (int i = 0; i < matrix.numRow; i++)
+            {
+                for (int j = 0; j < matrix.numCol; j++)
+                {
+                    retMatrix.SetValue(i, j, content[i, j] * stretchFactor);
+                }
+            }
+
+            return retMatrix;
+        }
+
+        public static double? GetEuclideanNormForVector(Matrix matrix)
+        {
+            if (!(matrix.numRow == 1 || matrix.numRow == 1))
+            {
+                return null;
+            }
+
+            double euclidianNorm = 0;
+            var content = matrix.content;
+            for (int i = 0; i < matrix.numRow; i++)
+            {
+                for (int j = 0; j < matrix.numCol; j++)
+                {
+                    euclidianNorm += Math.Pow(content[i, j], 2);
+                }
+            }
+
+            return Math.Sqrt(euclidianNorm);
+        }
+
+
     }
 
     
