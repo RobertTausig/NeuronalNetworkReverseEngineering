@@ -11,7 +11,7 @@ namespace NeuronalNetworkReverseEngineering
             clock.Start();
 
             var model = new Model(new int[4] { 7, 5, 6, 4 });
-            var bb = new SamplingLine(model).RandomSecantLine(60, 100);
+            var bb = new SamplingLine(model).RandomSecantLine();
 
             Console.WriteLine("Time passed: " + clock.Elapsed.TotalMilliseconds);
             Console.ReadLine();
