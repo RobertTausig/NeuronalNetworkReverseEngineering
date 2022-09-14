@@ -15,14 +15,23 @@ namespace NeuronalNetworkReverseEngineering
 
         private Model model { get; }
 
-        public List<double[]> RandomSecantLine(double radius, double minPointDistance)
+        private const double stdRadius = 60;
+        private const double stdlineLength = 500;
+        private const double stdMinPointDistance = 0.25;
+
+        public List<double[]> RandomSecantLine(double radius = stdRadius, double lineLength = stdlineLength, double minPointDistance = stdMinPointDistance)
         {
             var firstVector = new Matrix(1, model.topology.First());
             firstVector.PopulateAllRandomly(model.RandomGenerator);
             var secondVector = new Matrix(1, model.topology.First());
             secondVector.PopulateAllRandomly(model.RandomGenerator);
 
-            var aa = Matrix.NormalizeVector(firstVector);
+            var firstNormVector = Matrix.NormalizeVector(firstVector, radius);
+            var secondNormVector = Matrix.NormalizeVector(secondVector, radius);
+
+            var aa = Matrix.Substraction(secondNormVector, firstNormVector);
+            var bb = Matrix.GetEuclideanNormForVector(aa);
+
 
             return new List<double[]>();
         }
