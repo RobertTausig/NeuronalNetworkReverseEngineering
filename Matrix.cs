@@ -74,6 +74,20 @@ namespace NeuronalNetworkReverseEngineering
 
             return retMatrix;
         }
+        public static Matrix Multiplication(Matrix matrix, double factor)
+        {
+            var retMatrix = new Matrix(matrix.numRow, matrix.numCol);
+            var content = matrix.content;
+            for (int i = 0; i < matrix.numRow; i++)
+            {
+                for (int j = 0; j < matrix.numCol; j++)
+                {
+                    retMatrix.SetValue(i, j, content[i, j] * factor);
+                }
+            }
+
+            return retMatrix;
+        }
         public static Matrix Addition(Matrix leftMatrix, Matrix rightMatrix)
         {
             if (leftMatrix.numRow != rightMatrix.numRow || leftMatrix.numCol != rightMatrix.numCol)
