@@ -131,6 +131,31 @@ namespace NeuronalNetworkReverseEngineering
             return retMatrix;
         }
 
+        public static bool? ApproxEqual(Matrix leftMatrix, Matrix rightMatrix)
+        {
+            if (leftMatrix.numRow != rightMatrix.numRow || leftMatrix.numCol != rightMatrix.numCol)
+            {
+                return null;
+            }
+
+            var leftContent = leftMatrix.content;
+            var rightContent = rightMatrix.content;
+
+            for (int i = 0; i < leftMatrix.numRow; i++)
+            {
+                for (int j = 0; j < leftMatrix.numCol; j++)
+                {
+                    var temp = leftContent[i, j] / rightContent[i, j];
+                    if (!(0.9524 < temp && temp < 1.05))
+                    {
+                        return false;
+                    }
+                }
+            }
+
+            return true;
+        }
+
         public static Matrix NormalizeVector(Matrix matrix, double norm = 1)
         {
             var currentNorm = GetEuclideanNormForVector(matrix);

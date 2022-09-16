@@ -41,6 +41,32 @@ namespace NeuronalNetworkReverseEngineering
             return retVal;
         }
 
+        public List<Matrix> LinearRegionChanges (List<Matrix> inputs)
+        {
+            var retVal = new List<Matrix>();
+            var inputDiff = new Matrix(1, model.topology.First());
+            var outputDiff = new Matrix(1, model.topology.Last());
+
+            outputDiff = Matrix.Substraction(model.Use(inputs[1]), model.Use(inputs[0]));
+            for (int i = 2; i < inputs.Count; i++)
+            {
+                var aa = Matrix.Substraction(model.Use(inputs[i]), model.Use(inputs[i - 1]));
+                switch(Matrix.ApproxEqual(aa, outputDiff))
+                {
+                    case null:
+                        throw new Exception();
+                    case true:
+                        continue;
+                    case false:
+                        retVal.Add(inputs[i]);
+                        outputDiff = Matrix.Substraction(model.Use(inputs[i + 1]), model.Use(inputs[i]));
+                        i++;
+                        break;
+                }
+            }
+
+            return retVal;
+        }
 
     }
 }
