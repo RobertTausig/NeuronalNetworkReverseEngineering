@@ -32,10 +32,12 @@ namespace NeuronalNetworkReverseEngineering
             secondVector = Matrix.NormalizeVector(secondVector, radius);
 
             var directionVector = Matrix.Substraction(secondVector, firstVector);
+            var midPoint = Matrix.Addition(firstVector, Matrix.Multiplication(directionVector, 0.5));
+
             directionVector = Matrix.NormalizeVector(directionVector, minPointDistance);
             for (int i = -(int)(lineLength / minPointDistance) / 2; i < (int)(lineLength / minPointDistance) / 2; i++)
             {
-                retVal.Add(Matrix.Addition(firstVector, Matrix.Multiplication(directionVector, i)));
+                retVal.Add(Matrix.Addition(midPoint, Matrix.Multiplication(directionVector, i)));
             }
 
             return retVal;
@@ -60,6 +62,7 @@ namespace NeuronalNetworkReverseEngineering
                     case false:
                         retVal.Add(inputs[i]);
                         outputDiff = Matrix.Substraction(model.Use(inputs[i + 1]), model.Use(inputs[i]));
+                        //Console.WriteLine(i);
                         i++;
                         break;
                 }
