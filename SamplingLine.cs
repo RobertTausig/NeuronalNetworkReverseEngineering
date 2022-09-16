@@ -16,7 +16,7 @@ namespace NeuronalNetworkReverseEngineering
         private Model model { get; }
 
         private const double stdRadius = 60;
-        private const double stdlineLength = 500;
+        private const double stdlineLength = 3_000;
         private const double stdMinPointDistance = 0.25;
 
         public List<Matrix> RandomSecantLine(double radius = stdRadius, double lineLength = stdlineLength, double minPointDistance = stdMinPointDistance)

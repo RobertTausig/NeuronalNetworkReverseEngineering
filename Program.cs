@@ -14,10 +14,11 @@ namespace NeuronalNetworkReverseEngineering
             var model = new Model(new int[4] { 7, 5, 6, 4 });
             var sampler = new SamplingLine(model);
 
-            var firstLine = sampler.RandomSecantLine();
-            var secondLine = sampler.RandomSecantLine();
-            var firstChangePoints = sampler.LinearRegionChanges(firstLine);
-            var secondChangePoints = sampler.LinearRegionChanges(secondLine);
+            for (int i = 0; i < 60; i++)
+            {
+                var firstLine = sampler.RandomSecantLine();
+                var firstChangePoints = sampler.LinearRegionChanges(firstLine);
+            }
 
             Console.WriteLine("Time passed: " + clock.Elapsed.TotalMilliseconds);
             Console.ReadLine();
