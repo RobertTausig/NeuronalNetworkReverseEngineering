@@ -146,7 +146,7 @@ namespace NeuronalNetworkReverseEngineering
                 for (int j = 0; j < leftMatrix.numCol; j++)
                 {
                     var temp = leftContent[i, j] / rightContent[i, j];
-                    if (!(0.9524 < temp && temp < 1.05))
+                    if (!((0.9524 < temp && temp < 1.05) || rightContent[i,j] == 0))
                     {
                         return false;
                     }
