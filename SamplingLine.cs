@@ -46,24 +46,45 @@ namespace NeuronalNetworkReverseEngineering
         public List<Matrix> LinearRegionChanges (List<Matrix> inputs)
         {
             var retVal = new List<Matrix>();
-            var inputDiff = new Matrix(1, model.topology.First());
-            var outputDiff = new Matrix(1, model.topology.Last());
+            bool fastMode = false;
+            const int fastSteps = 10;
+            int fastTrigger = fastSteps;
 
-            outputDiff = Matrix.Substraction(model.Use(inputs[1]), model.Use(inputs[0]));
+            var outputDiff = Matrix.Substraction(model.Use(inputs[1]), model.Use(inputs[0]));
             for (int i = 2; i < inputs.Count; i++)
             {
-                var aa = Matrix.Substraction(model.Use(inputs[i]), model.Use(inputs[i - 1]));
-                switch(Matrix.ApproxEqual(aa, outputDiff))
+                if (fastMode && (i + fastSteps + 1 < inputs.Count))
+                {
+                    var temp = Matrix.Substraction(model.Use(inputs[i + fastSteps]), model.Use(inputs[i + fastSteps - 1]));
+                    if(Matrix.ApproxEqual(temp, outputDiff) == true)
+                    {
+                        i += fastSteps + 1;
+                    }
+                    else
+                    {
+                        fastTrigger = fastSteps;
+                        fastMode = false;
+                    }
+                }
+                var newOutPutDiff = Matrix.Substraction(model.Use(inputs[i]), model.Use(inputs[i - 1]));
+                switch(Matrix.ApproxEqual(newOutPutDiff, outputDiff))
                 {
                     case null:
                         throw new Exception();
                     case true:
+                        fastTrigger--;
+                        if (fastTrigger < 1)
+                        {
+                            fastMode = true;
+                        }
                         continue;
                     case false:
                         retVal.Add(inputs[i]);
                         outputDiff = Matrix.Substraction(model.Use(inputs[i + 1]), model.Use(inputs[i]));
                         //Console.WriteLine(i);
                         i++;
+                        fastTrigger = fastSteps;
+                        fastMode = false;
                         break;
                 }
             }
