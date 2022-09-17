@@ -14,11 +14,19 @@ namespace NeuronalNetworkReverseEngineering
             var model = new Model(new int[4] { 7, 5, 6, 4 });
             var sampler = new SamplingLine(model);
 
-            for (int i = 0; i < 60; i++)
+            var boundaryPoints = new List<Matrix>();
+            // Why doing this:
+            // To make sure to not accidentally get a "bad" line.
+            while(true)
             {
-                var aa = sampler.RandomSecantLine();
-                var dd = sampler.BidirectionalLinearRegionChanges(aa.midPoint, aa.directionVector);
-                Console.WriteLine(dd.Count);
+                var (midPoint, directionVector) = sampler.RandomSecantLine(radius:100);
+                var firstBoundaryPointsSuggestion = sampler.BidirectionalLinearRegionChanges(midPoint, directionVector);
+                var secondBoundaryPointsSuggestion = sampler.BidirectionalLinearRegionChanges(Matrix.Multiplication(midPoint, 1.01), directionVector);
+                if (firstBoundaryPointsSuggestion.Count == secondBoundaryPointsSuggestion.Count)
+                {
+                    boundaryPoints = firstBoundaryPointsSuggestion;
+                    break;
+                }
             }
 
             Console.WriteLine("Time passed: " + clock.Elapsed.TotalMilliseconds);
