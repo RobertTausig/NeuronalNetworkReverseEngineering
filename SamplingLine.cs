@@ -64,6 +64,10 @@ namespace NeuronalNetworkReverseEngineering
                             oldSamplePoint = temp;
 
                         }
+                        else if (stretchMagnitude < 0)
+                        {
+                            throw new Exception();
+                        }
                         else
                         {
                             stretchMagnitude -= 2;
