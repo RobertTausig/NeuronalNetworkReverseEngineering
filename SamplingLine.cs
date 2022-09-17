@@ -19,7 +19,7 @@ namespace NeuronalNetworkReverseEngineering
         private const double stdMinPointDistance = 0.1;
         private const int stdMaxMagnitude = 20;
 
-        public (Matrix startPoint, Matrix directionVector) RandomSecantLine(double radius = stdRadius, double minPointDistance = stdMinPointDistance)
+        public (Matrix midPoint, Matrix directionVector) RandomSecantLine(double radius = stdRadius, double minPointDistance = stdMinPointDistance)
         {
             var retVal = new List<Matrix>();
 
@@ -37,7 +37,12 @@ namespace NeuronalNetworkReverseEngineering
 
             return (midPoint, directionVector);
         }
-
+        public List<Matrix> BidirectionalLinearRegionChanges(Matrix startPoint, Matrix directionVector, int maxMagnitude = stdMaxMagnitude)
+        {
+            var positivePath = LinearRegionChanges(startPoint, directionVector, maxMagnitude);
+            var negativePath = LinearRegionChanges(startPoint, Matrix.Multiplication(directionVector, -1), maxMagnitude);
+            return positivePath.Concat(negativePath).ToList();
+        }
         public List<Matrix> LinearRegionChanges(Matrix startPoint, Matrix directionVector, int maxMagnitude = stdMaxMagnitude)
         {
             var retVal = new List<Matrix>();

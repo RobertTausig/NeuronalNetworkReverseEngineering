@@ -17,9 +17,8 @@ namespace NeuronalNetworkReverseEngineering
             for (int i = 0; i < 60; i++)
             {
                 var aa = sampler.RandomSecantLine();
-                var bb = sampler.LinearRegionChanges(aa.startPoint, aa.directionVector);
-                var cc = sampler.LinearRegionChanges(aa.startPoint, Matrix.Multiplication(aa.directionVector, -1));
-                Console.WriteLine(bb.Count + cc.Count);
+                var dd = sampler.BidirectionalLinearRegionChanges(aa.midPoint, aa.directionVector);
+                Console.WriteLine(dd.Count);
             }
 
             Console.WriteLine("Time passed: " + clock.Elapsed.TotalMilliseconds);
