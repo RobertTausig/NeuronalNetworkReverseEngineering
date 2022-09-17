@@ -58,4 +58,4 @@
 8
 10
 7
-Time passed: 82,4268
+Time passed: 87,3876

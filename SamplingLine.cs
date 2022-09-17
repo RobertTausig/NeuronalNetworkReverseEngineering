@@ -47,8 +47,8 @@ namespace NeuronalNetworkReverseEngineering
             for (int stretchMagnitude = 0; stretchMagnitude < maxMagnitude; stretchMagnitude++)
             {
                 var newSamplePoint = Matrix.Addition(oldSamplePoint, Matrix.Multiplication(directionVector, Math.Pow(2, stretchMagnitude)));
-                var newOutPutDiff = Matrix.Substraction(model.Use(newSamplePoint), model.Use(oldSamplePoint));
-                switch(Matrix.ApproxEqual(newOutPutDiff, Matrix.Multiplication(oldOutputDiff, Math.Pow(2, stretchMagnitude))))
+                var newOutPutDiff = Matrix.Substraction(model.Use(newSamplePoint), model.Use(Matrix.Substraction(newSamplePoint, directionVector)));
+                switch(Matrix.ApproxEqual(newOutPutDiff, oldOutputDiff))
                 {
                     case null:
                         throw new Exception();
