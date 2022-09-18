@@ -40,6 +40,7 @@ namespace NeuronalNetworkReverseEngineering
         {
             var positivePath = LinearRegionChanges(startPoint, directionVector, maxMagnitude);
             var negativePath = LinearRegionChanges(startPoint, Matrix.Multiplication(directionVector, -1), maxMagnitude);
+            positivePath.Reverse();
             return positivePath.Concat(negativePath).ToList();
         }
         public List<Matrix> LinearRegionChanges(Matrix startPoint, Matrix directionVector, int maxMagnitude = stdMaxMagnitude)

@@ -29,6 +29,11 @@ namespace NeuronalNetworkReverseEngineering
                 }
             }
 
+            for (int i = 1; i < boundaryPoints.Count; i++)
+            {
+                Console.WriteLine(Matrix.GetEuclideanNormForVector(Matrix.Substraction(boundaryPoints[i], boundaryPoints[i - 1])));
+            }
+
             Console.WriteLine("Time passed: " + clock.Elapsed.TotalMilliseconds);
             Console.ReadLine();
         }
