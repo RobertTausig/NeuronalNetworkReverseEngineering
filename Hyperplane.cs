@@ -37,7 +37,7 @@ namespace NeuronalNetworkReverseEngineering
 
                 var cc = new Matrix(boundaryPoint.numRow, boundaryPoint.numCol);
                 cc.PopulateAllRandomly(tempModel.RandomGenerator);
-                cc = Matrix.NormalizeVector(bb, 0.02);
+                cc = Matrix.NormalizeVector(cc, 0.02);
 
                 var zz = Matrix.Addition(boundaryPoint, bb);
                 var uuu = new SamplingLine(tempModel);
@@ -49,6 +49,10 @@ namespace NeuronalNetworkReverseEngineering
             {
                 foreach (var item in bag)
                 {
+                    if (item.Count != 1)
+                    {
+                        continue;
+                    }
                     Console.WriteLine(Matrix.GetEuclideanNormForVector(Matrix.Substraction(boundaryPoint, item.First()))*100);
                 }
             }
