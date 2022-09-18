@@ -28,6 +28,13 @@ namespace NeuronalNetworkReverseEngineering
             }
             this.topology = topology;
         }
+        private Model(Model model, int? randomSeed = null)
+        {
+            this.topology = model.topology;
+            this.weigthMatrices = model.weigthMatrices;
+            this.biasVectors = model.biasVectors;
+            this.RandomGenerator = randomSeed == null ? model.RandomGenerator : new Random((int)randomSeed);
+        }
 
         private List<Matrix> weigthMatrices = new List<Matrix>();
         private List<Matrix> biasVectors = new List<Matrix>();
@@ -57,7 +64,12 @@ namespace NeuronalNetworkReverseEngineering
             }
 
             return neuronValues.Last();
-        } 
+        }
+
+        public Model Copy(int? randomSeed = null)
+        {
+            return new Model(this, randomSeed);
+        }
 
 
     }

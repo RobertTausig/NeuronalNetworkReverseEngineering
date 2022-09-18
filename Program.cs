@@ -32,7 +32,8 @@ namespace NeuronalNetworkReverseEngineering
                 }
             }
 
-
+            var plane = new Hyperplane(model);
+            plane.SupportPointsOnBoundary(boundaryPoints[0]);
 
             Console.WriteLine("Time passed: " + clock.Elapsed.TotalMilliseconds);
             Console.ReadLine();
