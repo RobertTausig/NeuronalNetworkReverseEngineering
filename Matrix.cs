@@ -197,6 +197,27 @@ namespace NeuronalNetworkReverseEngineering
 
             return Math.Sqrt(euclidianNorm);
         }
+        public static Matrix GetRandomlyJitteredVector(Matrix matrix, Random rand)
+        {
+            if (!(matrix.numRow == 1 || matrix.numRow == 1))
+            {
+                return null;
+            }
+
+            var retMatrix = new Matrix(matrix.numRow, matrix.numCol);
+            var content = matrix.content;
+            for (int i = 0; i < matrix.numRow; i++)
+            {
+                for (int j = 0; j < matrix.numCol; j++)
+                {
+                    retMatrix.SetValue(i, j, content[i, j] * (0.95 + rand.NextDouble() / 10));
+                }
+            }
+
+            return retMatrix;
+        }
+
+
 
 
     }
