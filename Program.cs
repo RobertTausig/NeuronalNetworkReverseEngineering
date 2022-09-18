@@ -22,11 +22,17 @@ namespace NeuronalNetworkReverseEngineering
                 var (midPoint, directionVector) = sampler.RandomSecantLine(radius:100);
                 var firstBoundaryPointsSuggestion = sampler.BidirectionalLinearRegionChanges(midPoint, directionVector);
                 var secondBoundaryPointsSuggestion = sampler.BidirectionalLinearRegionChanges(Matrix.Multiplication(midPoint, 1.01), directionVector);
-                if (firstBoundaryPointsSuggestion.Count == secondBoundaryPointsSuggestion.Count)
+                //if (firstBoundaryPointsSuggestion.Count == secondBoundaryPointsSuggestion.Count)
+                //{
+                //    boundaryPoints = firstBoundaryPointsSuggestion;
+                //    break;
+                //}
+                for (int i = 1; i < firstBoundaryPointsSuggestion.Count; i++)
                 {
-                    boundaryPoints = firstBoundaryPointsSuggestion;
-                    break;
+                    Console.WriteLine(Matrix.GetEuclideanNormForVector(Matrix.Substraction(firstBoundaryPointsSuggestion[i], firstBoundaryPointsSuggestion[i - 1])));
                 }
+                Console.WriteLine("----------------------");
+
             }
 
             for (int i = 1; i < boundaryPoints.Count; i++)

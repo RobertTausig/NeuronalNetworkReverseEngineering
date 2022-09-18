@@ -33,6 +33,17 @@ namespace NeuronalNetworkReverseEngineering
                 }
             }
         }
+        public void PopulateAllRandomlyFarFromZero(Random rand)
+        {
+            for (int i = 0; i < numRow; i++)
+            {
+                for (int j = 0; j < numCol; j++)
+                {
+                    var temp = rand.Next(4_000, 10_000);
+                    content[i, j] = temp % 2 == 0 ? temp/10_000.0 : -temp/10_000.0;
+                }
+            }
+        }
         public void ReLuOnSelf()
         {
             for (int i = 0; i < numRow; i++)
