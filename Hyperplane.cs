@@ -26,7 +26,7 @@ namespace NeuronalNetworkReverseEngineering
             }
 
             var bag = new ConcurrentBag<List<Matrix>>();
-            var iterations = boundaryPoint.numRow + boundaryPoint.numCol + 3;
+            var iterations = boundaryPoint.numRow + boundaryPoint.numCol + 6;
             var aa = Parallel.For(0, iterations, index =>
             {
                 var tempModel = model.Copy(index);
@@ -36,7 +36,7 @@ namespace NeuronalNetworkReverseEngineering
                 bb = Matrix.NormalizeVector(bb, 1);
 
                 var cc = new Matrix(boundaryPoint.numRow, boundaryPoint.numCol);
-                cc.PopulateAllRandomly(tempModel.RandomGenerator);
+                cc.PopulateAllRandomlyFarFromZero(tempModel.RandomGenerator);
                 cc = Matrix.NormalizeVector(cc, 0.02);
 
                 var zz = Matrix.Addition(boundaryPoint, bb);
