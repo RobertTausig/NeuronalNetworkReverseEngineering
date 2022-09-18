@@ -17,27 +17,24 @@ namespace NeuronalNetworkReverseEngineering
             var boundaryPoints = new List<Matrix>();
             // Why doing this:
             // To make sure to not accidentally get a "bad" line.
-            while(true)
+            for (int i = 0; i < 60; i++)
             {
                 var (midPoint, directionVector) = sampler.RandomSecantLine(radius:100);
                 var firstBoundaryPointsSuggestion = sampler.BidirectionalLinearRegionChanges(midPoint, directionVector);
                 var secondBoundaryPointsSuggestion = sampler.BidirectionalLinearRegionChanges(Matrix.Multiplication(midPoint, 1.01), directionVector);
-                //if (firstBoundaryPointsSuggestion.Count == secondBoundaryPointsSuggestion.Count)
-                //{
-                //    boundaryPoints = firstBoundaryPointsSuggestion;
-                //    break;
-                //}
-                for (int i = 1; i < firstBoundaryPointsSuggestion.Count; i++)
+                if (firstBoundaryPointsSuggestion.Count == secondBoundaryPointsSuggestion.Count)
                 {
-                    Console.WriteLine(Matrix.GetEuclideanNormForVector(Matrix.Substraction(firstBoundaryPointsSuggestion[i], firstBoundaryPointsSuggestion[i - 1])));
+                    Console.WriteLine(firstBoundaryPointsSuggestion.Count);
+                    //boundaryPoints = firstBoundaryPointsSuggestion;
+                    //break;
                 }
-                Console.WriteLine("----------------------");
 
-            }
+                //for (int i = 1; i < firstBoundaryPointsSuggestion.Count; i++)
+                //{
+                //    Console.WriteLine(Matrix.GetEuclideanNormForVector(Matrix.Substraction(firstBoundaryPointsSuggestion[i], firstBoundaryPointsSuggestion[i - 1])));
+                //}
+                //Console.WriteLine("----------------------");
 
-            for (int i = 1; i < boundaryPoints.Count; i++)
-            {
-                Console.WriteLine(Matrix.GetEuclideanNormForVector(Matrix.Substraction(boundaryPoints[i], boundaryPoints[i - 1])));
             }
 
             Console.WriteLine("Time passed: " + clock.Elapsed.TotalMilliseconds);
