@@ -6,6 +6,9 @@ namespace NeuronalNetworkReverseEngineering
 {
     class Program
     {
+        const double constRadius = 100;
+        const double constMinDistance = 10;
+
         static void Main(string[] args)
         {
             var clock = new Stopwatch();
@@ -17,28 +20,39 @@ namespace NeuronalNetworkReverseEngineering
             var boundaryPoints = new List<Matrix>();
             // Why doing this:
             // To make sure to not accidentally get a "bad" line.
-            for (int i = 0; i < 60; i++)
+            while (true)
             {
-                var (midPoint, directionVector) = sampler.RandomSecantLine(radius:100);
+                var (midPoint, directionVector) = sampler.RandomSecantLine(radius: constRadius);
                 var firstBoundaryPointsSuggestion = sampler.BidirectionalLinearRegionChanges(midPoint, directionVector);
                 var secondBoundaryPointsSuggestion = sampler.BidirectionalLinearRegionChanges(Matrix.Multiplication(midPoint, 1.01), directionVector);
-                if (firstBoundaryPointsSuggestion.Count == secondBoundaryPointsSuggestion.Count)
+                if (firstBoundaryPointsSuggestion.Count == secondBoundaryPointsSuggestion.Count && IsSpacedApart(firstBoundaryPointsSuggestion, constMinDistance))
                 {
-                    Console.WriteLine(firstBoundaryPointsSuggestion.Count);
-                    //boundaryPoints = firstBoundaryPointsSuggestion;
-                    //break;
+                    boundaryPoints = firstBoundaryPointsSuggestion;
+                    break;
                 }
-
-                //for (int i = 1; i < firstBoundaryPointsSuggestion.Count; i++)
-                //{
-                //    Console.WriteLine(Matrix.GetEuclideanNormForVector(Matrix.Substraction(firstBoundaryPointsSuggestion[i], firstBoundaryPointsSuggestion[i - 1])));
-                //}
-                //Console.WriteLine("----------------------");
-
             }
+
+
 
             Console.WriteLine("Time passed: " + clock.Elapsed.TotalMilliseconds);
             Console.ReadLine();
         }
+
+
+
+        public static bool IsSpacedApart(List<Matrix> list, double minDistance)
+        {
+            for (int i = 1; i < list.Count; i++)
+            {
+                var norm = Matrix.GetEuclideanNormForVector(Matrix.Substraction(list[i], list[i - 1]));
+                if (norm == null || norm < minDistance)
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
     }
 }
