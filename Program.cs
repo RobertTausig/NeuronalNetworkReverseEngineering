@@ -11,8 +11,7 @@ namespace NeuronalNetworkReverseEngineering
 
         static void Main(string[] args)
         {
-            var clock = new Stopwatch();
-            clock.Start();
+            
 
             var model = new Model(new int[4] { 7, 5, 6, 4 });
             var sampler = new SamplingLine(model);
@@ -32,8 +31,17 @@ namespace NeuronalNetworkReverseEngineering
                 }
             }
 
+            var clock = new Stopwatch();
+            clock.Start();
+
             var plane = new Hyperplane(model);
-            plane.SupportPointsOnBoundary(boundaryPoints[0]);
+            for (int i = 0; i < 20; i++)
+            {
+                foreach (var item in boundaryPoints)
+                {
+                    plane.SupportPointsOnBoundary(item);
+                }
+            }
 
             Console.WriteLine("Time passed: " + clock.Elapsed.TotalMilliseconds);
             Console.ReadLine();

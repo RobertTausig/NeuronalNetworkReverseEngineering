@@ -45,17 +45,17 @@ namespace NeuronalNetworkReverseEngineering
                 bag.Add(dd);
             });
             //Debug:
-            if (result.IsCompleted)
-            {
-                foreach (var item in bag)
-                {
-                    if (item.Count != 1)
-                    {
-                        continue;
-                    }
-                    Console.WriteLine(Matrix.GetEuclideanNormForVector(Matrix.Substraction(boundaryPoint, item.First()))*100);
-                }
-            }
+            //if (result.IsCompleted)
+            //{
+            //    foreach (var item in bag)
+            //    {
+            //        if (item.Count != 1)
+            //        {
+            //            continue;
+            //        }
+            //        Console.WriteLine(Matrix.GetEuclideanNormForVector(Matrix.Substraction(boundaryPoint, item.First()))*100);
+            //    }
+            //}
             
             return new List<Matrix>();
         }
