@@ -27,25 +27,25 @@ namespace NeuronalNetworkReverseEngineering
 
             var bag = new ConcurrentBag<List<Matrix>>();
             var iterations = boundaryPoint.numRow + boundaryPoint.numCol + 6;
-            var aa = Parallel.For(0, iterations, index =>
+            var result = Parallel.For(0, iterations, index =>
             {
                 var tempModel = model.Copy(index);
 
-                var bb = new Matrix(boundaryPoint.numRow, boundaryPoint.numCol);
-                bb.PopulateAllRandomlyFarFromZero(tempModel.RandomGenerator);
-                bb = Matrix.NormalizeVector(bb, 1);
+                var displacementVector = new Matrix(boundaryPoint.numRow, boundaryPoint.numCol);
+                displacementVector.PopulateAllRandomlyFarFromZero(tempModel.RandomGenerator);
+                displacementVector = Matrix.NormalizeVector(displacementVector, 1);
 
-                var cc = new Matrix(boundaryPoint.numRow, boundaryPoint.numCol);
-                cc.PopulateAllRandomlyFarFromZero(tempModel.RandomGenerator);
-                cc = Matrix.NormalizeVector(cc, 0.02);
+                var directionVector = new Matrix(boundaryPoint.numRow, boundaryPoint.numCol);
+                directionVector.PopulateAllRandomlyFarFromZero(tempModel.RandomGenerator);
+                directionVector = Matrix.NormalizeVector(directionVector, 0.02);
 
-                var zz = Matrix.Addition(boundaryPoint, bb);
-                var uuu = new SamplingLine(tempModel);
-                var dd = uuu.BidirectionalLinearRegionChanges(zz, cc, 8);
+                var startPoint = Matrix.Addition(boundaryPoint, displacementVector);
+                var tempSampler = new SamplingLine(tempModel);
+                var dd = tempSampler.BidirectionalLinearRegionChanges(startPoint, directionVector, 8);
                 bag.Add(dd);
             });
             //Debug:
-            if (aa.IsCompleted)
+            if (result.IsCompleted)
             {
                 foreach (var item in bag)
                 {
