@@ -21,7 +21,11 @@ namespace NeuronalNetworkReverseEngineering
         private const int saltIncreasePerRecursion = 1_000;
         private const int maxSalt = 4*saltIncreasePerRecursion;
 
-        public List<Matrix> SupportPointsOnBoundary(Matrix boundaryPoint, int salt = 0)
+        public List<Matrix> SupportPointsOnBoundary(Matrix boundaryPoint)
+        {
+            return SupportPointsOnBoundary(boundaryPoint, 0);
+        }
+        private List<Matrix> SupportPointsOnBoundary(Matrix boundaryPoint, int salt)
         {
             if (!(boundaryPoint.numRow == 1 || boundaryPoint.numRow == 1))
             {
