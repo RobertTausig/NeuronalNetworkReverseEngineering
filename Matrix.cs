@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MathNet.Numerics;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -227,8 +228,58 @@ namespace NeuronalNetworkReverseEngineering
 
             return retMatrix;
         }
+        public static double[] FlattenVector (Matrix matrix)
+        {
+            if (!(matrix.numRow == 1 || matrix.numRow == 1))
+            {
+                return null;
+            }
 
+            var content = matrix.content;
+            double[] retVal = new double[matrix.numRow + matrix.numCol - 1];
+            for (int i = 0; i < matrix.numRow; i++)
+            {
+                for (int j = 0; j < matrix.numCol; j++)
+                {
+                    retVal[i + j] = content[i, j];
+                }
+            }
 
+            return retVal;
+        }
+        public static Matrix CalculateLinearRegression(List<Matrix> points)
+        {
+            //--- Start: Working Example ---
+            //double[] parameters = new[] { 2.37, -3.8, -0.22, 7.19 };
+            //double[] x1 = new[] { 0.312928943462965, -1.16839616233405, 0.689276486707173, -1.53368475681262 };
+            //double[] x2 = new[] { -2.31558794808863, -1.496227468087, 1.75210536235624, -1.9902897333437 };
+            //double[] x3 = new[] { -1.70107862279079, -1.04064266557997, 2.51017395821844, -1.62947294479157 };
+            //double[] x4 = new[] { 2.06266069488705, -1.15373838976752, -1.60689690501272, 0.922334820817665 };
+            //double[] x5 = new[] { -0.243180393240999, -1.22898418193215, 2.4079249671106, 1.5112760469485 };
+            //double[] y = new[] { -5.9972872156817, -14.4979254206991, -12.3452629506697, 16.2578164087807, 14.4301336441564 };
+
+            //double[] p = Fit.MultiDim(
+            //    new[] { x1, x2, x3, x4, x5 },
+            //    y,
+            //    intercept: true);
+            //--- End: Working Example ---
+
+            if (points.Count < 2)
+            {
+                return null;
+            }
+
+            double[][] aa = new double[points.Count][];
+            double[] bb = new double[points.Count];
+            for (int i = 0; i < points.Count; i++)
+            {
+                var flat = FlattenVector(points[i]);
+                aa[i] = flat[..^1];
+                bb[i] = flat[^1];
+            }
+
+            return new Matrix(0, 0);
+        }
 
 
     }
