@@ -41,7 +41,7 @@ namespace NeuronalNetworkReverseEngineering
                 planes.Add(new Hyperplane(model, item));
             }
 
-            Matrix.CalculateLinearRegression(planes[0].pointsOnPlane);
+            var aa = Matrix.CalculateLinearRegression(planes[0].pointsOnPlane);
 
             clock.Stop();
             Console.WriteLine("Time passed: " + clock.Elapsed.TotalMilliseconds);

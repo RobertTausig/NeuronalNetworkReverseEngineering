@@ -247,7 +247,7 @@ namespace NeuronalNetworkReverseEngineering
 
             return retVal;
         }
-        public static Matrix CalculateLinearRegression(List<Matrix> points)
+        public static (double[] parameters, double? intercept) CalculateLinearRegression(List<Matrix> points)
         {
             //--- Start: Working Example ---
             //double[] parameters = new[] { 2.37, -3.8, -0.22, 7.19 };
@@ -266,19 +266,20 @@ namespace NeuronalNetworkReverseEngineering
 
             if (points.Count < 2)
             {
-                return null;
+                return (null, null);
             }
 
-            double[][] aa = new double[points.Count][];
-            double[] bb = new double[points.Count];
+            double[][] xArr = new double[points.Count][];
+            double[] yArr = new double[points.Count];
             for (int i = 0; i < points.Count; i++)
             {
                 var flat = FlattenVector(points[i]);
-                aa[i] = flat[..^1];
-                bb[i] = flat[^1];
+                xArr[i] = flat[..^1];
+                yArr[i] = flat[^1];
             }
 
-            return new Matrix(0, 0);
+            var temp = Fit.MultiDim(xArr, yArr, intercept: true);
+            return (temp[1..], temp[0]);
         }
 
 
