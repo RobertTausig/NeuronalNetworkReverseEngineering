@@ -34,10 +34,10 @@ namespace NeuronalNetworkReverseEngineering
             var clock = new Stopwatch();
             clock.Start();
 
-            var plane = new Hyperplane(model);
+            var planes = new List<Hyperplane>();
             foreach (var item in boundaryPoints)
             {
-                plane.SupportPointsOnBoundary(item);
+                planes.Add(new Hyperplane(model, item));
             }
 
 

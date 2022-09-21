@@ -9,22 +9,18 @@ namespace NeuronalNetworkReverseEngineering
 {
     class Hyperplane
     {
-        public Hyperplane(Model model)
+        public Hyperplane(Model model, Matrix boundaryPoint)
         {
             this.model = model;
-            this.sampler = new SamplingLine(model);
+            this.pointsOnPlane = SupportPointsOnBoundary(boundaryPoint, 0);
         }
 
         private Model model { get; }
-        private SamplingLine sampler { get; }
+        public List<Matrix> pointsOnPlane { get; } = new List<Matrix>();
 
         private const int saltIncreasePerRecursion = 1_000;
         private const int maxSalt = 4*saltIncreasePerRecursion;
 
-        public List<Matrix> SupportPointsOnBoundary(Matrix boundaryPoint)
-        {
-            return SupportPointsOnBoundary(boundaryPoint, 0);
-        }
         private List<Matrix> SupportPointsOnBoundary(Matrix boundaryPoint, int salt)
         {
             if (!(boundaryPoint.numRow == 1 || boundaryPoint.numRow == 1))
@@ -53,8 +49,8 @@ namespace NeuronalNetworkReverseEngineering
                 directionVector = Matrix.NormalizeVector(directionVector, 0.02);
 
                 var startPoint = Matrix.Addition(boundaryPoint, displacementVector);
-                var supportPoints = tempSampler.BidirectionalLinearRegionChanges(startPoint, directionVector, 8);
-                bag.Add(supportPoints);
+                var samplePoints = tempSampler.BidirectionalLinearRegionChanges(startPoint, directionVector, 8);
+                bag.Add(samplePoints);
             });
 
             if (result.IsCompleted)
@@ -72,7 +68,6 @@ namespace NeuronalNetworkReverseEngineering
                     salt += saltIncreasePerRecursion;
                     return SupportPointsOnBoundary(boundaryPoint, salt);
                 }
-                Console.WriteLine(retVal.Count);
                 return retVal;
 
             }
