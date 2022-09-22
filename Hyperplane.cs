@@ -13,10 +13,12 @@ namespace NeuronalNetworkReverseEngineering
         {
             this.model = model;
             this.pointsOnPlane = SupportPointsOnBoundary(boundaryPoint, 0);
+            this.planeIdentity = Matrix.CalculateLinearRegression(pointsOnPlane);
         }
 
         private Model model { get; }
         public List<Matrix> pointsOnPlane { get; } = new List<Matrix>();
+        public (double[] parameters, double? intercept) planeIdentity;
 
         private const int saltIncreasePerRecursion = 1_000;
         private const int maxSalt = 4*saltIncreasePerRecursion;
