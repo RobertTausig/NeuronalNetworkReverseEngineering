@@ -12,13 +12,17 @@ namespace NeuronalNetworkReverseEngineering
         public Hyperplane(Model model, Matrix boundaryPoint)
         {
             this.model = model;
+            this.originalBoundaryPoint = boundaryPoint;
+            this.spaceDim = boundaryPoint.numRow + boundaryPoint.numCol - 1;
             this.pointsOnPlane = SupportPointsOnBoundary(boundaryPoint, 0);
             this.planeIdentity = Matrix.CalculateLinearRegression(pointsOnPlane);
         }
 
         private Model model { get; }
         public List<Matrix> pointsOnPlane { get; } = new List<Matrix>();
-        public (double[] parameters, double? intercept) planeIdentity;
+        public (double[] parameters, double? intercept) planeIdentity { get; }
+        public int spaceDim { get; }
+        public Matrix originalBoundaryPoint { get; }
 
         private const int saltIncreasePerRecursion = 1_000;
         private const int maxSalt = 4*saltIncreasePerRecursion;
@@ -36,7 +40,7 @@ namespace NeuronalNetworkReverseEngineering
 
             var retVal = new List<Matrix>();
             var bag = new ConcurrentBag<List<Matrix>>();
-            var iterations = boundaryPoint.numRow + boundaryPoint.numCol + 10;
+            var iterations = spaceDim + 11;
             var result = Parallel.For(0, iterations, index =>
             {
                 var tempModel = model.Copy(index + salt);
@@ -64,8 +68,8 @@ namespace NeuronalNetworkReverseEngineering
                         retVal.AddRange(item);
                     }
                 }
-                //Mathematical minimum: retVal.Count < (boundaryPoint.numRow + boundaryPoint.numCol - 1)
-                if (retVal.Count < (boundaryPoint.numRow + boundaryPoint.numCol + 2))
+                //Mathematical minimum: retVal.Count < spaceDim
+                if (retVal.Count < spaceDim + 3)
                 {
                     salt += saltIncreasePerRecursion;
                     return SupportPointsOnBoundary(boundaryPoint, salt);
@@ -79,6 +83,11 @@ namespace NeuronalNetworkReverseEngineering
             }
 
         }
+
+        //public Matrix GenerateRandomPointOnPlane()
+        //{
+        //    var aa = new Matrix(1,)
+        //}
 
 
     }
