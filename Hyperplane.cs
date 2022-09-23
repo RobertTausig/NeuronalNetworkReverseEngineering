@@ -20,7 +20,7 @@ namespace NeuronalNetworkReverseEngineering
 
         private Model model { get; }
         public List<Matrix> pointsOnPlane { get; } = new List<Matrix>();
-        public (double[] parameters, double? intercept) planeIdentity { get; }
+        public (Matrix parameters, double? intercept) planeIdentity { get; }
         public int spaceDim { get; }
         public Matrix originalBoundaryPoint { get; }
 
@@ -84,10 +84,24 @@ namespace NeuronalNetworkReverseEngineering
 
         }
 
-        //public Matrix GenerateRandomPointOnPlane()
-        //{
-        //    var aa = new Matrix(1,)
-        //}
+        public Matrix GenerateRandomPointOnPlane()
+        {
+
+
+            var retVal = new Matrix(1, spaceDim);
+            var aa = new Matrix(1, spaceDim-1);
+            aa.PopulateAllRandomly(model.RandomGenerator);
+            aa = Matrix.NormalizeVector(aa, 100);
+
+            var bb = Matrix.Multiplication(aa, planeIdentity.parameters);
+            Matrix.ConcatHorizontally(aa, bb);
+
+
+
+
+
+            return new Matrix(1, 1);
+        }
 
 
     }

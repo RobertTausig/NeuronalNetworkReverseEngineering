@@ -143,6 +143,35 @@ namespace NeuronalNetworkReverseEngineering
             return retMatrix;
         }
 
+        public static Matrix ConcatHorizontally (Matrix leftMatrix, Matrix rightMatrix)
+        {
+            if (leftMatrix.numRow != rightMatrix.numRow)
+            {
+                return null;
+            }
+
+            var retMatrix = new Matrix(leftMatrix.numRow, leftMatrix.numCol + rightMatrix.numCol);
+            var leftContent = leftMatrix.content;
+            var rightContent = rightMatrix.content;
+
+            for (int i = 0; i < retMatrix.numRow; i++)
+            {
+                for (int j = 0; j < retMatrix.numCol; j++)
+                {
+                    if (j < leftMatrix.numCol)
+                    {
+                        retMatrix.SetValue(i, j, leftContent[i, j]);
+                    }
+                    else
+                    {
+                        retMatrix.SetValue(i, j, rightContent[i, j - leftMatrix.numCol]);
+                    }
+                }
+            }
+
+            return retMatrix;
+        }
+
         public static bool? ApproxEqual(Matrix leftMatrix, Matrix rightMatrix)
         {
             if (leftMatrix.numRow != rightMatrix.numRow || leftMatrix.numCol != rightMatrix.numCol)
@@ -247,7 +276,7 @@ namespace NeuronalNetworkReverseEngineering
 
             return retVal;
         }
-        public static (double[] parameters, double? intercept) CalculateLinearRegression(List<Matrix> points)
+        public static (Matrix parameters, double? intercept) CalculateLinearRegression(List<Matrix> points)
         {
             //--- Start: Working Example ---
             //double[] parameters = new[] { 2.37, -3.8, -0.22, 7.19 };
@@ -279,7 +308,12 @@ namespace NeuronalNetworkReverseEngineering
             }
 
             var temp = Fit.MultiDim(xArr, yArr, intercept: true);
-            return (temp[1..], temp[0]);
+            var parameters = new Matrix(temp.Length - 1, 1);
+            for (int i = 0; i < temp.Length - 1; i++)
+            {
+                parameters.SetValue(i, 0, temp[i + 1]);
+            }
+            return (parameters, temp[0]);
         }
 
 
