@@ -33,9 +33,9 @@ namespace NeuronalNetworkReverseEngineering
             {
                 return null;
             }
-            if (salt > maxSalt)
+            if (salt >= maxSalt)
             {
-                throw new Exception("PM06");
+                return new List<Matrix>();
             }
 
             var retVal = new List<Matrix>();
@@ -68,8 +68,12 @@ namespace NeuronalNetworkReverseEngineering
                         retVal.AddRange(item);
                     }
                 }
+                if (retVal.Count < 2)
+                {
+                    return new List<Matrix>();
+                }
                 //Mathematical minimum: retVal.Count < spaceDim
-                if (retVal.Count < spaceDim + 3)
+                else if (retVal.Count < spaceDim + 3)
                 {
                     salt += saltIncreasePerRecursion;
                     return SupportPointsOnBoundary(boundaryPoint, salt);
@@ -86,17 +90,23 @@ namespace NeuronalNetworkReverseEngineering
 
         public Matrix GenerateRandomPointOnPlane()
         {
-            var retVal = new Matrix(1, spaceDim);
-            var xCoords = new Matrix(1, spaceDim - 1);
-            xCoords.PopulateAllRandomlyFarFromZero(model.RandomGenerator);
-            xCoords = Matrix.NormalizeVector(xCoords, 70);
+            //var retVal = new Matrix(1, spaceDim);
+            //var xCoords = new Matrix(1, spaceDim - 1);
+            //xCoords.PopulateAllRandomlyFarFromZero(model.RandomGenerator);
+            //xCoords = Matrix.NormalizeVector(xCoords, 70);
 
-            var yCoord = Matrix.Multiplication(xCoords, planeIdentity.parameters);
-            var potentialPointOnPlane = Matrix.ConcatHorizontally(xCoords, yCoord);
+            //var yCoord = Matrix.Multiplication(xCoords, planeIdentity.parameters);
+            //var potentialPointOnPlane = Matrix.ConcatHorizontally(xCoords, yCoord);
 
             //Debug:
-            var dd = Matrix.GetEuclideanNormForVector(potentialPointOnPlane);
-            var aa = SupportPointsOnBoundary(potentialPointOnPlane, 0);
+            for (int i = 0; i < 50; i++)
+            {
+                var notOnPlane = new Matrix(1, spaceDim);
+                notOnPlane.PopulateAllRandomlyFarFromZero(new Random(i));
+                notOnPlane = Matrix.NormalizeVector(notOnPlane, 500);
+                Console.WriteLine(SupportPointsOnBoundary(notOnPlane, i + 444).Count);
+            }
+            
 
 
 
