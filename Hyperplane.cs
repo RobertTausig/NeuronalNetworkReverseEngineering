@@ -14,7 +14,7 @@ namespace NeuronalNetworkReverseEngineering
             this.model = model;
             this.originalBoundaryPoint = boundaryPoint;
             this.spaceDim = boundaryPoint.numRow + boundaryPoint.numCol - 1;
-            this.pointsOnPlane = SupportPointsOnBoundary(boundaryPoint, 0);
+            this.pointsOnPlane = SupportPointsOnBoundary(boundaryPoint, 0, 1, 0.02, 8);
             this.planeIdentity = Matrix.CalculateLinearRegression(pointsOnPlane);
         }
 
@@ -27,7 +27,7 @@ namespace NeuronalNetworkReverseEngineering
         private const int saltIncreasePerRecursion = 1_000;
         private const int maxSalt = 4*saltIncreasePerRecursion;
 
-        private List<Matrix> SupportPointsOnBoundary(Matrix boundaryPoint, int salt)
+        private List<Matrix> SupportPointsOnBoundary(Matrix boundaryPoint, int salt, double displacementNorm, double directionNorm, int maxMagnitude)
         {
             if (!(boundaryPoint.numRow == 1 || boundaryPoint.numRow == 1))
             {
@@ -48,14 +48,14 @@ namespace NeuronalNetworkReverseEngineering
 
                 var displacementVector = new Matrix(boundaryPoint.numRow, boundaryPoint.numCol);
                 displacementVector.PopulateAllRandomlyFarFromZero(tempModel.RandomGenerator);
-                displacementVector = Matrix.NormalizeVector(displacementVector, 1);
+                displacementVector = Matrix.NormalizeVector(displacementVector, displacementNorm);
 
                 var directionVector = new Matrix(boundaryPoint.numRow, boundaryPoint.numCol);
                 directionVector.PopulateAllRandomlyFarFromZero(tempModel.RandomGenerator);
-                directionVector = Matrix.NormalizeVector(directionVector, 0.02);
+                directionVector = Matrix.NormalizeVector(directionVector, directionNorm);
 
                 var startPoint = Matrix.Addition(boundaryPoint, displacementVector);
-                var samplePoints = tempSampler.BidirectionalLinearRegionChanges(startPoint, directionVector, 8);
+                var samplePoints = tempSampler.BidirectionalLinearRegionChanges(startPoint, directionVector, maxMagnitude);
                 bag.Add(samplePoints);
             });
 
@@ -76,7 +76,7 @@ namespace NeuronalNetworkReverseEngineering
                 else if (retVal.Count < spaceDim + 3)
                 {
                     salt += saltIncreasePerRecursion;
-                    return SupportPointsOnBoundary(boundaryPoint, salt);
+                    return SupportPointsOnBoundary(boundaryPoint, salt, displacementNorm, directionNorm, maxMagnitude);
                 }
                 return retVal;
 
@@ -99,14 +99,23 @@ namespace NeuronalNetworkReverseEngineering
             //var potentialPointOnPlane = Matrix.ConcatHorizontally(xCoords, yCoord);
 
             //Debug:
-            for (int i = 0; i < 50; i++)
+            var aa = new List<Matrix>();
+            for (int i = 0; i < 100; i++)
             {
+                if (i == 16)
+                {
+                }
                 var notOnPlane = new Matrix(1, spaceDim);
                 notOnPlane.PopulateAllRandomlyFarFromZero(new Random(i));
                 notOnPlane = Matrix.NormalizeVector(notOnPlane, 500);
-                Console.WriteLine(SupportPointsOnBoundary(notOnPlane, i + 444).Count);
+                var cc = SupportPointsOnBoundary(notOnPlane, i + 444, 0, 0.2, 3);
+                Console.WriteLine(cc.Count);
+                aa.AddRange(cc);
             }
-            
+            //foreach (var item in aa)
+            //{
+            //    var bb = model.Use(item);
+            //}
 
 
 
