@@ -43,7 +43,7 @@ namespace NeuronalNetworkReverseEngineering
 
             clock.Stop();
             Console.WriteLine("Time passed: " + clock.Elapsed.TotalMilliseconds);
-              Console.ReadLine();
+            Console.ReadLine();
         }
 
 
