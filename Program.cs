@@ -41,8 +41,6 @@ namespace NeuronalNetworkReverseEngineering
                 planes.Add(new Hyperplane(model, item));
             }
 
-            planes[0].GenerateRandomPointOnPlane();
-
             clock.Stop();
             Console.WriteLine("Time passed: " + clock.Elapsed.TotalMilliseconds);
               Console.ReadLine();

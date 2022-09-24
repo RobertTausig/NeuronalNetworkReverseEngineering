@@ -90,36 +90,11 @@ namespace NeuronalNetworkReverseEngineering
 
         public Matrix GenerateRandomPointOnPlane()
         {
-            //var retVal = new Matrix(1, spaceDim);
-            //var xCoords = new Matrix(1, spaceDim - 1);
-            //xCoords.PopulateAllRandomlyFarFromZero(model.RandomGenerator);
-            //xCoords = Matrix.NormalizeVector(xCoords, 70);
-
-            //var yCoord = Matrix.Multiplication(xCoords, planeIdentity.parameters);
-            //var potentialPointOnPlane = Matrix.ConcatHorizontally(xCoords, yCoord);
-
-            //Debug:
-            var aa = new List<Matrix>();
-            for (int i = 0; i < 100; i++)
-            {
-                if (i == 16)
-                {
-                }
-                var notOnPlane = new Matrix(1, spaceDim);
-                notOnPlane.PopulateAllRandomlyFarFromZero(new Random(i));
-                notOnPlane = Matrix.NormalizeVector(notOnPlane, 500);
-                var cc = SupportPointsOnBoundary(notOnPlane, i + 444, 0, 0.2, 3);
-                Console.WriteLine(cc.Count);
-                aa.AddRange(cc);
-            }
-            //foreach (var item in aa)
-            //{
-            //    var bb = model.Use(item);
-            //}
-
-
-
-            return new Matrix(1, 1);
+            var xCoords = new Matrix(1, spaceDim - 1);
+            xCoords.PopulateAllRandomlyFarFromZero(model.RandomGenerator);
+            xCoords = Matrix.NormalizeVector(xCoords, 80);
+            var yCoord = Matrix.Multiplication(xCoords, planeIdentity.parameters);
+            return Matrix.ConcatHorizontally(xCoords, yCoord);
         }
 
 
