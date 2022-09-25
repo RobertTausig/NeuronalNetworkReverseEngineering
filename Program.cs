@@ -12,12 +12,14 @@ namespace NeuronalNetworkReverseEngineering
 
         static void Main(string[] args)
         {
-            
+            var clock = new Stopwatch();
+            clock.Start();
+
 
             var model = new Model(new int[4] { 7, 5, 6, 4 });
             var sampler = new SamplingLine(model);
 
-            var boundaryPoints = new List<Matrix>();
+            var boundaryPoints_1 = new List<Matrix>();
             // Why doing this:
             // To make sure to not accidentally get a "bad" line.
             while (true)
@@ -27,19 +29,53 @@ namespace NeuronalNetworkReverseEngineering
                 var secondBoundaryPointsSuggestion = sampler.BidirectionalLinearRegionChanges(Matrix.Multiplication(midPoint, 1.01), directionVector);
                 if (firstBoundaryPointsSuggestion.Count == secondBoundaryPointsSuggestion.Count && IsSpacedApart(firstBoundaryPointsSuggestion, constMinDistance))
                 {
-                    boundaryPoints = firstBoundaryPointsSuggestion;
+                    boundaryPoints_1 = firstBoundaryPointsSuggestion;
                     break;
                 }
             }
 
-            var clock = new Stopwatch();
-            clock.Start();
-
-            var planes = new List<Hyperplane>();
-            foreach (var item in boundaryPoints)
+            var planes_1 = new List<Hyperplane>();
+            foreach (var item in boundaryPoints_1)
             {
-                planes.Add(new Hyperplane(model, item));
+                planes_1.Add(new Hyperplane(model, item));
             }
+
+            //----------------------------------------------
+            var boundaryPoints_2 = new List<Matrix>();
+            // Why doing this:
+            // To make sure to not accidentally get a "bad" line.
+            while (true)
+            {
+                var (midPoint, directionVector) = sampler.RandomSecantLine(radius: constRadius);
+                var firstBoundaryPointsSuggestion = sampler.BidirectionalLinearRegionChanges(midPoint, directionVector);
+                var secondBoundaryPointsSuggestion = sampler.BidirectionalLinearRegionChanges(Matrix.Multiplication(midPoint, 1.01), directionVector);
+                if (firstBoundaryPointsSuggestion.Count == secondBoundaryPointsSuggestion.Count && IsSpacedApart(firstBoundaryPointsSuggestion, constMinDistance))
+                {
+                    boundaryPoints_2 = firstBoundaryPointsSuggestion;
+                    break;
+                }
+            }
+
+            var planes_2 = new List<Hyperplane>();
+            foreach (var item in boundaryPoints_2)
+            {
+                planes_2.Add(new Hyperplane(model, item));
+            }
+
+            //----------------------------------------------
+            foreach (var pl1 in planes_1)
+            {
+                foreach (var pl2 in planes_2)
+                {
+                    if(Matrix.ApproxEqual(pl1.planeIdentity.parameters, pl2.planeIdentity.parameters) == true)
+                    {
+                        Console.WriteLine("x");
+                        break;
+                    }
+                }
+            }
+
+
 
             clock.Stop();
             Console.WriteLine("Time passed: " + clock.Elapsed.TotalMilliseconds);
