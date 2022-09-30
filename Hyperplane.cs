@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MathNet.Numerics;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,7 +26,7 @@ namespace NeuronalNetworkReverseEngineering
         public Matrix originalBoundaryPoint { get; }
 
         private const int saltIncreasePerRecursion = 1_000;
-        private const int maxSalt = 4*saltIncreasePerRecursion;
+        private const int maxSalt = 6*saltIncreasePerRecursion;
 
         private List<Matrix> SupportPointsOnBoundary(Matrix boundaryPoint, int salt, double displacementNorm, double directionNorm, int maxMagnitude)
         {
@@ -40,7 +41,7 @@ namespace NeuronalNetworkReverseEngineering
 
             var retVal = new List<Matrix>();
             var bag = new ConcurrentBag<List<Matrix>>();
-            var iterations = spaceDim + 11;
+            var iterations = 2 * spaceDim + 6;
             var result = Parallel.For(0, iterations, index =>
             {
                 var tempModel = model.Copy(index + salt);
@@ -61,24 +62,54 @@ namespace NeuronalNetworkReverseEngineering
 
             if (result.IsCompleted)
             {
-                foreach (var item in bag)
-                {
-                    if (item.Count == 1)
-                    {
-                        retVal.AddRange(item);
-                    }
-                }
-                if (retVal.Count < 2)
+                var overshootSample = bag.Where(x => x.Count > 1);
+                var fineSample = bag.Where(x => x.Count == 1);
+                var undershootSample = bag.Where(x => x.Count < 1);
+
+                if (undershootSample.Count() > iterations * 0.9)
                 {
                     return new List<Matrix>();
                 }
-                //Mathematical minimum: retVal.Count < spaceDim
-                else if (retVal.Count < spaceDim + 3)
+                else if (fineSample.Count() > iterations * 0.5)
                 {
-                    salt += saltIncreasePerRecursion;
-                    return SupportPointsOnBoundary(boundaryPoint, salt, displacementNorm, directionNorm, maxMagnitude);
+                    foreach (var item in fineSample)
+                    {
+                        retVal.AddRange(item);
+                    }
+                    return retVal;
                 }
-                return retVal;
+                else
+                {
+                    if (overshootSample.Count() > undershootSample.Count())
+                    {
+                        salt += saltIncreasePerRecursion;
+                        return SupportPointsOnBoundary(boundaryPoint, salt, displacementNorm, directionNorm / 1.25, maxMagnitude);
+                    }
+                    else
+                    {
+                        salt += saltIncreasePerRecursion;
+                        return SupportPointsOnBoundary(boundaryPoint, salt, displacementNorm, directionNorm * 1.25, maxMagnitude);
+                    }
+                }
+
+                //foreach (var item in bag)
+                //{
+                //    if (item.Count == 1)
+                //    {
+                //        retVal.AddRange(item);
+                //    }
+                //}
+                //if (retVal.Count < 2)
+                //{
+                //    return new List<Matrix>();
+                //}
+                ////Mathematical minimum: retVal.Count < spaceDim
+                //else if (retVal.Count < spaceDim + 3)
+                //{
+                //    salt += saltIncreasePerRecursion;
+                //    return SupportPointsOnBoundary(boundaryPoint, salt, displacementNorm, directionNorm, maxMagnitude);
+                //}
+                //return retVal;
 
             }
             else
