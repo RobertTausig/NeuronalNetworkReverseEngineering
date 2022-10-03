@@ -100,25 +100,6 @@ namespace NeuronalNetworkReverseEngineering
                     }
                 }
 
-                //foreach (var item in bag)
-                //{
-                //    if (item.Count == 1)
-                //    {
-                //        retVal.AddRange(item);
-                //    }
-                //}
-                //if (retVal.Count < 2)
-                //{
-                //    return new List<Matrix>();
-                //}
-                ////Mathematical minimum: retVal.Count < spaceDim
-                //else if (retVal.Count < spaceDim + 3)
-                //{
-                //    salt += saltIncreasePerRecursion;
-                //    return SupportPointsOnBoundary(boundaryPoint, salt, displacementNorm, directionNorm, maxMagnitude);
-                //}
-                //return retVal;
-
             }
             else
             {
