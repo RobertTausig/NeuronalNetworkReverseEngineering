@@ -67,7 +67,7 @@ namespace NeuronalNetworkReverseEngineering
             {
                 foreach (var pl2 in planes_2)
                 {
-                    if(Matrix.ApproxEqual(pl1.planeIdentity.parameters, pl2.planeIdentity.parameters) == true)
+                    if(Matrix.ApproxEqual(pl1.planeIdentity.parameters, pl2.planeIdentity.parameters, 0.3) == true)
                     {
                         Console.WriteLine("x");
                         break;

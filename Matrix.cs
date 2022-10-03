@@ -172,13 +172,15 @@ namespace NeuronalNetworkReverseEngineering
             return retMatrix;
         }
 
-        public static bool? ApproxEqual(Matrix leftMatrix, Matrix rightMatrix)
+        public static bool? ApproxEqual(Matrix leftMatrix, Matrix rightMatrix, double accuracy = 0.05)
         {
             if (leftMatrix.numRow != rightMatrix.numRow || leftMatrix.numCol != rightMatrix.numCol)
             {
                 return null;
             }
 
+            double upperLimit = 1 + accuracy;
+            double lowerLimit = 1 / upperLimit;
             var leftContent = leftMatrix.content;
             var rightContent = rightMatrix.content;
 
@@ -187,7 +189,7 @@ namespace NeuronalNetworkReverseEngineering
                 for (int j = 0; j < leftMatrix.numCol; j++)
                 {
                     var temp = leftContent[i, j] / rightContent[i, j];
-                    if (!((0.9524 < temp && temp < 1.05) || leftContent[i, j] == rightContent[i, j]))
+                    if (!((lowerLimit < temp && temp < upperLimit) || leftContent[i, j] == rightContent[i, j]))
                     {
                         return false;
                     }
