@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 
 namespace NeuronalNetworkReverseEngineering
 {
@@ -40,40 +41,7 @@ namespace NeuronalNetworkReverseEngineering
                 planes_1.Add(new Hyperplane(model, item));
             }
 
-            //----------------------------------------------
-            var boundaryPoints_2 = new List<Matrix>();
-            // Why doing this:
-            // To make sure to not accidentally get a "bad" line.
-            while (true)
-            {
-                var (midPoint, directionVector) = sampler.RandomSecantLine(radius: constRadius);
-                var firstBoundaryPointsSuggestion = sampler.BidirectionalLinearRegionChanges(midPoint, directionVector);
-                var secondBoundaryPointsSuggestion = sampler.BidirectionalLinearRegionChanges(Matrix.Multiplication(midPoint, 1.01), directionVector);
-                if (firstBoundaryPointsSuggestion.Count == secondBoundaryPointsSuggestion.Count && IsSpacedApart(firstBoundaryPointsSuggestion, constMinDistance))
-                {
-                    boundaryPoints_2 = firstBoundaryPointsSuggestion;
-                    break;
-                }
-            }
-
-            var planes_2 = new List<Hyperplane>();
-            foreach (var item in boundaryPoints_2)
-            {
-                planes_2.Add(new Hyperplane(model, item));
-            }
-
-            //----------------------------------------------
-            foreach (var pl1 in planes_1)
-            {
-                foreach (var pl2 in planes_2)
-                {
-                    if(Matrix.ApproxEqual(pl1.planeIdentity.parameters, pl2.planeIdentity.parameters, 0.3) == true)
-                    {
-                        Console.WriteLine("x");
-                        break;
-                    }
-                }
-            }
+            var aa = planes_1.First().IsPointOnPlane(planes_1.First().originalBoundaryPoint);
 
 
 

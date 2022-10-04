@@ -117,6 +117,29 @@ namespace NeuronalNetworkReverseEngineering
             return Matrix.ConcatHorizontally(xCoords, yCoord);
         }
 
+        public bool? IsPointOnPlane (Matrix point, double accuracy = 0.1)
+        {
+            if (point.numRow != 1)
+            {
+                return null;
+            }
+
+            double upperLimit = 1 + accuracy;
+            double lowerLimit = 1 / upperLimit;
+
+            var flattenPoint = Matrix.FlattenVector(point);
+            var xCoords = new Matrix(1, spaceDim - 1);
+            for (int i = 0; i < flattenPoint.Length - 1; i++)
+            {
+                xCoords.SetValue(0, i, flattenPoint[i]);
+            }
+            var yCoord = flattenPoint[^1];
+
+            var yCoordCalculated = Matrix.Multiplication(xCoords, planeIdentity.parameters);
+            var quotient = yCoord / Matrix.FlattenVector(yCoordCalculated).First();
+
+            return (lowerLimit < quotient) && (upperLimit > quotient);
+        }
 
     }
 }
