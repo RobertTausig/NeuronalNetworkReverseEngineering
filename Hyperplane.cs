@@ -114,7 +114,10 @@ namespace NeuronalNetworkReverseEngineering
             xCoords.PopulateAllRandomlyFarFromZero(model.RandomGenerator);
             xCoords = Matrix.NormalizeVector(xCoords, 80);
             var yCoord = Matrix.Multiplication(xCoords, planeIdentity.parameters);
-            return Matrix.ConcatHorizontally(xCoords, yCoord);
+            var intercept = new Matrix(1, 1);
+            intercept.SetValue(0, 0, (double)planeIdentity.intercept);
+
+            return Matrix.ConcatHorizontally(xCoords, Matrix.Addition(yCoord, intercept));
         }
 
         //Probability for a random point to return "true" with accuracy 0.1: ~2%
