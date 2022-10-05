@@ -20,37 +20,31 @@ namespace NeuronalNetworkReverseEngineering
             var model = new Model(new int[4] { 7, 5, 6, 4 });
             var sampler = new SamplingLine(model);
 
-            var boundaryPoints_1 = new List<Matrix>();
+            var linesThroughSpace = new List<List<Matrix>>();
             // Why doing this:
             // To make sure to not accidentally get a "bad" line.
-            while (true)
+            while (linesThroughSpace.Count < 10)
             {
                 var (midPoint, directionVector) = sampler.RandomSecantLine(radius: constRadius);
                 var firstBoundaryPointsSuggestion = sampler.BidirectionalLinearRegionChanges(midPoint, directionVector);
                 var secondBoundaryPointsSuggestion = sampler.BidirectionalLinearRegionChanges(Matrix.Multiplication(midPoint, 1.01), directionVector);
                 if (firstBoundaryPointsSuggestion.Count == secondBoundaryPointsSuggestion.Count && IsSpacedApart(firstBoundaryPointsSuggestion, constMinDistance))
                 {
-                    boundaryPoints_1 = firstBoundaryPointsSuggestion;
-                    break;
+                    linesThroughSpace.Add(firstBoundaryPointsSuggestion);
                 }
             }
 
-            var planes_1 = new List<Hyperplane>();
-            foreach (var item in boundaryPoints_1)
+            var hyperPlaneCollection = new List<List<Hyperplane>>();
+            foreach (var lines in linesThroughSpace)
             {
-                planes_1.Add(new Hyperplane(model, item));
-            }
-
-            int cnt = 0;
-            for (int i = 0; i < 1_000; i++)
-            {
-                var randPoint = planes_1.Last().GenerateRandomPointOnPlane();
-                if (planes_1.Last().IsPointOnPlane(randPoint) == true)
+                var temp = new List<Hyperplane>();
+                foreach (var point in lines)
                 {
-                    cnt++;
+                    temp.Add(new Hyperplane(model, point));
                 }
+                hyperPlaneCollection.Add(temp);
             }
-            Console.WriteLine(cnt);
+
 
 
             clock.Stop();
