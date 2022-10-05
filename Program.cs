@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Reflection;
 
 namespace NeuronalNetworkReverseEngineering
 {
@@ -34,17 +35,8 @@ namespace NeuronalNetworkReverseEngineering
                 }
             }
 
-            var hyperPlaneCollection = new List<List<Hyperplane>>();
-            foreach (var lines in linesThroughSpace)
-            {
-                var temp = new List<Hyperplane>();
-                foreach (var point in lines)
-                {
-                    temp.Add(new Hyperplane(model, point));
-                }
-                hyperPlaneCollection.Add(temp);
-            }
-
+            var hyperPlaneCollection = SampleLinePointsToHyperplanes(linesThroughSpace, model);
+            
 
 
             clock.Stop();
@@ -66,6 +58,21 @@ namespace NeuronalNetworkReverseEngineering
             }
 
             return true;
+        }
+
+        public static List<List<Hyperplane>> SampleLinePointsToHyperplanes(List<List<Matrix>> lineCollection, Model model)
+        {
+            var retVal = new List<List<Hyperplane>>();
+            foreach (var lines in lineCollection)
+            {
+                var temp = new List<Hyperplane>();
+                foreach (var point in lines)
+                {
+                    temp.Add(new Hyperplane(model, point));
+                }
+                retVal.Add(temp);
+            }
+            return retVal;
         }
 
     }
