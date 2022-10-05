@@ -35,9 +35,41 @@ namespace NeuronalNetworkReverseEngineering
                 }
             }
 
-            var hyperPlaneCollection = SampleLinePointsToHyperplanes(linesThroughSpace, model);
-            
+            var hyperPlanes = new List<Hyperplane>();
+            foreach (var point in linesThroughSpace.First())
+            {
+                hyperPlanes.Add(new Hyperplane(model, point));
+            }
 
+
+            var firstLayerPlanes = new List<Hyperplane>();
+            foreach (var plane in hyperPlanes)
+            {
+                bool outerTest = false;
+                for (int i = 1; i < linesThroughSpace.Count; i++)
+                {
+                    bool innerTest = false;
+                    var comparisonLine = linesThroughSpace[i];
+                    for (int j = 0; j < comparisonLine.Count; j++)
+                    {
+                        if (plane.IsPointOnPlane(comparisonLine[j], 0.15) == true)
+                        {
+                            innerTest = true;
+                        }
+                    }
+                    if (!innerTest)
+                    {
+                        break;
+                    }
+                    outerTest = true;
+                }
+                if (outerTest)
+                {
+                    firstLayerPlanes.Add(plane);
+                }
+            }
+
+            
 
             clock.Stop();
             Console.WriteLine("Time passed: " + clock.Elapsed.TotalMilliseconds);
