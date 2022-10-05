@@ -117,7 +117,8 @@ namespace NeuronalNetworkReverseEngineering
             return Matrix.ConcatHorizontally(xCoords, yCoord);
         }
 
-        public bool? IsPointOnPlane (Matrix point, double accuracy = 0.1)
+        //Probability for a random point to return "true" with accuracy 0.1: ~2%
+        public bool? IsPointOnPlane (Matrix point, double accuracy = 0.05)
         {
             if (point.numRow != 1)
             {
@@ -136,7 +137,7 @@ namespace NeuronalNetworkReverseEngineering
             var yCoord = flattenPoint[^1];
 
             var yCoordCalculated = Matrix.Multiplication(xCoords, planeIdentity.parameters);
-            var quotient = yCoord / Matrix.FlattenVector(yCoordCalculated).First();
+            var quotient = yCoord / (Matrix.FlattenVector(yCoordCalculated).First() + planeIdentity.intercept);
 
             return (lowerLimit < quotient) && (upperLimit > quotient);
         }

@@ -41,8 +41,11 @@ namespace NeuronalNetworkReverseEngineering
                 planes_1.Add(new Hyperplane(model, item));
             }
 
-            var aa = planes_1.First().IsPointOnPlane(planes_1.First().originalBoundaryPoint);
-
+            foreach (var item in planes_1.First().pointsOnPlane)
+            {
+                planes_1.First().IsPointOnPlane(item);
+            }
+            
 
 
             clock.Stop();
