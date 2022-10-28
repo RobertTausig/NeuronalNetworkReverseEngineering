@@ -29,10 +29,13 @@ namespace NeuronalNetworkReverseEngineering
             {
                 var (midPoint, directionVector) = sampler.RandomSecantLine(radius: constRadius);
                 var firstBoundaryPointsSuggestion = sampler.BidirectionalLinearRegionChanges(midPoint, directionVector, constMaxMagnitude);
-                var secondBoundaryPointsSuggestion = sampler.BidirectionalLinearRegionChanges(Matrix.Multiplication(midPoint, 1.01), directionVector, constMaxMagnitude);
-                if (firstBoundaryPointsSuggestion.Count == secondBoundaryPointsSuggestion.Count && IsSpacedApart(firstBoundaryPointsSuggestion, constMinDistance))
+                if(IsSpacedApart(firstBoundaryPointsSuggestion, constMinDistance))
                 {
-                    linesThroughSpace.Add(firstBoundaryPointsSuggestion);
+                    var secondBoundaryPointsSuggestion = sampler.BidirectionalLinearRegionChanges(Matrix.Multiplication(midPoint, 1.01), directionVector, constMaxMagnitude);
+                    if (firstBoundaryPointsSuggestion.Count == secondBoundaryPointsSuggestion.Count)
+                    {
+                        linesThroughSpace.Add(firstBoundaryPointsSuggestion);
+                    }
                 }
             }
 
