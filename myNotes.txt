@@ -1,101 +1,22 @@
-0
-0
-0
-0
-0
-0
-0
-0
-0
-0
-0
-0
-0
-0
-0
-0
-11
-0
-0
-0
-0
-0
-0
-0
-0
-0
-0
-0
-0
-0
-0
-0
-0
-0
-0
-0
-0
-0
-0
-0
-0
-0
-0
-0
-0
-0
-0
-0
-0
-0
-0
-0
-0
-10
-0
-0
-13
-0
-0
-0
-0
-0
-0
-0
-0
-0
-0
-0
-0
-0
-0
-0
-0
-0
-0
-0
-0
-0
-0
-0
-0
-0
-0
-0
-0
-0
-0
-0
-0
-0
-0
-0
-0
-0
-0
-0
-0
-0
-0
-0
-Time passed: 251,7814
+-		linesThroughSpace	Count = 20	System.Collections.Generic.List<System.Collections.Generic.List<NeuronalNetworkReverseEngineering.Matrix>>
++		[0]	Count = 7	System.Collections.Generic.List<NeuronalNetworkReverseEngineering.Matrix>
++		[1]	Count = 6	System.Collections.Generic.List<NeuronalNetworkReverseEngineering.Matrix>
++		[2]	Count = 8	System.Collections.Generic.List<NeuronalNetworkReverseEngineering.Matrix>
++		[3]	Count = 10	System.Collections.Generic.List<NeuronalNetworkReverseEngineering.Matrix>
++		[4]	Count = 10	System.Collections.Generic.List<NeuronalNetworkReverseEngineering.Matrix>
++		[5]	Count = 9	System.Collections.Generic.List<NeuronalNetworkReverseEngineering.Matrix>
++		[6]	Count = 11	System.Collections.Generic.List<NeuronalNetworkReverseEngineering.Matrix>
++		[7]	Count = 10	System.Collections.Generic.List<NeuronalNetworkReverseEngineering.Matrix>
++		[8]	Count = 11	System.Collections.Generic.List<NeuronalNetworkReverseEngineering.Matrix>
++		[9]	Count = 8	System.Collections.Generic.List<NeuronalNetworkReverseEngineering.Matrix>
++		[10]	Count = 11	System.Collections.Generic.List<NeuronalNetworkReverseEngineering.Matrix>
++		[11]	Count = 7	System.Collections.Generic.List<NeuronalNetworkReverseEngineering.Matrix>
++		[12]	Count = 7	System.Collections.Generic.List<NeuronalNetworkReverseEngineering.Matrix>
++		[13]	Count = 9	System.Collections.Generic.List<NeuronalNetworkReverseEngineering.Matrix>
++		[14]	Count = 7	System.Collections.Generic.List<NeuronalNetworkReverseEngineering.Matrix>
++		[15]	Count = 7	System.Collections.Generic.List<NeuronalNetworkReverseEngineering.Matrix>
++		[16]	Count = 10	System.Collections.Generic.List<NeuronalNetworkReverseEngineering.Matrix>
++		[17]	Count = 11	System.Collections.Generic.List<NeuronalNetworkReverseEngineering.Matrix>
++		[18]	Count = 8	System.Collections.Generic.List<NeuronalNetworkReverseEngineering.Matrix>
++		[19]	Count = 7	System.Collections.Generic.List<NeuronalNetworkReverseEngineering.Matrix>
++		Raw View		

@@ -10,12 +10,15 @@ namespace NeuronalNetworkReverseEngineering
 {
     class Hyperplane
     {
-        public Hyperplane(Model model, Matrix boundaryPoint)
+        public Hyperplane(Model model, Matrix boundaryPoint, double displacementNorm = 1)
         {
+            int maxMagnitude = 8;
+            double directionNorm = 5.0 * displacementNorm / Math.Pow(2, maxMagnitude);
+
             this.model = model;
             this.originalBoundaryPoint = boundaryPoint;
             this.spaceDim = boundaryPoint.numRow + boundaryPoint.numCol - 1;
-            this.pointsOnPlane = SupportPointsOnBoundary(boundaryPoint, 0, 1, 0.02, 8);
+            this.pointsOnPlane = SupportPointsOnBoundary(boundaryPoint, 0, displacementNorm, directionNorm, maxMagnitude);
             this.planeIdentity = Matrix.CalculateLinearRegression(pointsOnPlane);
         }
 
@@ -108,11 +111,11 @@ namespace NeuronalNetworkReverseEngineering
 
         }
 
-        public Matrix GenerateRandomPointOnPlane()
+        public Matrix GenerateRandomPointOnPlane(double approxRadius)
         {
             var xCoords = new Matrix(1, spaceDim - 1);
             xCoords.PopulateAllRandomlyFarFromZero(model.RandomGenerator);
-            xCoords = Matrix.NormalizeVector(xCoords, 80);
+            xCoords = Matrix.NormalizeVector(xCoords, approxRadius);
             var yCoord = Matrix.Multiplication(xCoords, planeIdentity.parameters);
             var intercept = new Matrix(1, 1);
             intercept.SetValue(0, 0, (double)planeIdentity.intercept);

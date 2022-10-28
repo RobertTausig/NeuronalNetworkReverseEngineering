@@ -9,8 +9,9 @@ namespace NeuronalNetworkReverseEngineering
 {
     class Program
     {
-        const double constRadius = 100;
-        const double constMinDistance = 10;
+        const double constRadius = 1_000;
+        const double constMinDistance = 100;
+        const int constMaxMagnitude = 24;
 
         static void Main(string[] args)
         {
@@ -27,8 +28,8 @@ namespace NeuronalNetworkReverseEngineering
             while (linesThroughSpace.Count < 20)
             {
                 var (midPoint, directionVector) = sampler.RandomSecantLine(radius: constRadius);
-                var firstBoundaryPointsSuggestion = sampler.BidirectionalLinearRegionChanges(midPoint, directionVector);
-                var secondBoundaryPointsSuggestion = sampler.BidirectionalLinearRegionChanges(Matrix.Multiplication(midPoint, 1.01), directionVector);
+                var firstBoundaryPointsSuggestion = sampler.BidirectionalLinearRegionChanges(midPoint, directionVector, constMaxMagnitude);
+                var secondBoundaryPointsSuggestion = sampler.BidirectionalLinearRegionChanges(Matrix.Multiplication(midPoint, 1.01), directionVector, constMaxMagnitude);
                 if (firstBoundaryPointsSuggestion.Count == secondBoundaryPointsSuggestion.Count && IsSpacedApart(firstBoundaryPointsSuggestion, constMinDistance))
                 {
                     linesThroughSpace.Add(firstBoundaryPointsSuggestion);
@@ -38,7 +39,7 @@ namespace NeuronalNetworkReverseEngineering
             var hyperPlanes = new List<Hyperplane>();
             foreach (var point in linesThroughSpace.First())
             {
-                hyperPlanes.Add(new Hyperplane(model, point));
+                hyperPlanes.Add(new Hyperplane(model, point, 10));
             }
 
 
