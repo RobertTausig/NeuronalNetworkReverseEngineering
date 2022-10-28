@@ -45,7 +45,7 @@ namespace NeuronalNetworkReverseEngineering
 
             var retVal = new List<Matrix>();
             var bag = new ConcurrentBag<List<Matrix>>();
-            var iterations = 2 * spaceDim + 6;
+            var iterations = 20 * spaceDim + 6;
             var result = Parallel.For(0, iterations, index =>
             {
                 var tempModel = model.Copy(index + salt);

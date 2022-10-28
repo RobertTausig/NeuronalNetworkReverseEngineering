@@ -25,7 +25,7 @@ namespace NeuronalNetworkReverseEngineering
             var linesThroughSpace = new List<List<Matrix>>();
             // Why doing this:
             // To make sure to not accidentally get a "bad" line.
-            while (linesThroughSpace.Count < 20)
+            while (linesThroughSpace.Count < 100)
             {
                 var (midPoint, directionVector) = sampler.RandomSecantLine(radius: constRadius);
                 var firstBoundaryPointsSuggestion = sampler.BidirectionalLinearRegionChanges(midPoint, directionVector, constMaxMagnitude);
@@ -53,7 +53,7 @@ namespace NeuronalNetworkReverseEngineering
                     var comparisonLine = linesThroughSpace[i];
                     for (int j = 0; j < comparisonLine.Count; j++)
                     {
-                        if (plane.IsPointOnPlane(comparisonLine[j], 0.25) == true)
+                        if (plane.IsPointOnPlane(comparisonLine[j], 0.10) == true)
                         {
                             innerTest = true;
                         }
@@ -64,7 +64,7 @@ namespace NeuronalNetworkReverseEngineering
                     }
                 }
                 Console.WriteLine(succeededLineFinds);
-                if (succeededLineFinds > 14)
+                if (succeededLineFinds > 80)
                 {
                     firstLayerPlanes.Add(plane);
                 }
