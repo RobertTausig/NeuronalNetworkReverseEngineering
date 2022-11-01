@@ -51,14 +51,19 @@ namespace NeuronalNetworkReverseEngineering
                 for (int i = 0; i < 500; i++)
                 {
                     var genPoint = plane.GenerateRandomPointOnPlane(1_000);
+                    var norm = Matrix.GetEuclideanNormForVector(genPoint);
                     int sphereCnt = 0;
                     for (int j = 0; j < 30; j++)
                     {
                         var directionVector = new Matrix(genPoint.numRow, genPoint.numCol);
                         directionVector.PopulateAllRandomlyFarFromZero(model.RandomGenerator);
-                        directionVector = Matrix.NormalizeVector(directionVector, 0.037);
+                        directionVector = Matrix.NormalizeVector(directionVector, (double)norm/31_000);
                         var boundaryPoints = sampler.BidirectionalLinearRegionChanges(genPoint, directionVector, 8);
                         sphereCnt += boundaryPoints.Count;
+                        if (sphereCnt > 0)
+                        {
+                            break;
+                        }
                     }
                     if (sphereCnt > 0)
                     {
