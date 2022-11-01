@@ -25,7 +25,7 @@ namespace NeuronalNetworkReverseEngineering
             var linesThroughSpace = new List<List<Matrix>>();
             // Why doing this:
             // To make sure to not accidentally get a "bad" line.
-            while (linesThroughSpace.Count < 100)
+            while (linesThroughSpace.Count < 1)
             {
                 var (midPoint, directionVector) = sampler.RandomSecantLine(radius: constRadius);
                 var firstBoundaryPointsSuggestion = sampler.BidirectionalLinearRegionChanges(midPoint, directionVector, constMaxMagnitude);
@@ -45,33 +45,56 @@ namespace NeuronalNetworkReverseEngineering
                 hyperPlanes.Add(new Hyperplane(model, point, 10));
             }
 
-
-            var firstLayerPlanes = new List<Hyperplane>();
             foreach (var plane in hyperPlanes)
             {
-                int succeededLineFinds = 0;
-                for (int i = 1; i < linesThroughSpace.Count; i++)
+                int cnt = 0;
+                for (int i = 0; i < 500; i++)
                 {
-                    bool innerTest = false;
-                    var comparisonLine = linesThroughSpace[i];
-                    for (int j = 0; j < comparisonLine.Count; j++)
+                    var genPoint = plane.GenerateRandomPointOnPlane(1_000);
+                    int sphereCnt = 0;
+                    for (int j = 0; j < 30; j++)
                     {
-                        if (plane.IsPointOnPlane(comparisonLine[j], 0.10) == true)
-                        {
-                            innerTest = true;
-                        }
+                        var directionVector = new Matrix(genPoint.numRow, genPoint.numCol);
+                        directionVector.PopulateAllRandomlyFarFromZero(model.RandomGenerator);
+                        directionVector = Matrix.NormalizeVector(directionVector, 0.037);
+                        var boundaryPoints = sampler.BidirectionalLinearRegionChanges(genPoint, directionVector, 8);
+                        sphereCnt += boundaryPoints.Count;
                     }
-                    if (innerTest)
+                    if (sphereCnt > 0)
                     {
-                        succeededLineFinds++;
+                        cnt++;
                     }
                 }
-                Console.WriteLine(succeededLineFinds);
-                if (succeededLineFinds > 80)
-                {
-                    firstLayerPlanes.Add(plane);
-                }
+                Console.WriteLine(cnt.ToString());
             }
+            
+
+            //var firstLayerPlanes = new List<Hyperplane>();
+            //foreach (var plane in hyperPlanes)
+            //{
+            //    int succeededLineFinds = 0;
+            //    for (int i = 1; i < linesThroughSpace.Count; i++)
+            //    {
+            //        bool innerTest = false;
+            //        var comparisonLine = linesThroughSpace[i];
+            //        for (int j = 0; j < comparisonLine.Count; j++)
+            //        {
+            //            if (plane.IsPointOnPlane(comparisonLine[j], 0.10) == true)
+            //            {
+            //                innerTest = true;
+            //            }
+            //        }
+            //        if (innerTest)
+            //        {
+            //            succeededLineFinds++;
+            //        }
+            //    }
+            //    Console.WriteLine(succeededLineFinds);
+            //    if (succeededLineFinds > 80)
+            //    {
+            //        firstLayerPlanes.Add(plane);
+            //    }
+            //}
 
             
 
