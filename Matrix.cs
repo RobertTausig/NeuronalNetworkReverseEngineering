@@ -223,7 +223,7 @@ namespace NeuronalNetworkReverseEngineering
 
         public static double? GetEuclideanNormForVector(Matrix matrix)
         {
-            if (!(matrix.numRow == 1 || matrix.numRow == 1))
+            if (!(matrix.numRow == 1 || matrix.numCol == 1))
             {
                 return null;
             }
@@ -242,7 +242,7 @@ namespace NeuronalNetworkReverseEngineering
         }
         public static Matrix GetRandomlyJitteredVector(Matrix matrix, Random rand)
         {
-            if (!(matrix.numRow == 1 || matrix.numRow == 1))
+            if (!(matrix.numRow == 1 || matrix.numCol == 1))
             {
                 return null;
             }
@@ -261,7 +261,7 @@ namespace NeuronalNetworkReverseEngineering
         }
         public static double[] FlattenVector (Matrix matrix)
         {
-            if (!(matrix.numRow == 1 || matrix.numRow == 1))
+            if (!(matrix.numRow == 1 || matrix.numCol == 1))
             {
                 return null;
             }
