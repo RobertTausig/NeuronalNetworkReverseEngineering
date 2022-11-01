@@ -46,6 +46,12 @@ namespace NeuronalNetworkReverseEngineering
                 hyperPlanes.Add(new Hyperplane(model, point, 10));
             }
 
+            var cc = new SamplingSphere(model);
+            foreach (var point in linesThroughSpace[0])
+            {
+                var bb = cc.MinimumDistanceToDifferentBoundary(point, 10);
+            }
+
             List<int> papap = new List<int>();
             foreach (var plane in hyperPlanes)
             {
