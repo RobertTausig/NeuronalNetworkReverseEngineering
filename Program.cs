@@ -25,14 +25,15 @@ namespace NeuronalNetworkReverseEngineering
             var linesThroughSpace = new List<List<Matrix>>();
             // Why doing this:
             // To make sure to not accidentally get a "bad" line.
-            while (linesThroughSpace.Count < 1)
+            while (linesThroughSpace.Count < 4)
             {
                 var (midPoint, directionVector) = sampler.RandomSecantLine(radius: constRadius);
                 var firstBoundaryPointsSuggestion = sampler.BidirectionalLinearRegionChanges(midPoint, directionVector, constMaxMagnitude);
                 if(IsSpacedApart(firstBoundaryPointsSuggestion, constMinDistance))
                 {
-                    var secondBoundaryPointsSuggestion = sampler.BidirectionalLinearRegionChanges(Matrix.Multiplication(midPoint, 1.01), directionVector, constMaxMagnitude);
-                    if (firstBoundaryPointsSuggestion.Count == secondBoundaryPointsSuggestion.Count)
+                    var secondBoundaryPointsSuggestion = sampler.BidirectionalLinearRegionChanges(Matrix.Multiplication(midPoint, 1.03), directionVector, constMaxMagnitude);
+                    var thirdBoundaryPointsSuggestion = sampler.BidirectionalLinearRegionChanges(Matrix.Multiplication(midPoint, 0.97), directionVector, constMaxMagnitude);
+                    if (firstBoundaryPointsSuggestion.Count == secondBoundaryPointsSuggestion.Count && firstBoundaryPointsSuggestion.Count == thirdBoundaryPointsSuggestion.Count)
                     {
                         linesThroughSpace.Add(firstBoundaryPointsSuggestion);
                     }
@@ -40,11 +41,12 @@ namespace NeuronalNetworkReverseEngineering
             }
 
             var hyperPlanes = new List<Hyperplane>();
-            foreach (var point in linesThroughSpace.First())
+            foreach (var point in linesThroughSpace[0])
             {
                 hyperPlanes.Add(new Hyperplane(model, point, 10));
             }
 
+            List<int> papap = new List<int>();
             foreach (var plane in hyperPlanes)
             {
                 int cnt = 0;
@@ -57,7 +59,7 @@ namespace NeuronalNetworkReverseEngineering
                     {
                         var directionVector = new Matrix(genPoint.numRow, genPoint.numCol);
                         directionVector.PopulateAllRandomlyFarFromZero(model.RandomGenerator);
-                        directionVector = Matrix.NormalizeVector(directionVector, (double)norm/31_000);
+                        directionVector = Matrix.NormalizeVector(directionVector, (double)norm / 31_000);
                         var boundaryPoints = sampler.BidirectionalLinearRegionChanges(genPoint, directionVector, 8);
                         sphereCnt += boundaryPoints.Count;
                         if (sphereCnt > 0)
@@ -71,8 +73,24 @@ namespace NeuronalNetworkReverseEngineering
                     }
                 }
                 Console.WriteLine(cnt.ToString());
+                papap.Add(cnt);
             }
-            
+            Console.WriteLine("----------------------------------------");
+            for (int i = 0; i < hyperPlanes.Count; i++)
+            {
+                if (papap[i] > 480)
+                {
+                    //var aa = hyperPlanes[i].planeIdentity.parameters;
+                    //var bb = Matrix.FlattenVector(aa);
+                    foreach (var param in Matrix.FlattenVector(hyperPlanes[i].planeIdentity.parameters))
+                    {
+                        Console.WriteLine(param);
+                    }
+                    Console.WriteLine(hyperPlanes[i].planeIdentity.intercept);
+                    Console.WriteLine("~ ~ ~ ~");
+                }
+            }
+
 
             //var firstLayerPlanes = new List<Hyperplane>();
             //foreach (var plane in hyperPlanes)
@@ -101,7 +119,7 @@ namespace NeuronalNetworkReverseEngineering
             //    }
             //}
 
-            
+
 
             clock.Stop();
             Console.WriteLine("Time passed: " + clock.Elapsed.TotalMilliseconds);
