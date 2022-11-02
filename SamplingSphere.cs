@@ -19,14 +19,14 @@ namespace NeuronalNetworkReverseEngineering
         private int salt = 0;
         private int saltIncreasePerUsage = 1_000;
 
-        public double MinimumDistanceToDifferentBoundary(Matrix boundaryPoint, double startingDistance)
+        public double? MinimumDistanceToDifferentBoundary(Matrix boundaryPoint, double startingDistance)
         {
             var retVal = new List<Matrix>();
 
             double directionNorm = startingDistance / Math.Pow(2, stdMaxMagnitude);
             var spaceDim = boundaryPoint.numRow + boundaryPoint.numCol - 1;
             var iterations = (spaceDim + 1) * 15;
-            var iterationGrowth = Math.Pow(2_500, 1.0 / iterations);
+            var iterationGrowth = Math.Pow(3_000, 1.0 / iterations);
 
             var conc = new ConcurrentDictionary<int, List<Matrix>>();
             var result = Parallel.For(0, iterations, index =>
@@ -45,8 +45,15 @@ namespace NeuronalNetworkReverseEngineering
             if (result.IsCompleted)
             {
                 salt += saltIncreasePerUsage;
-                var temp = conc.First(x => x.Value.Count > 1).Key;
-                return startingDistance * Math.Pow(iterationGrowth, temp);
+                int boundaryIndex = conc.FirstOrDefault(x => x.Value.Count > 1).Key;
+                if (boundaryIndex == 0)
+                {
+                    return null;
+                }
+                else
+                {
+                    return startingDistance * Math.Pow(iterationGrowth, boundaryIndex);
+                }
             }
             else
             {
