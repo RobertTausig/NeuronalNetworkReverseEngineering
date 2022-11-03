@@ -12,11 +12,12 @@ namespace NeuronalNetworkReverseEngineering
         public SamplingSphere(Model model)
         {
             this.model = model;
+            this.salt = model.RandomGenerator.Next();
         }
 
         private Model model { get; }
         private int stdMaxMagnitude = 6;
-        private int salt = 0;
+        private int salt;
         private int saltIncreasePerUsage = 1_000;
 
         public double? MinimumDistanceToDifferentBoundary(Matrix boundaryPoint, double startingDistance)
@@ -60,6 +61,35 @@ namespace NeuronalNetworkReverseEngineering
                 throw new Exception("CX31");
             }
         }
+
+        public List<(Matrix boundaryPoint, double? safeDistance)> MinimumDistanceToDifferentBoundary(List<Matrix> boundaryPoints, double startingDistance)
+        {
+            var retVal = new List<(Matrix boundaryPoint, double? safeDistance)>();
+            var conc = new ConcurrentDictionary<int, double?>();
+
+            var result = Parallel.For(0, boundaryPoints.Count, index =>
+            {
+                var tempModel = model.Copy(index + salt);
+                var tempSphere = new SamplingSphere(tempModel);
+
+                conc.TryAdd(index, this.MinimumDistanceToDifferentBoundary(boundaryPoints[index], startingDistance));
+            });
+
+            if (result.IsCompleted)
+            {
+                for (int i = 0; i < boundaryPoints.Count; i++)
+                {
+                    retVal.Add((boundaryPoints[i], conc[i]));
+                }
+                return retVal;
+            }
+            else
+            {
+                throw new Exception("TJ90");
+            }
+        }
+
+
 
 
 

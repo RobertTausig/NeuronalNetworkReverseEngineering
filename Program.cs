@@ -26,12 +26,18 @@ namespace NeuronalNetworkReverseEngineering
             var linesThroughSpace = new List<List<Matrix>>();
             // Why doing this:
             // To make sure to not accidentally get a "bad" line.
-            while (linesThroughSpace.Count < 8)
+            while (linesThroughSpace.Count < 30)
             {
                 var (midPoint, directionVector) = sampler.RandomSecantLine(radius: constRadius);
                 var boundaryPointsSuggestion = sampler.BidirectionalLinearRegionChanges(midPoint, directionVector, constMaxMagnitude);
                 if(IsSpacedApart(boundaryPointsSuggestion, constMinDistance))
                 {
+                    //var aa = sphere.MinimumDistanceToDifferentBoundary(boundaryPointsSuggestion, constMinDistance / 10);
+
+                    //if (aa.TrueForAll(x => x.safeDistance > constMinDistance))
+                    //{
+                    //    linesThroughSpace.Add(boundaryPointsSuggestion);
+                    //}
                     if (boundaryPointsSuggestion.TrueForAll(x => sphere.MinimumDistanceToDifferentBoundary(x, constMinDistance / 10) > constMinDistance))
                     {
                         linesThroughSpace.Add(boundaryPointsSuggestion);
