@@ -21,21 +21,20 @@ namespace NeuronalNetworkReverseEngineering
 
             var model = new Model(new int[4] { 7, 5, 6, 4 });
             var sampler = new SamplingLine(model);
+            var sphere = new SamplingSphere(model);
 
             var linesThroughSpace = new List<List<Matrix>>();
             // Why doing this:
             // To make sure to not accidentally get a "bad" line.
-            while (linesThroughSpace.Count < 4)
+            while (linesThroughSpace.Count < 8)
             {
                 var (midPoint, directionVector) = sampler.RandomSecantLine(radius: constRadius);
-                var firstBoundaryPointsSuggestion = sampler.BidirectionalLinearRegionChanges(midPoint, directionVector, constMaxMagnitude);
-                if(IsSpacedApart(firstBoundaryPointsSuggestion, constMinDistance))
+                var boundaryPointsSuggestion = sampler.BidirectionalLinearRegionChanges(midPoint, directionVector, constMaxMagnitude);
+                if(IsSpacedApart(boundaryPointsSuggestion, constMinDistance))
                 {
-                    var secondBoundaryPointsSuggestion = sampler.BidirectionalLinearRegionChanges(Matrix.Multiplication(midPoint, 1.03), directionVector, constMaxMagnitude);
-                    var thirdBoundaryPointsSuggestion = sampler.BidirectionalLinearRegionChanges(Matrix.Multiplication(midPoint, 0.97), directionVector, constMaxMagnitude);
-                    if (firstBoundaryPointsSuggestion.Count == secondBoundaryPointsSuggestion.Count && firstBoundaryPointsSuggestion.Count == thirdBoundaryPointsSuggestion.Count)
+                    if (boundaryPointsSuggestion.TrueForAll(x => sphere.MinimumDistanceToDifferentBoundary(x, constMinDistance / 10) > constMinDistance))
                     {
-                        linesThroughSpace.Add(firstBoundaryPointsSuggestion);
+                        linesThroughSpace.Add(boundaryPointsSuggestion);
                     }
                 }
             }
@@ -46,10 +45,12 @@ namespace NeuronalNetworkReverseEngineering
                 hyperPlanes.Add(new Hyperplane(model, point, 10));
             }
 
-            var cc = new SamplingSphere(model);
-            foreach (var point in linesThroughSpace[0])
+            foreach (var line in linesThroughSpace)
             {
-                var bb = cc.MinimumDistanceToDifferentBoundary(point, 10);
+                foreach (var point in line)
+                {
+                    var bb = sphere.MinimumDistanceToDifferentBoundary(point, 10);
+                }
             }
 
             List<int> papap = new List<int>();
