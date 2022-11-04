@@ -10,7 +10,8 @@ namespace NeuronalNetworkReverseEngineering
     class Program
     {
         const double constRadius = 1_000;
-        const double constMinDistance = 100;
+        const double constMinSafeDistance = constRadius / 10;
+        const double constMinStartingDistance = constMinSafeDistance / 10;
         const int constMaxMagnitude = 24;
 
         static void Main(string[] args)
@@ -31,12 +32,12 @@ namespace NeuronalNetworkReverseEngineering
             {
                 var (midPoint, directionVector) = sampler.RandomSecantLine(radius: constRadius);
                 var boundaryPointsSuggestion = sampler.BidirectionalLinearRegionChanges(midPoint, directionVector, constMaxMagnitude);
-                if(IsSpacedApart(boundaryPointsSuggestion, constMinDistance))
+                if(IsSpacedApart(boundaryPointsSuggestion, constMinSafeDistance))
                 {
                     foreach (var point in boundaryPointsSuggestion)
                     {
-                        var tempSafeDistance = sphere.MinimumDistanceToDifferentBoundary(point, constMinDistance / 10);
-                        if (tempSafeDistance != null && tempSafeDistance > constMinDistance)
+                        var tempSafeDistance = sphere.MinimumDistanceToDifferentBoundary(point, constMinStartingDistance);
+                        if (tempSafeDistance != null && tempSafeDistance > constMinSafeDistance)
                         {
                             lineThroughSpace.Add((point, (double)tempSafeDistance));
                             loopCondition = false;
@@ -54,7 +55,7 @@ namespace NeuronalNetworkReverseEngineering
             var hyperPlanes = new List<Hyperplane>();
             foreach (var l in lineThroughSpace)
             {
-                hyperPlanes.Add(new Hyperplane(model, l.boundaryPoint, l.safeDistance / 10));
+                hyperPlanes.Add(new Hyperplane(model, l.boundaryPoint, l.safeDistance / 12));
             }
 
             List<int> papap = new List<int>();

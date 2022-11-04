@@ -13,7 +13,7 @@ namespace NeuronalNetworkReverseEngineering
         public Hyperplane(Model model, Matrix boundaryPoint, double displacementNorm = 1)
         {
             int maxMagnitude = 8;
-            double directionNorm = 5.0 * displacementNorm / Math.Pow(2, maxMagnitude);
+            double directionNorm = 6.0 * displacementNorm / Math.Pow(2, maxMagnitude);
 
             this.model = model;
             this.originalBoundaryPoint = boundaryPoint;
