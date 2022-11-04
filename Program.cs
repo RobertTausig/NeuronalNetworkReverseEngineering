@@ -23,40 +23,38 @@ namespace NeuronalNetworkReverseEngineering
             var sampler = new SamplingLine(model);
             var sphere = new SamplingSphere(model);
 
-            var linesThroughSpace = new List<List<Matrix>>();
+            bool loopCondition = true;
+            var lineThroughSpace = new List<(Matrix boundaryPoint, double safeDistance)>();
             // Why doing this:
             // To make sure to not accidentally get a "bad" line.
-            while (linesThroughSpace.Count < 30)
+            while (loopCondition)
             {
                 var (midPoint, directionVector) = sampler.RandomSecantLine(radius: constRadius);
                 var boundaryPointsSuggestion = sampler.BidirectionalLinearRegionChanges(midPoint, directionVector, constMaxMagnitude);
                 if(IsSpacedApart(boundaryPointsSuggestion, constMinDistance))
                 {
-                    //var aa = sphere.MinimumDistanceToDifferentBoundary(boundaryPointsSuggestion, constMinDistance / 10);
-
-                    //if (aa.TrueForAll(x => x.safeDistance > constMinDistance))
-                    //{
-                    //    linesThroughSpace.Add(boundaryPointsSuggestion);
-                    //}
-                    if (boundaryPointsSuggestion.TrueForAll(x => sphere.MinimumDistanceToDifferentBoundary(x, constMinDistance / 10) > constMinDistance))
+                    foreach (var point in boundaryPointsSuggestion)
                     {
-                        linesThroughSpace.Add(boundaryPointsSuggestion);
+                        var tempSafeDistance = sphere.MinimumDistanceToDifferentBoundary(point, constMinDistance / 10);
+                        if (tempSafeDistance != null && tempSafeDistance > constMinDistance)
+                        {
+                            lineThroughSpace.Add((point, (double)tempSafeDistance));
+                            loopCondition = false;
+                        }
+                        else
+                        {
+                            lineThroughSpace.Clear();
+                            loopCondition = true;
+                            break;
+                        }
                     }
                 }
             }
 
             var hyperPlanes = new List<Hyperplane>();
-            foreach (var point in linesThroughSpace[0])
+            foreach (var l in lineThroughSpace)
             {
-                hyperPlanes.Add(new Hyperplane(model, point, 10));
-            }
-
-            foreach (var line in linesThroughSpace)
-            {
-                foreach (var point in line)
-                {
-                    var bb = sphere.MinimumDistanceToDifferentBoundary(point, 10);
-                }
+                hyperPlanes.Add(new Hyperplane(model, l.boundaryPoint, l.safeDistance / 10));
             }
 
             List<int> papap = new List<int>();
@@ -103,34 +101,6 @@ namespace NeuronalNetworkReverseEngineering
                     Console.WriteLine("~ ~ ~ ~");
                 }
             }
-
-
-            //var firstLayerPlanes = new List<Hyperplane>();
-            //foreach (var plane in hyperPlanes)
-            //{
-            //    int succeededLineFinds = 0;
-            //    for (int i = 1; i < linesThroughSpace.Count; i++)
-            //    {
-            //        bool innerTest = false;
-            //        var comparisonLine = linesThroughSpace[i];
-            //        for (int j = 0; j < comparisonLine.Count; j++)
-            //        {
-            //            if (plane.IsPointOnPlane(comparisonLine[j], 0.10) == true)
-            //            {
-            //                innerTest = true;
-            //            }
-            //        }
-            //        if (innerTest)
-            //        {
-            //            succeededLineFinds++;
-            //        }
-            //    }
-            //    Console.WriteLine(succeededLineFinds);
-            //    if (succeededLineFinds > 80)
-            //    {
-            //        firstLayerPlanes.Add(plane);
-            //    }
-            //}
 
 
 
