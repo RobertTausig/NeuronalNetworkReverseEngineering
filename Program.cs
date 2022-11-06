@@ -25,7 +25,7 @@ namespace NeuronalNetworkReverseEngineering
             var sphere = new SamplingSphere(model);
 
             //Just for debugging:
-            for (int i = 0; i < 4; i++)
+            for (int i = 0; i < 7; i++)
             {
                 var aa = model.RandomGenerator.Next();
             }
