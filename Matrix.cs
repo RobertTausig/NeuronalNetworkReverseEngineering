@@ -278,7 +278,7 @@ namespace NeuronalNetworkReverseEngineering
 
             return retVal;
         }
-        public static (Matrix parameters, double? intercept) CalculateLinearRegression(List<Matrix> points)
+        public static (Matrix parameters, double? intercept) CalculateLinearRegression(List<Matrix> points, bool hasIntercept)
         {
             //--- Start: Working Example ---
             //double[] parameters = new[] { 2.37, -3.8, -0.22, 7.19 };
@@ -309,13 +309,13 @@ namespace NeuronalNetworkReverseEngineering
                 yArr[i] = flat[^1];
             }
 
-            var temp = Fit.MultiDim(xArr, yArr, intercept: true);
-            var parameters = new Matrix(temp.Length - 1, 1);
-            for (int i = 0; i < temp.Length - 1; i++)
+            var temp = Fit.MultiDim(xArr, yArr, intercept: hasIntercept);
+            var parameters = new Matrix(temp.Length - (hasIntercept ? 1 : 0), 1);
+            for (int i = 0; i < temp.Length - (hasIntercept ? 1 : 0); i++)
             {
-                parameters.SetValue(i, 0, temp[i + 1]);
+                parameters.SetValue(i, 0, temp[i + (hasIntercept ? 1 : 0)]);
             }
-            return (parameters, temp[0]);
+            return (parameters, (hasIntercept ? temp[0] : 0));
         }
 
 
