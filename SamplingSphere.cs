@@ -27,7 +27,7 @@ namespace NeuronalNetworkReverseEngineering
             double directionNorm = startingDistance / Math.Pow(2, stdMaxMagnitude);
             var spaceDim = boundaryPoint.numRow + boundaryPoint.numCol - 1;
             var iterations = (spaceDim + 1) * 30;
-            var iterationGrowth = Math.Pow(3_000, 1.0 / iterations);
+            var iterationGrowth = Math.Pow(10_000, 1.0 / iterations);
 
             var conc = new ConcurrentDictionary<int, List<Matrix>>();
             var result = Parallel.For(0, iterations, index =>

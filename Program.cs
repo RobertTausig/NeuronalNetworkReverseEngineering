@@ -11,7 +11,7 @@ namespace NeuronalNetworkReverseEngineering
     {
         const double constRadius = 1_000;
         const double constMinSafeDistance = constRadius / 10;
-        const double constMinStartingDistance = constMinSafeDistance / 10;
+        const double constMinStartingDistance = constMinSafeDistance / 40;
         const int constMaxMagnitude = 24;
 
         static void Main(string[] args)
@@ -25,7 +25,7 @@ namespace NeuronalNetworkReverseEngineering
             var sphere = new SamplingSphere(model);
 
             //Just for debugging:
-            for (int i = 0; i < 7; i++)
+            for (int i = 0; i < 1; i++)
             {
                 var aa = model.RandomGenerator.Next();
             }
@@ -61,7 +61,7 @@ namespace NeuronalNetworkReverseEngineering
             var hyperPlanes = new List<Hyperplane>();
             foreach (var l in lineThroughSpace)
             {
-                hyperPlanes.Add(new Hyperplane(model, l.boundaryPoint, l.safeDistance / 18));
+                hyperPlanes.Add(new Hyperplane(model, l.boundaryPoint, l.safeDistance / 24));
             }
 
             List<int> papap = new List<int>();

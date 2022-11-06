@@ -10,22 +10,22 @@ namespace NeuronalNetworkReverseEngineering
 {
     class Hyperplane
     {
-        public Hyperplane(Model model, Matrix boundaryPoint, double displacementNorm = 1)
+        public Hyperplane(Model model, Matrix boundaryPoint, double displacementNorm = 1, bool hasIntercept = true)
         {
-            //int maxMagnitude = 8;
-            //double directionNorm = 6.0 * displacementNorm / Math.Pow(2, maxMagnitude);
+            int maxMagnitude = 8;
+            double directionNorm = 6.0 * displacementNorm / Math.Pow(2, maxMagnitude);
 
             this.model = model;
             this.originalBoundaryPoint = boundaryPoint;
             this.spaceDim = boundaryPoint.numRow + boundaryPoint.numCol - 1;
 
-            double baseDirectionNorm = 0.03 * Math.Sqrt(spaceDim);
-            var baseMaxMagnitude = Math.Log(6.0 * displacementNorm / baseDirectionNorm) / Math.Log(2);
-            int maxMagnitude = (int)baseMaxMagnitude;
-            var directionNorm = baseDirectionNorm * Math.Pow(2, baseMaxMagnitude - maxMagnitude);
+            //double baseDirectionNorm = 0.03 * Math.Sqrt(spaceDim);
+            //var baseMaxMagnitude = Math.Log(6.0 * displacementNorm / baseDirectionNorm) / Math.Log(2);
+            //int maxMagnitude = (int)baseMaxMagnitude;
+            //var directionNorm = baseDirectionNorm * Math.Pow(2, baseMaxMagnitude - maxMagnitude);
 
             this.pointsOnPlane = SupportPointsOnBoundary(boundaryPoint, 0, displacementNorm, directionNorm, maxMagnitude);
-            this.planeIdentity = Matrix.CalculateLinearRegression(pointsOnPlane);
+            this.planeIdentity = Matrix.CalculateLinearRegression(pointsOnPlane, hasIntercept);
         }
 
         private Model model { get; }
