@@ -25,7 +25,7 @@ namespace NeuronalNetworkReverseEngineering
             var sphere = new SamplingSphere(model);
 
             //Just for debugging:
-            for (int i = 0; i < 1; i++)
+            for (int i = 0; i < 6; i++)
             {
                 var aa = model.RandomGenerator.Next();
             }
@@ -61,7 +61,7 @@ namespace NeuronalNetworkReverseEngineering
             var hyperPlanes = new List<Hyperplane>();
             foreach (var l in lineThroughSpace)
             {
-                hyperPlanes.Add(new Hyperplane(model, l.boundaryPoint, l.safeDistance / 24));
+                hyperPlanes.Add(new Hyperplane(model, l.boundaryPoint, l.safeDistance / 30, hasIntercept: false));
             }
 
             List<int> papap = new List<int>();
