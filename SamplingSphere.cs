@@ -30,7 +30,7 @@ namespace NeuronalNetworkReverseEngineering
             var iterationGrowth = Math.Pow(10_000, 1.0 / iterations);
 
             var conc = new ConcurrentDictionary<int, List<Matrix>>();
-            var result = Parallel.For(0, iterations, index =>
+            var result = Parallel.For(0, iterations, (index, state) =>
             {
                 var tempModel = model.Copy(index + salt);
                 var tempSampler = new SamplingLine(tempModel);
@@ -41,24 +41,21 @@ namespace NeuronalNetworkReverseEngineering
 
                 var samplePoints = tempSampler.BidirectionalLinearRegionChanges(boundaryPoint, directionVector, stdMaxMagnitude);
                 conc.TryAdd(index, samplePoints);
+                if(samplePoints.Count > 1)
+                {
+                    state.Break();
+                }
             });
 
-            if (result.IsCompleted)
+            salt += saltIncreasePerUsage;
+            long? boundaryIndex = result.LowestBreakIteration;
+            if (boundaryIndex == null)
             {
-                salt += saltIncreasePerUsage;
-                int boundaryIndex = conc.FirstOrDefault(x => x.Value.Count > 1).Key;
-                if (boundaryIndex == 0)
-                {
-                    return null;
-                }
-                else
-                {
-                    return startingDistance * Math.Pow(iterationGrowth, boundaryIndex);
-                }
+                return null;
             }
             else
             {
-                throw new Exception("CX31");
+                return startingDistance * Math.Pow(iterationGrowth, (long)boundaryIndex);
             }
         }
 
