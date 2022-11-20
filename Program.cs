@@ -23,6 +23,7 @@ namespace NeuronalNetworkReverseEngineering
             var model = new Model(new int[4] { 7, 5, 6, 4 });
             var sampler = new SamplingLine(model);
             var sphere = new SamplingSphere(model);
+            var layer = new LayerCalculation(model, sampler);
 
             //Just for debugging:
             for (int i = 0; i < 0; i++)
@@ -66,50 +67,7 @@ namespace NeuronalNetworkReverseEngineering
                 hyperPlanes.Add(new Hyperplane(model, l.boundaryPoint, l.safeDistance / 30, hasIntercept: false));
             }
 
-            List<int> papap = new List<int>();
-            foreach (var plane in hyperPlanes)
-            {
-                int cnt = 0;
-                for (int i = 0; i < 500; i++)
-                {
-                    var genPoint = plane.GenerateRandomPointOnPlane(1_000);
-                    var norm = Matrix.GetEuclideanNormForVector(genPoint);
-                    int sphereCnt = 0;
-                    for (int j = 0; j < 30; j++)
-                    {
-                        var directionVector = new Matrix(genPoint.numRow, genPoint.numCol);
-                        directionVector.PopulateAllRandomlyFarFromZero(model.RandomGenerator);
-                        directionVector = Matrix.NormalizeVector(directionVector, (double)norm / 31_000);
-                        var boundaryPoints = sampler.BidirectionalLinearRegionChanges(genPoint, directionVector, 8);
-                        sphereCnt += boundaryPoints.Count;
-                        if (sphereCnt > 0)
-                        {
-                            break;
-                        }
-                    }
-                    if (sphereCnt > 0)
-                    {
-                        cnt++;
-                    }
-                }
-                Console.WriteLine(cnt.ToString());
-                papap.Add(cnt);
-            }
-            Console.WriteLine("----------------------------------------");
-            for (int i = 0; i < hyperPlanes.Count; i++)
-            {
-                if (papap[i] > 480)
-                {
-                    //var aa = hyperPlanes[i].planeIdentity.parameters;
-                    //var bb = Matrix.FlattenVector(aa);
-                    foreach (var param in Matrix.FlattenVector(hyperPlanes[i].planeIdentity.parameters))
-                    {
-                        Console.WriteLine(param);
-                    }
-                    Console.WriteLine(hyperPlanes[i].planeIdentity.intercept);
-                    Console.WriteLine("~ ~ ~ ~");
-                }
-            }
+            var bb = layer.GetFirstLayer(hyperPlanes);
 
 
 
