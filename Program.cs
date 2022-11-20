@@ -58,8 +58,6 @@ namespace NeuronalNetworkReverseEngineering
                     }
                 }
             }
-            clock.Stop();
-            Console.WriteLine("Time passed: " + clock.Elapsed.TotalMilliseconds);
 
             var hyperPlanes = new List<Hyperplane>();
             foreach (var l in lineThroughSpace)

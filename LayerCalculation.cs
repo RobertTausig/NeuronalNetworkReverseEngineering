@@ -51,23 +51,14 @@ namespace NeuronalNetworkReverseEngineering
                         cnt++;
                     }
                 }
-                Console.WriteLine(cnt.ToString());
                 papap.Add(cnt);
             }
-            Console.WriteLine("----------------------------------------");
+
             for (int i = 0; i < hyperPlanes.Count; i++)
             {
                 if (papap[i] > 0.9 * stdNumTestPoints)
                 {
                     retVal.Add(hyperPlanes[i]);
-                    //var aa = hyperPlanes[i].planeIdentity.parameters;
-                    //var bb = Matrix.FlattenVector(aa);
-                    foreach (var param in Matrix.FlattenVector(hyperPlanes[i].planeIdentity.parameters))
-                    {
-                        Console.WriteLine(param);
-                    }
-                    Console.WriteLine(hyperPlanes[i].planeIdentity.intercept);
-                    Console.WriteLine("~ ~ ~ ~");
                 }
             }
             return retVal;
