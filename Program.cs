@@ -23,7 +23,7 @@ namespace NeuronalNetworkReverseEngineering
             var model = new Model(new int[4] { 7, 5, 6, 4 });
             var sampler = new SamplingLine(model);
             var sphere = new SamplingSphere(model);
-            var layer = new LayerCalculation(model, sampler);
+            var layer = new LayerCalculation(model, sphere);
 
             //Just for debugging:
             for (int i = 0; i < 0; i++)

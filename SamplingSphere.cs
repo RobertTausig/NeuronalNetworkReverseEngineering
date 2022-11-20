@@ -2,6 +2,7 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -86,7 +87,43 @@ namespace NeuronalNetworkReverseEngineering
             }
         }
 
+        public List<List<Matrix>> FirstLayerTest(Hyperplane plane, int numTestPoints, double radius)
+        {
+            var retVal = new List<Matrix>();
+            var maxTestLines = (plane.spaceDim + 1) * 4;
+            var conc = new ConcurrentDictionary<int, List<Matrix>>();
 
+            var result = Parallel.For(0, numTestPoints, index =>
+            {
+                var tempModel = model.Copy(index + salt);
+                var tempSampler = new SamplingLine(tempModel);
+
+                var genPoint = plane.GenerateRandomPointOnPlane(radius);
+                var norm = Matrix.GetEuclideanNormForVector(genPoint);
+                for (int j = 0; j < maxTestLines; j++)
+                {
+                    var directionVector = new Matrix(genPoint.numRow, genPoint.numCol);
+                    directionVector.PopulateAllRandomlyFarFromZero(model.RandomGenerator);
+                    directionVector = Matrix.NormalizeVector(directionVector, (double)norm / (31 * radius));
+                    var boundaryPoints = tempSampler.BidirectionalLinearRegionChanges(genPoint, directionVector, stdMaxMagnitude);
+                    if (boundaryPoints.Count > 0)
+                    {
+                        conc.TryAdd(index, boundaryPoints);
+                        break;
+                    }
+                }
+            });
+
+            if (result.IsCompleted)
+            {
+                salt += saltIncreasePerUsage;
+                return conc.Values.ToList();
+            }
+            else
+            {
+                throw new Exception("KQ35");
+            }
+        }
 
 
 
