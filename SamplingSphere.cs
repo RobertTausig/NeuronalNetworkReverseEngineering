@@ -13,10 +13,12 @@ namespace NeuronalNetworkReverseEngineering
         public SamplingSphere(Model model)
         {
             this.model = model;
+            this.sampler = new SamplingLine(model);
             this.salt = model.RandomGenerator.Next();
         }
 
         private Model model { get; }
+        private SamplingLine sampler { get; }
         private int stdMaxMagnitude = 6;
         private int salt;
         private int saltIncreasePerUsage = 1_000;
@@ -56,7 +58,19 @@ namespace NeuronalNetworkReverseEngineering
             }
             else
             {
-                return startingDistance * Math.Pow(iterationGrowth, (long)boundaryIndex);
+                int shrinkIndex = 1;
+                var directionVector = Matrix.Substraction(conc[(int)boundaryIndex].First(), boundaryPoint);
+                while (true)
+                {
+                    directionVector = Matrix.NormalizeVector(directionVector, directionNorm * Math.Pow(iterationGrowth, (long)boundaryIndex - shrinkIndex));
+                    var samplePoints = sampler.BidirectionalLinearRegionChanges(boundaryPoint, directionVector, stdMaxMagnitude);
+                    if(samplePoints.Count < 2)
+                    {
+                        break;
+                    }
+                    shrinkIndex++;
+                }
+                return startingDistance * Math.Pow(iterationGrowth, (long)boundaryIndex - shrinkIndex);
             }
         }
 
