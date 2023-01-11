@@ -12,6 +12,7 @@ namespace NeuronalNetworkReverseEngineering
         const double constRadius = 1_000;
         const double constMinSafeDistance = constRadius / 10;
         const double constMinStartingDistance = constMinSafeDistance / 10;
+        const double constMinPointDistance = constMinStartingDistance / 10;
         const int constMaxMagnitude = 24;
 
         static void Main(string[] args)
@@ -37,7 +38,7 @@ namespace NeuronalNetworkReverseEngineering
             // To make sure to not accidentally get a "bad" line.
             while (loopCondition)
             {
-                var (midPoint, directionVector) = sampler.RandomSecantLine(radius: constRadius);
+                var (midPoint, directionVector) = sampler.RandomSecantLine(radius: constRadius, minPointDistance: constMinPointDistance);
                 var boundaryPointsSuggestion = sampler.BidirectionalLinearRegionChanges(midPoint, directionVector, constMaxMagnitude);
                 if(IsSpacedApart(boundaryPointsSuggestion, constMinSafeDistance))
                 {

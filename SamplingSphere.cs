@@ -118,7 +118,7 @@ namespace NeuronalNetworkReverseEngineering
                 {
                     var directionVector = new Matrix(genPoint.numRow, genPoint.numCol);
                     directionVector.PopulateAllRandomlyFarFromZero(model.RandomGenerator);
-                    directionVector = Matrix.NormalizeVector(directionVector, (double)norm / (16 * radius));
+                    directionVector = Matrix.NormalizeVector(directionVector, (double)norm / (12 * radius));
                     var boundaryPoints = tempSampler.BidirectionalLinearRegionChanges(genPoint, directionVector, stdMaxMagnitude);
                     if (boundaryPoints.Count > 0)
                     {
