@@ -104,7 +104,7 @@ namespace NeuronalNetworkReverseEngineering
         public List<List<Matrix>> FirstLayerTest(Hyperplane plane, int numTestPoints, double radius)
         {
             var retVal = new List<Matrix>();
-            var maxTestLines = (plane.spaceDim + 1) * 4;
+            var maxTestLines = (plane.spaceDim + 1) * 5;
             var conc = new ConcurrentDictionary<int, List<Matrix>>();
 
             var result = Parallel.For(0, numTestPoints, index =>
@@ -118,7 +118,7 @@ namespace NeuronalNetworkReverseEngineering
                 {
                     var directionVector = new Matrix(genPoint.numRow, genPoint.numCol);
                     directionVector.PopulateAllRandomlyFarFromZero(model.RandomGenerator);
-                    directionVector = Matrix.NormalizeVector(directionVector, (double)norm / (31 * radius));
+                    directionVector = Matrix.NormalizeVector(directionVector, (double)norm / (16 * radius));
                     var boundaryPoints = tempSampler.BidirectionalLinearRegionChanges(genPoint, directionVector, stdMaxMagnitude);
                     if (boundaryPoints.Count > 0)
                     {
