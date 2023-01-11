@@ -66,7 +66,7 @@ namespace NeuronalNetworkReverseEngineering
                 hyperPlanes.Add(new Hyperplane(model, l.boundaryPoint, l.safeDistance / 15, hasIntercept: false));
             }
 
-            var bb = layer.GetFirstLayer(hyperPlanes);
+            var firstLayerPlanes = layer.GetFirstLayer(hyperPlanes, constRadius);
 
 
 

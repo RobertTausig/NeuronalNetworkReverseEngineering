@@ -22,24 +22,17 @@ namespace NeuronalNetworkReverseEngineering
         private int stdNumTestPoints = 500;
         private int stdNumTestLines = 30;
 
-        public List<Hyperplane> GetFirstLayer(List<Hyperplane> hyperPlanes)
+        public List<Hyperplane> GetFirstLayer(List<Hyperplane> hyperPlanes, double testRadius)
         {
             var retVal = new List<Hyperplane>();
 
             foreach (var plane in hyperPlanes)
             {
-                var aa = sphere.FirstLayerTest(plane, 500, 1_000);
-                var bb = aa.Where(x => x.Count == 1).Count();
+                var temp = sphere.FirstLayerTest(plane, stdNumTestPoints, testRadius);
+                if (temp.Count(x => x.Count == 1) > 0.8 * stdNumTestPoints) {
+                    retVal.Add(plane);
+                }
             }
-
-
-            //for (int i = 0; i < hyperPlanes.Count; i++)
-            //{
-            //    if (papap[i] > 0.9 * stdNumTestPoints)
-            //    {
-            //        retVal.Add(hyperPlanes[i]);
-            //    }
-            //}
             return retVal;
         }
 
