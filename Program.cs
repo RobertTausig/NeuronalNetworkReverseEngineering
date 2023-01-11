@@ -9,8 +9,13 @@ namespace NeuronalNetworkReverseEngineering
 {
     class Program
     {
-        const double constRadius = 1_000;
-        const double constMinSafeDistance = constRadius / 10;
+        const int inputDim = 7;
+        const int firstLayerDim = 5;
+        const int secondLayerDim = 6;
+        const int outputDim = 4;
+
+        const double constRadius = inputDim * 150;
+        const double constMinSafeDistance = constRadius / (firstLayerDim + secondLayerDim);
         const double constMinStartingDistance = constMinSafeDistance / 10;
         const double constMinPointDistance = constMinStartingDistance / 10;
         const int constMaxMagnitude = 24;
@@ -21,7 +26,7 @@ namespace NeuronalNetworkReverseEngineering
             clock.Start();
 
 
-            var model = new Model(new int[4] { 7, 5, 6, 4 });
+            var model = new Model(new int[4] { inputDim, firstLayerDim, secondLayerDim, outputDim });
             var sampler = new SamplingLine(model);
             var sphere = new SamplingSphere(model);
             var layer = new LayerCalculation(model, sphere);
