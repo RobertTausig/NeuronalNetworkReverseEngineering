@@ -14,8 +14,9 @@ namespace NeuronalNetworkReverseEngineering
         const int secondLayerDim = 6;
         const int outputDim = 4;
 
-        const double constRadius = inputDim * 150;
-        const double constMinSafeDistance = constRadius / (firstLayerDim + secondLayerDim);
+        const double constRadius = (firstLayerDim + secondLayerDim)* (firstLayerDim + secondLayerDim) * 10;
+        const double constMinSpacedApartDistance = 100;
+        const double constMinSafeDistance = constMinSpacedApartDistance / 2;
         const double constMinStartingDistance = constMinSafeDistance / 10;
         const double constMinPointDistance = constMinStartingDistance / 10;
         const int constMaxMagnitude = 24;
