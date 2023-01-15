@@ -50,3 +50,24 @@
 0
 ~ ~ ~ ~
 Time passed: 5942,5981
+
+
+
+
+First estimate, without intercept:
+[0, 0]	1.0241303252293237	double
+[1, 0]	0.50020566600357863	double
+[2, 0]	-1.2738718281950199	double
+[3, 0]	-0.871569168341819	double
+[4, 0]	0.46914563516091579	double
+[5, 0]	0.72479249808569313	double
+intercept	0	double?
+
+Second estimate, with intercept:
+[0, 0]	1.0042372828026269	double
+[1, 0]	0.53817604057396962	double
+[2, 0]	-1.2939333153735966	double
+[3, 0]	-0.88716417114152923	double
+[4, 0]	0.45979199918023889	double
+[5, 0]	0.71387780949331769	double
+intercept	-53.299063624754062	double?

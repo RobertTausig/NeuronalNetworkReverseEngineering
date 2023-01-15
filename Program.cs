@@ -3,7 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Reflection;
 
 namespace NeuronalNetworkReverseEngineering
 {
@@ -33,46 +32,96 @@ namespace NeuronalNetworkReverseEngineering
             var layer = new LayerCalculation(model, sphere);
 
             //Just for debugging:
-            for (int i = 0; i < 0; i++)
+            for (int i = 0; i < 1; i++)
             {
                 var aa = model.RandomGenerator.Next();
             }
 
             bool loopCondition = true;
-            var lineThroughSpace = new List<(Matrix boundaryPoint, double safeDistance)>();
+            var linesThroughSpace = new List<List<(Matrix boundaryPoint, double safeDistance)>>();
             // Why doing this:
             // To make sure to not accidentally get a "bad" line.
-            while (loopCondition)
+            while (linesThroughSpace.Count < 5 * inputDim + 1)
             {
-                var (midPoint, directionVector) = sampler.RandomSecantLine(radius: constRadius, minPointDistance: constMinPointDistance);
-                var boundaryPointsSuggestion = sampler.BidirectionalLinearRegionChanges(midPoint, directionVector, constMaxMagnitude);
-                if(IsSpacedApart(boundaryPointsSuggestion, constMinSafeDistance))
+                var tempLine = new List<(Matrix boundaryPoint, double safeDistance)>();
+                while (loopCondition)
                 {
-                    foreach (var point in boundaryPointsSuggestion)
+                    var (midPoint, directionVector) = sampler.RandomSecantLine(radius: constRadius, minPointDistance: constMinPointDistance);
+                    var boundaryPointsSuggestion = sampler.BidirectionalLinearRegionChanges(midPoint, directionVector, constMaxMagnitude);
+                    if (IsSpacedApart(boundaryPointsSuggestion, constMinSafeDistance))
                     {
-                        var tempSafeDistance = sphere.MinimumDistanceToDifferentBoundary(point, constMinStartingDistance);
-                        if (tempSafeDistance != null && tempSafeDistance > constMinSafeDistance)
+                        foreach (var point in boundaryPointsSuggestion)
                         {
-                            lineThroughSpace.Add((point, (double)tempSafeDistance));
-                            loopCondition = false;
-                        }
-                        else
-                        {
-                            lineThroughSpace.Clear();
-                            loopCondition = true;
-                            break;
+                            var tempSafeDistance = sphere.MinimumDistanceToDifferentBoundary(point, constMinStartingDistance);
+                            if (tempSafeDistance != null && tempSafeDistance > constMinSafeDistance)
+                            {
+                                tempLine.Add((point, (double)tempSafeDistance));
+                                loopCondition = false;
+                            }
+                            else
+                            {
+                                tempLine.Clear();
+                                loopCondition = true;
+                                break;
+                            }
                         }
                     }
                 }
+                linesThroughSpace.Add(tempLine);
+                loopCondition = true;
             }
 
             var hyperPlanes = new List<Hyperplane>();
-            foreach (var l in lineThroughSpace)
+            foreach (var l in linesThroughSpace.First())
             {
                 hyperPlanes.Add(new Hyperplane(model, l.boundaryPoint, l.safeDistance / 15, hasIntercept: false));
             }
 
-            var firstLayerPlanes = layer.GetFirstLayer(hyperPlanes, constRadius);
+            var firstLayerPlanes = new List<Hyperplane>();
+            var bb = new List<Matrix>();
+            foreach (var plane in hyperPlanes)
+            {
+                var temp = new List<Matrix>();
+                foreach (var line in linesThroughSpace)
+                {
+                    foreach (var point in line)
+                    {
+                        if((bool)plane.IsPointOnPlane(point.boundaryPoint, 0.1))
+                        {
+                            temp.Add(point.boundaryPoint);
+                            break;
+                        }
+                    }
+                }
+
+                Console.WriteLine(temp.Count());
+                if (temp.Count() > 23)
+                {
+                    firstLayerPlanes.Add(plane);
+                }
+                else if (temp.Count() == 10)
+                {
+                    bb = temp;
+                }
+            }
+
+            var cc = new Hyperplane(model, bb, hasIntercept: true);
+            var tempo = new List<Matrix>();
+            foreach (var line in linesThroughSpace)
+            {
+                foreach (var point in line)
+                {
+                    if ((bool)cc.IsPointOnPlane(point.boundaryPoint, 0.1))
+                    {
+                        tempo.Add(point.boundaryPoint);
+                        break;
+                    }
+                }
+            }
+
+
+
+            //var firstLayerPlanes = layer.GetFirstLayer(hyperPlanes, constRadius);
 
 
 

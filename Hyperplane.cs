@@ -18,15 +18,17 @@ namespace NeuronalNetworkReverseEngineering
             this.model = model;
             this.originalBoundaryPoint = boundaryPoint;
             this.spaceDim = boundaryPoint.numRow + boundaryPoint.numCol - 1;
-
-            //double baseDirectionNorm = 0.03 * Math.Sqrt(spaceDim);
-            //var baseMaxMagnitude = Math.Log(6.0 * displacementNorm / baseDirectionNorm) / Math.Log(2);
-            //int maxMagnitude = (int)baseMaxMagnitude;
-            //var directionNorm = baseDirectionNorm * Math.Pow(2, baseMaxMagnitude - maxMagnitude);
-
             this.pointsOnPlane = SupportPointsOnBoundary(boundaryPoint, 0, displacementNorm, directionNorm, maxMagnitude);
             this.planeIdentity = Matrix.CalculateLinearRegression(pointsOnPlane, hasIntercept);
         }
+        public Hyperplane(Model model, List<Matrix> pointsOnPlane, bool hasIntercept = true)
+        {
+            this.model = model;
+            this.spaceDim = pointsOnPlane.First().numRow + pointsOnPlane.First().numCol - 1;
+            this.pointsOnPlane = pointsOnPlane;
+            this.planeIdentity = Matrix.CalculateLinearRegression(pointsOnPlane, hasIntercept);
+        }
+
 
         private Model model { get; }
         public List<Matrix> pointsOnPlane { get; } = new List<Matrix>();
