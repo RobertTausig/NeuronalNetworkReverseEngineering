@@ -87,6 +87,7 @@ namespace NeuronalNetworkReverseEngineering
                 conc.TryAdd(index, this.MinimumDistanceToDifferentBoundary(boundaryPoints[index], startingDistance));
             });
 
+            salt += saltIncreasePerUsage;
             if (result.IsCompleted)
             {
                 for (int i = 0; i < boundaryPoints.Count; i++)
@@ -128,9 +129,9 @@ namespace NeuronalNetworkReverseEngineering
                 }
             });
 
+            salt += saltIncreasePerUsage;
             if (result.IsCompleted)
             {
-                salt += saltIncreasePerUsage;
                 return conc.Values.ToList();
             }
             else

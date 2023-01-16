@@ -24,12 +24,6 @@ namespace NeuronalNetworkReverseEngineering
             var sphere = new SamplingSphere(model);
             var layer = new LayerCalculation(model, sphere);
 
-            //Just for debugging:
-            for (int i = 0; i < 0; i++)
-            {
-                var aa = model.RandomGenerator.Next();
-            }
-
             int numLines = inputDim * 5;
             var linesThroughSpace = layer.DriveLinesThroughSpace(numLines: numLines, minSpacedApartDistance: 100);
 

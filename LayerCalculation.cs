@@ -14,10 +14,14 @@ namespace NeuronalNetworkReverseEngineering
         {
             this.model = model;
             this.sphere = sphere;
+            this.salt = model.RandomGenerator.Next();
         }
 
         private Model model { get; }
         private SamplingSphere sphere { get; }
+        private int salt;
+        private int saltIncreasePerUsage = 1_000;
+
         private int stdMaxMagnitude = 8;
         private int stdNumTestPoints = 500;
         private int stdNumTestLines = 30;
@@ -37,7 +41,7 @@ namespace NeuronalNetworkReverseEngineering
             // To make sure to not accidentally get a "bad" line.
             var result = Parallel.For(0, numLines, index =>
             {
-                var tempModel = model.Copy(index * 500);
+                var tempModel = model.Copy(index + salt);
                 var tempSampler = new SamplingLine(tempModel);
                 var tempSphere = new SamplingSphere(tempModel);
 
@@ -67,9 +71,9 @@ namespace NeuronalNetworkReverseEngineering
                     }
                 }
                 linesThroughSpace.TryAdd(index, tempLine);
-                loopCondition = true;
             });
 
+            salt += saltIncreasePerUsage;
             if (result.IsCompleted)
             {
                 return linesThroughSpace.Select(x => x.Value).ToList();
@@ -91,6 +95,8 @@ namespace NeuronalNetworkReverseEngineering
                     retVal.Add(plane);
                 }
             }
+
+            salt += saltIncreasePerUsage;
             return retVal;
         }
 
