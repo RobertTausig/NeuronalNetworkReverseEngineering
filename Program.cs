@@ -13,13 +13,6 @@ namespace NeuronalNetworkReverseEngineering
         const int secondLayerDim = 6;
         const int outputDim = 4;
 
-        const double constRadius = (firstLayerDim + secondLayerDim)* (firstLayerDim + secondLayerDim) * 10;
-        const double constMinSpacedApartDistance = 100;
-        const double constMinSafeDistance = constMinSpacedApartDistance / 2;
-        const double constMinStartingDistance = constMinSafeDistance / 10;
-        const double constMinPointDistance = constMinStartingDistance / 10;
-        const int constMaxMagnitude = 24;
-
         static void Main(string[] args)
         {
             var clock = new Stopwatch();
@@ -32,44 +25,13 @@ namespace NeuronalNetworkReverseEngineering
             var layer = new LayerCalculation(model, sphere);
 
             //Just for debugging:
-            for (int i = 0; i < 1; i++)
+            for (int i = 0; i < 0; i++)
             {
                 var aa = model.RandomGenerator.Next();
             }
 
-            bool loopCondition = true;
-            var linesThroughSpace = new List<List<(Matrix boundaryPoint, double safeDistance)>>();
-            // Why doing this:
-            // To make sure to not accidentally get a "bad" line.
-            while (linesThroughSpace.Count < 5 * inputDim + 1)
-            {
-                var tempLine = new List<(Matrix boundaryPoint, double safeDistance)>();
-                while (loopCondition)
-                {
-                    var (midPoint, directionVector) = sampler.RandomSecantLine(radius: constRadius, minPointDistance: constMinPointDistance);
-                    var boundaryPointsSuggestion = sampler.BidirectionalLinearRegionChanges(midPoint, directionVector, constMaxMagnitude);
-                    if (IsSpacedApart(boundaryPointsSuggestion, constMinSafeDistance))
-                    {
-                        foreach (var point in boundaryPointsSuggestion)
-                        {
-                            var tempSafeDistance = sphere.MinimumDistanceToDifferentBoundary(point, constMinStartingDistance);
-                            if (tempSafeDistance != null && tempSafeDistance > constMinSafeDistance)
-                            {
-                                tempLine.Add((point, (double)tempSafeDistance));
-                                loopCondition = false;
-                            }
-                            else
-                            {
-                                tempLine.Clear();
-                                loopCondition = true;
-                                break;
-                            }
-                        }
-                    }
-                }
-                linesThroughSpace.Add(tempLine);
-                loopCondition = true;
-            }
+            int numLines = inputDim * 5;
+            var linesThroughSpace = layer.DriveLinesThroughSpace(numLines: numLines, minSpacedApartDistance: 100);
 
             var hyperPlanes = new List<Hyperplane>();
             foreach (var l in linesThroughSpace.First())
@@ -95,11 +57,11 @@ namespace NeuronalNetworkReverseEngineering
                 }
 
                 Console.WriteLine(temp.Count());
-                if (temp.Count() > 23)
+                if (temp.Count() > numLines * 0.8)
                 {
                     firstLayerPlanes.Add(plane);
                 }
-                else if (temp.Count() == 10)
+                else if (temp.Count() > numLines * 0.5)
                 {
                     bb = temp;
                 }
@@ -132,19 +94,7 @@ namespace NeuronalNetworkReverseEngineering
 
 
 
-        public static bool IsSpacedApart(List<Matrix> list, double minDistance)
-        {
-            for (int i = 1; i < list.Count; i++)
-            {
-                var norm = Matrix.GetEuclideanNormForVector(Matrix.Substraction(list[i], list[i - 1]));
-                if (norm == null || norm < minDistance)
-                {
-                    return false;
-                }
-            }
-
-            return true;
-        }
+        
 
         public static List<List<Hyperplane>> SampleLinePointsToHyperplanes(List<List<Matrix>> lineCollection, Model model)
         {
