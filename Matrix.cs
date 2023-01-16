@@ -259,6 +259,27 @@ namespace NeuronalNetworkReverseEngineering
 
             return retMatrix;
         }
+        public static Matrix GetRandomlyJitteredVectorFarFromZero(Matrix matrix, Random rand)
+        {
+            if (!(matrix.numRow == 1 || matrix.numCol == 1))
+            {
+                return null;
+            }
+
+            var retMatrix = new Matrix(matrix.numRow, matrix.numCol);
+            var content = matrix.content;
+            for (int i = 0; i < matrix.numRow; i++)
+            {
+                for (int j = 0; j < matrix.numCol; j++)
+                {
+                    var temp = rand.Next(4_000, 10_000);
+                    var jitterFactor = temp % 2 == 0 ? 1 + temp / 200_000.0 : 1 - temp / 200_000.0;
+                    retMatrix.SetValue(i, j, content[i, j] * jitterFactor);
+                }
+            }
+
+            return retMatrix;
+        }
         public static double[] FlattenVector (Matrix matrix)
         {
             if (!(matrix.numRow == 1 || matrix.numCol == 1))

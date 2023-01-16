@@ -27,7 +27,7 @@ namespace NeuronalNetworkReverseEngineering
             firstVector.PopulateAllRandomlyFarFromZero(model.RandomGenerator);
             firstVector = Matrix.NormalizeVector(firstVector, radius);
 
-            var secondVector = Matrix.GetRandomlyJitteredVector(firstVector, model.RandomGenerator);
+            var secondVector = Matrix.GetRandomlyJitteredVectorFarFromZero(firstVector, model.RandomGenerator);
             secondVector = Matrix.NormalizeVector(secondVector, radius);
 
             var directionVector = Matrix.Substraction(secondVector, firstVector);
