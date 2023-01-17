@@ -9,7 +9,7 @@ namespace NeuronalNetworkReverseEngineering
     class Program
     {
         const int inputDim = 7;
-        const int firstLayerDim = 5;
+        const int firstLayerDim = 8;
         const int secondLayerDim = 6;
         const int outputDim = 4;
 
@@ -33,47 +33,7 @@ namespace NeuronalNetworkReverseEngineering
                 hyperPlanes.Add(new Hyperplane(model, l.boundaryPoint, l.safeDistance / 15, hasIntercept: false));
             }
 
-            var firstLayerPlanes = new List<Hyperplane>();
-            var bb = new List<Matrix>();
-            foreach (var plane in hyperPlanes)
-            {
-                var temp = new List<Matrix>();
-                foreach (var line in linesThroughSpace)
-                {
-                    foreach (var point in line)
-                    {
-                        if((bool)plane.IsPointOnPlane(point.boundaryPoint, 0.1))
-                        {
-                            temp.Add(point.boundaryPoint);
-                            break;
-                        }
-                    }
-                }
-
-                Console.WriteLine(temp.Count());
-                if (temp.Count() > numLines * 0.8)
-                {
-                    firstLayerPlanes.Add(plane);
-                }
-                else if (temp.Count() > numLines * 0.5)
-                {
-                    bb = temp;
-                }
-            }
-
-            var cc = new Hyperplane(model, bb, hasIntercept: true);
-            var tempo = new List<Matrix>();
-            foreach (var line in linesThroughSpace)
-            {
-                foreach (var point in line)
-                {
-                    if ((bool)cc.IsPointOnPlane(point.boundaryPoint, 0.1))
-                    {
-                        tempo.Add(point.boundaryPoint);
-                        break;
-                    }
-                }
-            }
+            var firstLayerPlanes = layer.GetFirstLayer(linesThroughSpace, hyperPlanes);
 
 
 

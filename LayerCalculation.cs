@@ -84,19 +84,69 @@ namespace NeuronalNetworkReverseEngineering
             }
         }
 
-        public List<Hyperplane> GetFirstLayer(List<Hyperplane> hyperPlanes, double testRadius)
+        public List<Hyperplane> Old_GetFirstLayer(List<Hyperplane> hyperPlanes, double testRadius)
         {
             var retVal = new List<Hyperplane>();
 
             foreach (var plane in hyperPlanes)
             {
-                var temp = sphere.FirstLayerTest(plane, stdNumTestPoints, testRadius);
+                var temp = sphere.Old_FirstLayerTest(plane, stdNumTestPoints, testRadius);
                 if (temp.Count(x => x.Count == 1) > 0.8 * stdNumTestPoints) {
                     retVal.Add(plane);
                 }
             }
 
             salt += saltIncreasePerUsage;
+            return retVal;
+        }
+
+        public List<Hyperplane> GetFirstLayer(List<List<(Matrix boundaryPoint, double safeDistance)>> linesThroughSpace, List<Hyperplane> hyperPlanes)
+        {
+            var firstLayerPlanes = new List<Hyperplane>();
+            var potentiallyFirstLayer = new List<List<Matrix>>();
+            foreach (var plane in hyperPlanes)
+            {
+                var temp = FirstLayerTest(linesThroughSpace, plane, 0.15);
+
+                Console.WriteLine(temp.Count());
+                if (temp.Count() > linesThroughSpace.Count * 0.8)
+                {
+                    firstLayerPlanes.Add(plane);
+                }
+                else if (temp.Count() > linesThroughSpace.Count * 0.4)
+                {
+                    potentiallyFirstLayer.Add(temp);
+                }
+            }
+
+            Console.WriteLine("---------------------");
+            foreach (var pfl in potentiallyFirstLayer)
+            {
+                var cc = new Hyperplane(model, pfl, hasIntercept: true);
+                var temp = FirstLayerTest(linesThroughSpace, cc, 0.15);
+                Console.WriteLine(temp.Count());
+                if (temp.Count() > linesThroughSpace.Count * 0.8)
+                {
+                    firstLayerPlanes.Add(cc);
+                }
+            }
+
+            return firstLayerPlanes;
+        }
+        private List<Matrix> FirstLayerTest(List<List<(Matrix boundaryPoint, double safeDistance)>> linesThroughSpace, Hyperplane plane, double accuracy)
+        {
+            var retVal = new List<Matrix>();
+            foreach (var line in linesThroughSpace)
+            {
+                foreach (var point in line)
+                {
+                    if ((bool)plane.IsPointOnPlane(point.boundaryPoint, accuracy))
+                    {
+                        retVal.Add(point.boundaryPoint);
+                        break;
+                    }
+                }
+            }
             return retVal;
         }
 
