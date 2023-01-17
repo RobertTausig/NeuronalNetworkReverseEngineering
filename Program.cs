@@ -9,7 +9,7 @@ namespace NeuronalNetworkReverseEngineering
     class Program
     {
         const int inputDim = 7;
-        const int firstLayerDim = 8;
+        const int firstLayerDim = 5;
         const int secondLayerDim = 6;
         const int outputDim = 4;
 
@@ -24,16 +24,20 @@ namespace NeuronalNetworkReverseEngineering
             var sphere = new SamplingSphere(model);
             var layer = new LayerCalculation(model, sphere);
 
-            int numLines = inputDim * 5;
+            int numLines = inputDim * 8;
             var linesThroughSpace = layer.DriveLinesThroughSpace(numLines: numLines, minSpacedApartDistance: 100);
 
-            var hyperPlanes = new List<Hyperplane>();
-            foreach (var l in linesThroughSpace.First())
+            for (int i = 0; i < linesThroughSpace.Count; i++)
             {
-                hyperPlanes.Add(new Hyperplane(model, l.boundaryPoint, l.safeDistance / 15, hasIntercept: false));
-            }
+                var hyperPlanes = new List<Hyperplane>();
+                foreach (var l in linesThroughSpace[i])
+                {
+                    hyperPlanes.Add(new Hyperplane(model, l.boundaryPoint, l.safeDistance / 15, hasIntercept: false));
+                }
 
-            var firstLayerPlanes = layer.GetFirstLayer(linesThroughSpace, hyperPlanes);
+                var firstLayerPlanes = layer.GetFirstLayer(linesThroughSpace, hyperPlanes);
+            }
+            
 
 
 

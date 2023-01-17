@@ -106,31 +106,29 @@ namespace NeuronalNetworkReverseEngineering
             var potentiallyFirstLayer = new List<List<Matrix>>();
             foreach (var plane in hyperPlanes)
             {
-                var temp = FirstLayerTest(linesThroughSpace, plane, 0.15);
+                var temp = FirstLayerTest(linesThroughSpace, plane, 0.1);
 
-                Console.WriteLine(temp.Count());
                 if (temp.Count() > linesThroughSpace.Count * 0.8)
                 {
                     firstLayerPlanes.Add(plane);
                 }
-                else if (temp.Count() > linesThroughSpace.Count * 0.4)
+                else if (temp.Count() > linesThroughSpace.Count * 0.2)
                 {
                     potentiallyFirstLayer.Add(temp);
                 }
             }
 
-            Console.WriteLine("---------------------");
             foreach (var pfl in potentiallyFirstLayer)
             {
                 var cc = new Hyperplane(model, pfl, hasIntercept: true);
-                var temp = FirstLayerTest(linesThroughSpace, cc, 0.15);
-                Console.WriteLine(temp.Count());
+                var temp = FirstLayerTest(linesThroughSpace, cc, 0.1);
                 if (temp.Count() > linesThroughSpace.Count * 0.8)
                 {
                     firstLayerPlanes.Add(cc);
                 }
             }
 
+            Console.WriteLine($@"firstLayer Count: {firstLayerPlanes.Count}");
             return firstLayerPlanes;
         }
         private List<Matrix> FirstLayerTest(List<List<(Matrix boundaryPoint, double safeDistance)>> linesThroughSpace, Hyperplane plane, double accuracy)
