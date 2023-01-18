@@ -102,12 +102,14 @@ namespace NeuronalNetworkReverseEngineering
                     if (overshootSample.Count() > undershootSample.Count())
                     {
                         salt += saltIncreasePerRecursion;
-                        return SupportPointsOnBoundary(boundaryPoint, salt, displacementNorm, directionNorm / 1.25, maxMagnitude);
+                        double normCorrectionFactor = (double)overshootSample.Count() / iterations + 1;
+                        return SupportPointsOnBoundary(boundaryPoint, salt, displacementNorm / normCorrectionFactor, directionNorm / normCorrectionFactor, maxMagnitude);
                     }
                     else
                     {
                         salt += saltIncreasePerRecursion;
-                        return SupportPointsOnBoundary(boundaryPoint, salt, displacementNorm, directionNorm * 1.25, maxMagnitude);
+                        double normCorrectionFactor = (double)undershootSample.Count() / iterations + 1;
+                        return SupportPointsOnBoundary(boundaryPoint, salt, displacementNorm * normCorrectionFactor, directionNorm * normCorrectionFactor, maxMagnitude);
                     }
                 }
 
