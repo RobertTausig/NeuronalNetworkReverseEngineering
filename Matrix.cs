@@ -299,6 +299,20 @@ namespace NeuronalNetworkReverseEngineering
 
             return retVal;
         }
+        public static StringBuilder PrintContent(Matrix matrix)
+        {
+            var retVal = new StringBuilder();
+            var content = matrix.content;
+            for (int i = 0; i < matrix.numRow; i++)
+            {
+                for (int j = 0; j < matrix.numCol; j++)
+                {
+                     retVal.Append(content[i, j] + ", ");
+                }
+                retVal.AppendLine();
+            }
+            return retVal;
+        }
         public static (Matrix parameters, double? intercept) CalculateLinearRegression(List<Matrix> points, bool hasIntercept)
         {
             //--- Start: Working Example ---

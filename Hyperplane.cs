@@ -157,6 +157,16 @@ namespace NeuronalNetworkReverseEngineering
 
             return (lowerLimit < quotient) && (upperLimit > quotient);
         }
+        public void Print()
+        {
+            var printStr = new StringBuilder();
+            printStr.AppendLine("// Hyperplane //:");
+            printStr.AppendLine("parameters:");
+            printStr.Append(Matrix.PrintContent(planeIdentity.parameters));
+            printStr.AppendLine("intercept: " + planeIdentity.intercept.ToString());
+            Console.Write(printStr);
+        }
+
 
     }
 }
