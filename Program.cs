@@ -9,7 +9,7 @@ namespace NeuronalNetworkReverseEngineering
     class Program
     {
         const int inputDim = 7;
-        const int firstLayerDim = 6;
+        const int firstLayerDim = 5;
         const int secondLayerDim = 6;
         const int outputDim = 4;
 

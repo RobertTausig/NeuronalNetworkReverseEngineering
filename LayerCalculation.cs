@@ -102,7 +102,8 @@ namespace NeuronalNetworkReverseEngineering
 
         public List<Hyperplane> GetFirstLayer(List<List<(Matrix boundaryPoint, double safeDistance)>> linesThroughSpace, List<Hyperplane> hyperPlanes)
         {
-            var firstLayerPlanes = new List<Hyperplane>();
+            var retVal = new List<Hyperplane>();
+            var firstLayerPlanes = new List<List<Matrix>>();
             var potentiallyFirstLayer = new List<List<Matrix>>();
             var spaceDim = model.topology[0];
 
@@ -112,7 +113,7 @@ namespace NeuronalNetworkReverseEngineering
 
                 if (temp.Count > linesThroughSpace.Count * 0.8)
                 {
-                    firstLayerPlanes.Add(plane);
+                    firstLayerPlanes.Add(temp);
                 }
                 else if (temp.Count > spaceDim)
                 {
@@ -124,30 +125,44 @@ namespace NeuronalNetworkReverseEngineering
             {
                 var cc = new Hyperplane(model, pfl, hasIntercept: true);
                 var temp = FirstLayerTest(linesThroughSpace, cc, 0.15);
-                if (temp.Count() > linesThroughSpace.Count * 0.8)
+                if (temp.Count > linesThroughSpace.Count * 0.8)
                 {
-                    firstLayerPlanes.Add(cc);
+                    retVal.Add(cc);
                 }
             }
 
-            Console.WriteLine($@"firstLayer Count: {firstLayerPlanes.Count}");
-            return firstLayerPlanes;
+            foreach (var flp in firstLayerPlanes)
+            {
+                var cc = new Hyperplane(model, flp, hasIntercept: true);
+                var temp = FirstLayerTest(linesThroughSpace, cc, 0.15);
+                if (temp.Count > linesThroughSpace.Count * 0.8)
+                {
+                    retVal.Add(cc);
+                }
+            }
+
+
+            Console.WriteLine($@"firstLayer Count: {retVal.Count}");
+            return retVal;
         }
         private List<Matrix> FirstLayerTest(List<List<(Matrix boundaryPoint, double safeDistance)>> linesThroughSpace, Hyperplane plane, double accuracy)
         {
-            var retVal = new List<Matrix>();
+            var collection = new List<List<Matrix>>();
             foreach (var line in linesThroughSpace)
             {
+                var temp = new List<Matrix>();
                 foreach (var point in line)
                 {
                     if ((bool)plane.IsPointOnPlane(point.boundaryPoint, accuracy))
                     {
-                        retVal.Add(point.boundaryPoint);
-                        break;
+                        temp.Add(point.boundaryPoint);
                     }
                 }
+                collection.Add(temp);
             }
-            return retVal;
+
+            collection.RemoveAll(x => x.Count != 1);
+            return collection.SelectMany(x => x).ToList();
         }
 
         public static bool IsSpacedApart(List<Matrix> list, double minDistance)
