@@ -91,11 +91,13 @@ namespace NeuronalNetworkReverseEngineering
             foreach (var plane in hyperPlanes)
             {
                 var temp = sphere.Old_FirstLayerTest(plane, stdNumTestPoints, testRadius);
+                Console.WriteLine(temp.Count + ", " + temp.Count(x => x.Count == 1));
                 if (temp.Count(x => x.Count == 1) > 0.8 * stdNumTestPoints) {
                     retVal.Add(plane);
                 }
             }
 
+            Console.WriteLine("~~~~~~~~~~~~~~~~~~~~~~~~~~~");
             salt += saltIncreasePerUsage;
             return retVal;
         }
@@ -103,17 +105,17 @@ namespace NeuronalNetworkReverseEngineering
         public List<Hyperplane> GetFirstLayer(List<List<(Matrix boundaryPoint, double safeDistance)>> linesThroughSpace, List<Hyperplane> hyperPlanes)
         {
             var retVal = new List<Hyperplane>();
-            var firstLayerPlanes = new List<List<Matrix>>();
+            var firstLayerPlanes = new List<Hyperplane>();
             var potentiallyFirstLayer = new List<List<Matrix>>();
             var spaceDim = model.topology[0];
 
             foreach (var plane in hyperPlanes)
             {
-                var temp = FirstLayerTest(linesThroughSpace, plane, 0.15);
+                var temp = FirstLayerTest(linesThroughSpace, plane, 0.08);
 
-                if (temp.Count > linesThroughSpace.Count * 0.8)
+                if (temp.Count > linesThroughSpace.Count * 0.75)
                 {
-                    firstLayerPlanes.Add(temp);
+                    firstLayerPlanes.Add(plane);
                 }
                 else if (temp.Count > spaceDim)
                 {
@@ -124,23 +126,23 @@ namespace NeuronalNetworkReverseEngineering
             foreach (var pfl in potentiallyFirstLayer)
             {
                 var cc = new Hyperplane(model, pfl, hasIntercept: true);
-                var temp = FirstLayerTest(linesThroughSpace, cc, 0.15);
-                if (temp.Count > linesThroughSpace.Count * 0.8)
+                var temp = FirstLayerTest(linesThroughSpace, cc, 0.08);
+                if (temp.Count > linesThroughSpace.Count * 0.75)
                 {
                     retVal.Add(cc);
                 }
             }
 
-            foreach (var flp in firstLayerPlanes)
-            {
-                var cc = new Hyperplane(model, flp, hasIntercept: true);
-                var temp = FirstLayerTest(linesThroughSpace, cc, 0.15);
-                if (temp.Count > linesThroughSpace.Count * 0.8)
-                {
-                    retVal.Add(cc);
-                }
-            }
-
+            //foreach (var flp in firstLayerPlanes)
+            //{
+            //    var cc = new Hyperplane(model, flp, hasIntercept: true);
+            //    var temp = FirstLayerTest(linesThroughSpace, cc, 0.15);
+            //    if (temp.Count > linesThroughSpace.Count * 0.8)
+            //    {
+            //        retVal.Add(cc);
+            //    }
+            //}
+            retVal.AddRange(firstLayerPlanes);
 
             Console.WriteLine($@"firstLayer Count: {retVal.Count}");
             return retVal;
