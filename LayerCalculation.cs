@@ -104,15 +104,17 @@ namespace NeuronalNetworkReverseEngineering
         {
             var firstLayerPlanes = new List<Hyperplane>();
             var potentiallyFirstLayer = new List<List<Matrix>>();
+            var spaceDim = model.topology[0];
+
             foreach (var plane in hyperPlanes)
             {
-                var temp = FirstLayerTest(linesThroughSpace, plane, 0.1);
+                var temp = FirstLayerTest(linesThroughSpace, plane, 0.15);
 
-                if (temp.Count() > linesThroughSpace.Count * 0.8)
+                if (temp.Count > linesThroughSpace.Count * 0.8)
                 {
                     firstLayerPlanes.Add(plane);
                 }
-                else if (temp.Count() > linesThroughSpace.Count * 0.2)
+                else if (temp.Count > spaceDim)
                 {
                     potentiallyFirstLayer.Add(temp);
                 }
@@ -121,7 +123,7 @@ namespace NeuronalNetworkReverseEngineering
             foreach (var pfl in potentiallyFirstLayer)
             {
                 var cc = new Hyperplane(model, pfl, hasIntercept: true);
-                var temp = FirstLayerTest(linesThroughSpace, cc, 0.1);
+                var temp = FirstLayerTest(linesThroughSpace, cc, 0.15);
                 if (temp.Count() > linesThroughSpace.Count * 0.8)
                 {
                     firstLayerPlanes.Add(cc);
