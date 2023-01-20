@@ -31,17 +31,19 @@ namespace NeuronalNetworkReverseEngineering
             var tt = new List<List<Hyperplane>>();
             for (int i = 0; i < linesThroughSpace.Count; i++)
             {
+                var tempModel = model.Copy(model.RandomGenerator.Next());
+
                 var hyperPlanes = new List<Hyperplane>();
                 foreach (var l in linesThroughSpace[i])
                 {
-                    hyperPlanes.Add(new Hyperplane(model, l.boundaryPoint, l.safeDistance / 15, hasIntercept: false));
+                    hyperPlanes.Add(new Hyperplane(tempModel, l.boundaryPoint, l.safeDistance / 15, hasIntercept: false));
                 }
 
                 tt.Add(layer.Old_GetFirstLayer(hyperPlanes, 1_000));
             }
 
             var gg = new List<Hyperplane>();
-            gg.AddRange(tt[2]);
+            gg.AddRange(tt[0]);
             for (int i = 0; i < tt.Count; i++)
             {
                 for (int j = 0; j < tt[i].Count; j++)
