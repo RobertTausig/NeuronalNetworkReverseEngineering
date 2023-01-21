@@ -9,8 +9,8 @@ namespace NeuronalNetworkReverseEngineering
     class Program
     {
         const int inputDim = 7;
-        const int firstLayerDim = 5;
-        const int secondLayerDim = 6;
+        const int firstLayerDim = 13;
+        const int secondLayerDim = 14;
         const int outputDim = 4;
 
         static void Main(string[] args)
@@ -49,7 +49,7 @@ namespace NeuronalNetworkReverseEngineering
                 for (int j = 0; j < tt[i].Count; j++)
                 {
                     var temp = tt[i][j];
-                    var booli = gg.Any(x => true == Matrix.ApproxEqual(temp.planeIdentity.parameters, x.planeIdentity.parameters, 0.2));
+                    var booli = gg.Any(x => true == Matrix.ApproxEqual(temp.planeIdentity.parameters, x.planeIdentity.parameters, 0.3));
                     if (!booli)
                     {
                         gg.Add(temp);
@@ -58,7 +58,7 @@ namespace NeuronalNetworkReverseEngineering
             } 
 
             Console.WriteLine("-------------------");
-            Console.WriteLine($@"Highest: {numfirstLayerPlanes}");
+            Console.WriteLine($@"Highest: {gg.Count}");
              
 
 
