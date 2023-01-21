@@ -84,6 +84,38 @@ namespace NeuronalNetworkReverseEngineering
             }
         }
 
+        public List<Hyperplane> UU(List<List<(Matrix boundaryPoint, double safeDistance)>> linesThroughSpace)
+        {
+            var tt = new List<List<Hyperplane>>();
+            for (int i = 0; i < linesThroughSpace.Count; i++)
+            {
+                var tempModel = model.Copy(model.RandomGenerator.Next());
+
+                var hyperPlanes = new List<Hyperplane>();
+                foreach (var l in linesThroughSpace[i])
+                {
+                    hyperPlanes.Add(new Hyperplane(tempModel, l.boundaryPoint, l.safeDistance / 15, hasIntercept: false));
+                }
+
+                tt.Add(Old_GetFirstLayer(hyperPlanes, 1_000));
+            }
+
+            var gg = new List<Hyperplane>();
+            gg.AddRange(tt[0]);
+            for (int i = 0; i < tt.Count; i++)
+            {
+                for (int j = 0; j < tt[i].Count; j++)
+                {
+                    var temp = tt[i][j];
+                    var booli = gg.Any(x => true == Matrix.ApproxEqual(temp.planeIdentity.parameters, x.planeIdentity.parameters, 0.3));
+                    if (!booli)
+                    {
+                        gg.Add(temp);
+                    }
+                }
+            }
+            return gg;
+        }
         public List<Hyperplane> Old_GetFirstLayer(List<Hyperplane> hyperPlanes, double testRadius)
         {
             var retVal = new List<Hyperplane>();
