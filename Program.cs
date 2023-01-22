@@ -27,7 +27,7 @@ namespace NeuronalNetworkReverseEngineering
             int numLines = 5;
             var initialBundle = layer.DriveLinesThroughSpace(numLines: numLines, minSpacedApartDistance: 100);
             var initialHyperplanesColl = layer.SpaceLinesToHyperplanes(initialBundle);
-            var firstLayerPlanes = layer.New_GetFirstLayer(initialHyperplanesColl, 1_000);
+            var firstLayerPlanes = layer.GetFirstLayer(initialHyperplanesColl, 1_000);
 
 
             Console.WriteLine("-------------------");

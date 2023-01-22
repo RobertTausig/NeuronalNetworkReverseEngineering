@@ -80,7 +80,7 @@ namespace NeuronalNetworkReverseEngineering
             salt += saltIncreasePerUsage;
             if (result.IsCompleted)
             {
-                return new SpaceLineBundle(conc.Select(x => x.Value).ToList());
+                return new SpaceLineBundle(conc.Values.ToList());
             }
             else
             {
@@ -107,7 +107,7 @@ namespace NeuronalNetworkReverseEngineering
             salt+= saltIncreasePerUsage;
             return retVal;
         }
-        public List<Hyperplane> New_GetFirstLayer(List<List<Hyperplane>> hyperPlanesColl, double testRadius)
+        public List<Hyperplane> GetFirstLayer(List<List<Hyperplane>> hyperPlanesColl, double testRadius)
         {
             var conc = new ConcurrentDictionary<int, List<Hyperplane>>();
             var result = Parallel.For(0, hyperPlanesColl.Count, index =>
@@ -118,7 +118,7 @@ namespace NeuronalNetworkReverseEngineering
                 var resultingHyperplanes = new List<Hyperplane>();
                 foreach (var plane in hyperPlanesColl[index])
                 {
-                    var temp = tempSphere.Old_FirstLayerTest(plane, stdNumTestPoints, testRadius);
+                    var temp = tempSphere.FirstLayerTest(plane, stdNumTestPoints, testRadius);
                     if (temp.Count(x => x.Count == 1) > 0.8 * stdNumTestPoints)
                     {
                         resultingHyperplanes.Add(plane);
@@ -130,111 +130,27 @@ namespace NeuronalNetworkReverseEngineering
             salt += saltIncreasePerUsage;
             if (result.IsCompleted)
             {
-                var gg = new List<Hyperplane>();
-                var tt = conc.Select(x => x.Value).ToList();
-                gg.AddRange(tt[0]);
-                for (int i = 0; i < tt.Count; i++)
+                var retVal = new List<Hyperplane>();
+                var resultingHyperplanesColl = conc.Values.ToList();
+                retVal.AddRange(resultingHyperplanesColl[0]);
+                for (int i = 0; i < resultingHyperplanesColl.Count; i++)
                 {
-                    for (int j = 0; j < tt[i].Count; j++)
+                    for (int j = 0; j < resultingHyperplanesColl[i].Count; j++)
                     {
-                        var temp = tt[i][j];
-                        var booli = gg.Any(x => true == Matrix.ApproxEqual(temp.planeIdentity.parameters, x.planeIdentity.parameters, 0.3));
-                        if (!booli)
+                        var temp = resultingHyperplanesColl[i][j];
+                        if(!retVal.Any(x => true == Matrix.ApproxEqual(temp.planeIdentity.parameters, x.planeIdentity.parameters, 0.3)))
                         {
-                            gg.Add(temp);
+                            retVal.Add(temp);
                         }
                     }
                 }
-                return gg;
+                return retVal;
             }
             else
             {
                 throw new Exception("IY26");
             }
         }
-        public List<Hyperplane> Old_GetFirstLayer(List<Hyperplane> hyperPlanes, double testRadius)
-        {
-            var retVal = new List<Hyperplane>();
-
-            foreach (var plane in hyperPlanes)
-            {
-                var temp = sphere.Old_FirstLayerTest(plane, stdNumTestPoints, testRadius);
-                //Console.WriteLine(temp.Count + ", " + temp.Count(x => x.Count == 1));
-                if (temp.Count(x => x.Count == 1) > 0.8 * stdNumTestPoints) {
-                    retVal.Add(plane);
-                }
-            }
-
-            //Console.WriteLine("~~~~~~~~~~~~~~~~~~~~~~~~~~~");
-            salt += saltIncreasePerUsage;
-            return retVal;
-        }
-
-        public List<Hyperplane> GetFirstLayer(List<List<(Matrix boundaryPoint, double safeDistance)>> linesThroughSpace, List<Hyperplane> hyperPlanes)
-        {
-            var retVal = new List<Hyperplane>();
-            var firstLayerPlanes = new List<Hyperplane>();
-            var potentiallyFirstLayer = new List<List<Matrix>>();
-            var spaceDim = model.topology[0];
-
-            foreach (var plane in hyperPlanes)
-            {
-                var temp = FirstLayerTest(linesThroughSpace, plane, 0.08);
-
-                if (temp.Count > linesThroughSpace.Count * 0.75)
-                {
-                    firstLayerPlanes.Add(plane);
-                }
-                else if (temp.Count > spaceDim)
-                {
-                    potentiallyFirstLayer.Add(temp);
-                }
-            }
-
-            foreach (var pfl in potentiallyFirstLayer)
-            {
-                var cc = new Hyperplane(model, pfl, hasIntercept: true);
-                var temp = FirstLayerTest(linesThroughSpace, cc, 0.08);
-                if (temp.Count > linesThroughSpace.Count * 0.75)
-                {
-                    retVal.Add(cc);
-                }
-            }
-
-            //foreach (var flp in firstLayerPlanes)
-            //{
-            //    var cc = new Hyperplane(model, flp, hasIntercept: true);
-            //    var temp = FirstLayerTest(linesThroughSpace, cc, 0.15);
-            //    if (temp.Count > linesThroughSpace.Count * 0.8)
-            //    {
-            //        retVal.Add(cc);
-            //    }
-            //}
-            retVal.AddRange(firstLayerPlanes);
-
-            Console.WriteLine($@"firstLayer Count: {retVal.Count}");
-            return retVal;
-        }
-        private List<Matrix> FirstLayerTest(List<List<(Matrix boundaryPoint, double safeDistance)>> linesThroughSpace, Hyperplane plane, double accuracy)
-        {
-            var collection = new List<List<Matrix>>();
-            foreach (var line in linesThroughSpace)
-            {
-                var temp = new List<Matrix>();
-                foreach (var point in line)
-                {
-                    if ((bool)plane.IsPointOnPlane(point.boundaryPoint, accuracy))
-                    {
-                        temp.Add(point.boundaryPoint);
-                    }
-                }
-                collection.Add(temp);
-            }
-
-            collection.RemoveAll(x => x.Count != 1);
-            return collection.SelectMany(x => x).ToList();
-        }
-
         public static bool IsSpacedApart(List<Matrix> list, double minDistance)
         {
             for (int i = 1; i < list.Count; i++)

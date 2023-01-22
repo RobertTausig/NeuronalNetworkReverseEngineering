@@ -106,7 +106,7 @@ namespace NeuronalNetworkReverseEngineering
             }
         }
 
-        public List<List<Matrix>> Old_FirstLayerTest(Hyperplane plane, int numTestPoints, double radius)
+        public List<List<Matrix>> FirstLayerTest(Hyperplane plane, int numTestPoints, double radius)
         {
             var retVal = new List<Matrix>();
             var maxTestLines = (plane.spaceDim + 1) * 5;
