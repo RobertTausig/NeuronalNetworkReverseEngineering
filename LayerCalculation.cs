@@ -107,25 +107,50 @@ namespace NeuronalNetworkReverseEngineering
             salt+= saltIncreasePerUsage;
             return retVal;
         }
-        public List<Hyperplane> KK(List<List<Hyperplane>> hyperPlanesColl)
+        public List<Hyperplane> New_GetFirstLayer(List<List<Hyperplane>> hyperPlanesColl, double testRadius)
         {
-            hyperPlanesColl = hyperPlanesColl.Select(x => Old_GetFirstLayer(x, 1_000)).ToList();
-
-            var gg = new List<Hyperplane>();
-            gg.AddRange(hyperPlanesColl[0]);
-            for (int i = 0; i < hyperPlanesColl.Count; i++)
+            var conc = new ConcurrentDictionary<int, List<Hyperplane>>();
+            var result = Parallel.For(0, hyperPlanesColl.Count, index =>
             {
-                for (int j = 0; j < hyperPlanesColl[i].Count; j++)
+                var tempModel = model.Copy(index + salt);
+                var tempSphere = new SamplingSphere(tempModel);
+
+                var resultingHyperplanes = new List<Hyperplane>();
+                foreach (var plane in hyperPlanesColl[index])
                 {
-                    var temp = hyperPlanesColl[i][j];
-                    var booli = gg.Any(x => true == Matrix.ApproxEqual(temp.planeIdentity.parameters, x.planeIdentity.parameters, 0.3));
-                    if (!booli)
+                    var temp = tempSphere.Old_FirstLayerTest(plane, stdNumTestPoints, testRadius);
+                    if (temp.Count(x => x.Count == 1) > 0.8 * stdNumTestPoints)
                     {
-                        gg.Add(temp);
+                        resultingHyperplanes.Add(plane);
                     }
                 }
+                conc.TryAdd(index, resultingHyperplanes);
+            });
+
+            salt += saltIncreasePerUsage;
+            if (result.IsCompleted)
+            {
+                var gg = new List<Hyperplane>();
+                var tt = conc.Select(x => x.Value).ToList();
+                gg.AddRange(tt[0]);
+                for (int i = 0; i < tt.Count; i++)
+                {
+                    for (int j = 0; j < tt[i].Count; j++)
+                    {
+                        var temp = tt[i][j];
+                        var booli = gg.Any(x => true == Matrix.ApproxEqual(temp.planeIdentity.parameters, x.planeIdentity.parameters, 0.3));
+                        if (!booli)
+                        {
+                            gg.Add(temp);
+                        }
+                    }
+                }
+                return gg;
             }
-            return gg;
+            else
+            {
+                throw new Exception("IY26");
+            }
         }
         public List<Hyperplane> Old_GetFirstLayer(List<Hyperplane> hyperPlanes, double testRadius)
         {
@@ -134,13 +159,13 @@ namespace NeuronalNetworkReverseEngineering
             foreach (var plane in hyperPlanes)
             {
                 var temp = sphere.Old_FirstLayerTest(plane, stdNumTestPoints, testRadius);
-                Console.WriteLine(temp.Count + ", " + temp.Count(x => x.Count == 1));
+                //Console.WriteLine(temp.Count + ", " + temp.Count(x => x.Count == 1));
                 if (temp.Count(x => x.Count == 1) > 0.8 * stdNumTestPoints) {
                     retVal.Add(plane);
                 }
             }
 
-            Console.WriteLine("~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+            //Console.WriteLine("~~~~~~~~~~~~~~~~~~~~~~~~~~~");
             salt += saltIncreasePerUsage;
             return retVal;
         }
