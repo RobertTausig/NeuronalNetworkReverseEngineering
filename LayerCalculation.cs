@@ -88,12 +88,12 @@ namespace NeuronalNetworkReverseEngineering
             }
         }
 
-        public List<Hyperplane> UU(SpaceLineBundle bundle)
+        public List<List<Hyperplane>> SpaceLinesToHyperplanes(SpaceLineBundle bundle)
         {
-            var tt = new List<List<Hyperplane>>();
+            var retVal = new List<List<Hyperplane>>();
             for (int i = 0; i < bundle.SpaceLines.Count(); i++)
             {
-                var tempModel = model.Copy(model.RandomGenerator.Next());
+                var tempModel = model.Copy(salt + i);
 
                 var hyperPlanes = new List<Hyperplane>();
                 foreach (var l in bundle.SpaceLines[i].SpaceLinePoints)
@@ -101,16 +101,23 @@ namespace NeuronalNetworkReverseEngineering
                     hyperPlanes.Add(new Hyperplane(tempModel, l.BoundaryPoint, (double)l.SafeDistance / 15, hasIntercept: false));
                 }
 
-                tt.Add(Old_GetFirstLayer(hyperPlanes, 1_000));
+                retVal.Add(hyperPlanes);
             }
 
+            salt+= saltIncreasePerUsage;
+            return retVal;
+        }
+        public List<Hyperplane> KK(List<List<Hyperplane>> hyperPlanesColl)
+        {
+            hyperPlanesColl = hyperPlanesColl.Select(x => Old_GetFirstLayer(x, 1_000)).ToList();
+
             var gg = new List<Hyperplane>();
-            gg.AddRange(tt[0]);
-            for (int i = 0; i < tt.Count; i++)
+            gg.AddRange(hyperPlanesColl[0]);
+            for (int i = 0; i < hyperPlanesColl.Count; i++)
             {
-                for (int j = 0; j < tt[i].Count; j++)
+                for (int j = 0; j < hyperPlanesColl[i].Count; j++)
                 {
-                    var temp = tt[i][j];
+                    var temp = hyperPlanesColl[i][j];
                     var booli = gg.Any(x => true == Matrix.ApproxEqual(temp.planeIdentity.parameters, x.planeIdentity.parameters, 0.3));
                     if (!booli)
                     {
