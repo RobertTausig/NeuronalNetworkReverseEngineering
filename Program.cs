@@ -25,8 +25,8 @@ namespace NeuronalNetworkReverseEngineering
             var layer = new LayerCalculation(model, sphere);
 
             int numLines = 5;
-            var linesThroughSpace = layer.DriveLinesThroughSpace(numLines: numLines, minSpacedApartDistance: 100);
-            var firstLayerPlanes = layer.UU(linesThroughSpace); 
+            var spaceLineBundle = layer.DriveLinesThroughSpace(numLines: numLines, minSpacedApartDistance: 100);
+            var firstLayerPlanes = layer.UU(spaceLineBundle); 
 
             Console.WriteLine("-------------------");
             Console.WriteLine($@"Highest: {firstLayerPlanes.Count}");

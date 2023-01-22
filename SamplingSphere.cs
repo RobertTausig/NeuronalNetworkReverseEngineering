@@ -74,9 +74,9 @@ namespace NeuronalNetworkReverseEngineering
             }
         }
 
-        public List<(Matrix boundaryPoint, double? safeDistance)> MinimumDistanceToDifferentBoundary(List<Matrix> boundaryPoints, double startingDistance)
+        public SpaceLine MinimumDistanceToDifferentBoundary(List<Matrix> boundaryPoints, double startingDistance)
         {
-            var retVal = new List<(Matrix boundaryPoint, double? safeDistance)>();
+            var retVal = new SpaceLine();
             var conc = new ConcurrentDictionary<int, double?>();
 
             var result = Parallel.For(0, boundaryPoints.Count, index =>
@@ -92,7 +92,11 @@ namespace NeuronalNetworkReverseEngineering
             {
                 for (int i = 0; i < boundaryPoints.Count; i++)
                 {
-                    retVal.Add((boundaryPoints[i], conc[i]));
+                    retVal.SpaceLinePoints.Add(new SpaceLinePoint
+                    {
+                        BoundaryPoint = boundaryPoints[i],
+                        SafeDistance = conc[i]
+                    });
                 }
                 return retVal;
             }

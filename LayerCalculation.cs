@@ -26,7 +26,7 @@ namespace NeuronalNetworkReverseEngineering
         private int stdNumTestPoints = 500;
         private int stdNumTestLines = 30;
 
-        public List<List<(Matrix boundaryPoint, double safeDistance)>> DriveLinesThroughSpace(int numLines, double minSpacedApartDistance)
+        public SpaceLineBundle DriveLinesThroughSpace(int numLines, double minSpacedApartDistance)
         {
             int sumHiddenLayerDims = model.topology[1..^1].Sum(x => x);
             double constRadius = Math.Pow(sumHiddenLayerDims, 2) * Math.Sqrt(minSpacedApartDistance);
@@ -36,47 +36,51 @@ namespace NeuronalNetworkReverseEngineering
             double constMinPointDistance = constMinStartingDistance / 10;
             int constMaxMagnitude = 24;
 
-            var linesThroughSpace = new ConcurrentDictionary<int, List<(Matrix boundaryPoint, double safeDistance)>>();
+            var conc = new ConcurrentDictionary<int, SpaceLine>();
             // Why doing this:
             // To make sure to not accidentally get a "bad" line.
             var result = Parallel.For(0, numLines, index =>
             {
-                var tempModel = model.Copy(index + salt);
-                var tempSampler = new SamplingLine(tempModel);
-                var tempSphere = new SamplingSphere(tempModel);
+            var tempModel = model.Copy(index + salt);
+            var tempSampler = new SamplingLine(tempModel);
+            var tempSphere = new SamplingSphere(tempModel);
 
-                var tempLine = new List<(Matrix boundaryPoint, double safeDistance)>();
-                bool loopCondition = true;
-                while (loopCondition)
+            var tempLine = new SpaceLine();
+            bool loopCondition = true;
+            while (loopCondition)
+            {
+                var (midPoint, directionVector) = tempSampler.RandomSecantLine(radius: constRadius, minPointDistance: constMinPointDistance);
+                var boundaryPointsSuggestion = tempSampler.BidirectionalLinearRegionChanges(midPoint, directionVector, constMaxMagnitude);
+                if (IsSpacedApart(boundaryPointsSuggestion, constMinSafeDistance))
                 {
-                    var (midPoint, directionVector) = tempSampler.RandomSecantLine(radius: constRadius, minPointDistance: constMinPointDistance);
-                    var boundaryPointsSuggestion = tempSampler.BidirectionalLinearRegionChanges(midPoint, directionVector, constMaxMagnitude);
-                    if (IsSpacedApart(boundaryPointsSuggestion, constMinSafeDistance))
+                    foreach (var point in boundaryPointsSuggestion)
                     {
-                        foreach (var point in boundaryPointsSuggestion)
+                        var tempSafeDistance = tempSphere.MinimumDistanceToDifferentBoundary(point, constMinStartingDistance);
+                        if (tempSafeDistance != null && tempSafeDistance > constMinSafeDistance)
                         {
-                            var tempSafeDistance = tempSphere.MinimumDistanceToDifferentBoundary(point, constMinStartingDistance);
-                            if (tempSafeDistance != null && tempSafeDistance > constMinSafeDistance)
-                            {
-                                tempLine.Add((point, (double)tempSafeDistance));
+                                tempLine.SpaceLinePoints.Add(new SpaceLinePoint
+                                {
+                                    BoundaryPoint = point,
+                                    SafeDistance = tempSafeDistance
+                                });
                                 loopCondition = false;
                             }
                             else
                             {
-                                tempLine.Clear();
+                                tempLine.SpaceLinePoints.Clear();
                                 loopCondition = true;
                                 break;
                             }
                         }
                     }
                 }
-                linesThroughSpace.TryAdd(index, tempLine);
+                conc.TryAdd(index, tempLine);
             });
 
             salt += saltIncreasePerUsage;
             if (result.IsCompleted)
             {
-                return linesThroughSpace.Select(x => x.Value).ToList();
+                return new SpaceLineBundle(conc.Select(x => x.Value).ToList());
             }
             else
             {
@@ -84,17 +88,17 @@ namespace NeuronalNetworkReverseEngineering
             }
         }
 
-        public List<Hyperplane> UU(List<List<(Matrix boundaryPoint, double safeDistance)>> linesThroughSpace)
+        public List<Hyperplane> UU(SpaceLineBundle bundle)
         {
             var tt = new List<List<Hyperplane>>();
-            for (int i = 0; i < linesThroughSpace.Count; i++)
+            for (int i = 0; i < bundle.SpaceLines.Count(); i++)
             {
                 var tempModel = model.Copy(model.RandomGenerator.Next());
 
                 var hyperPlanes = new List<Hyperplane>();
-                foreach (var l in linesThroughSpace[i])
+                foreach (var l in bundle.SpaceLines[i].SpaceLinePoints)
                 {
-                    hyperPlanes.Add(new Hyperplane(tempModel, l.boundaryPoint, l.safeDistance / 15, hasIntercept: false));
+                    hyperPlanes.Add(new Hyperplane(tempModel, l.BoundaryPoint, (double)l.SafeDistance / 15, hasIntercept: false));
                 }
 
                 tt.Add(Old_GetFirstLayer(hyperPlanes, 1_000));
