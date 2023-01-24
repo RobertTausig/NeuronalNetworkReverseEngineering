@@ -29,13 +29,11 @@ namespace NeuronalNetworkReverseEngineering
             var initialHyperplanesColl = layer.SpaceLinesToHyperplanes(initialBundle);
             var firstLayerPlanes = layer.GetFirstLayer(initialHyperplanesColl, 1_000);
 
+            foreach (var flp in firstLayerPlanes)
+            {
+                flp.Print();
+            }
 
-            Console.WriteLine("-------------------");
-            Console.WriteLine($@"Highest: {firstLayerPlanes.Count}");
-
-
-
-            //var firstLayerPlanes = layer.GetFirstLayer(hyperPlanes, constRadius);
 
 
 
