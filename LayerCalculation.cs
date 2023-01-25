@@ -119,7 +119,7 @@ namespace NeuronalNetworkReverseEngineering
                 foreach (var plane in hyperPlanesColl[index])
                 {
                     var temp = tempSphere.FirstLayerTest(plane, stdNumTestPoints, testRadius);
-                    if (temp.Count(x => x.Count == 1) > 0.8 * stdNumTestPoints)
+                    if (temp.Count > 0.8 * stdNumTestPoints)
                     {
                         resultingHyperplanes.Add(plane);
                     }

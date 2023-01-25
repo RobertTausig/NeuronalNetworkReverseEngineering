@@ -106,11 +106,11 @@ namespace NeuronalNetworkReverseEngineering
             }
         }
 
-        public List<List<Matrix>> FirstLayerTest(Hyperplane plane, int numTestPoints, double radius)
+        public List<bool> FirstLayerTest(Hyperplane plane, int numTestPoints, double radius)
         {
             var retVal = new List<Matrix>();
             var maxTestLines = (plane.spaceDim + 1) * 5;
-            var conc = new ConcurrentDictionary<int, List<Matrix>>();
+            var conc = new ConcurrentDictionary<int, bool>();
 
             var result = Parallel.For(0, numTestPoints, index =>
             {
@@ -123,11 +123,10 @@ namespace NeuronalNetworkReverseEngineering
                 {
                     var directionVector = new Matrix(genPoint.numRow, genPoint.numCol);
                     directionVector.PopulateAllRandomlyFarFromZero(tempModel.RandomGenerator);
-                    directionVector = Matrix.NormalizeVector(directionVector, (double)norm / (8 * radius));
-                    var boundaryPoints = tempSampler.BidirectionalLinearRegionChanges(genPoint, directionVector, stdMaxMagnitude);
-                    if (boundaryPoints.Count > 0)
+                    directionVector = Matrix.NormalizeVector(directionVector, (double)norm / radius * 8);
+                    if (tempSampler.IsPointInRangeOfBoundary(genPoint, directionVector))
                     {
-                        conc.TryAdd(index, boundaryPoints);
+                        conc.TryAdd(index, true);
                         break;
                     }
                 }
