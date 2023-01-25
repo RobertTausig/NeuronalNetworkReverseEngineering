@@ -41,23 +41,23 @@ namespace NeuronalNetworkReverseEngineering
             // To make sure to not accidentally get a "bad" line.
             var result = Parallel.For(0, numLines, index =>
             {
-            var tempModel = model.Copy(index + salt);
-            var tempSampler = new SamplingLine(tempModel);
-            var tempSphere = new SamplingSphere(tempModel);
+                var tempModel = model.Copy(index + salt);
+                var tempSampler = new SamplingLine(tempModel);
+                var tempSphere = new SamplingSphere(tempModel);
 
-            var tempLine = new SpaceLine();
-            bool loopCondition = true;
-            while (loopCondition)
-            {
-                var (midPoint, directionVector) = tempSampler.RandomSecantLine(radius: constRadius, minPointDistance: constMinPointDistance);
-                var boundaryPointsSuggestion = tempSampler.BidirectionalLinearRegionChanges(midPoint, directionVector, constMaxMagnitude);
-                if (IsSpacedApart(boundaryPointsSuggestion, constMinSafeDistance))
+                var tempLine = new SpaceLine();
+                bool loopCondition = true;
+                while (loopCondition)
                 {
-                    foreach (var point in boundaryPointsSuggestion)
+                    var (midPoint, directionVector) = tempSampler.RandomSecantLine(radius: constRadius, minPointDistance: constMinPointDistance);
+                    var boundaryPointsSuggestion = tempSampler.BidirectionalLinearRegionChanges(midPoint, directionVector, constMaxMagnitude);
+                    if (IsSpacedApart(boundaryPointsSuggestion, constMinSafeDistance))
                     {
-                        var tempSafeDistance = tempSphere.MinimumDistanceToDifferentBoundary(point, constMinStartingDistance);
-                        if (tempSafeDistance != null && tempSafeDistance > constMinSafeDistance)
+                        foreach (var point in boundaryPointsSuggestion)
                         {
+                            var tempSafeDistance = tempSphere.MinimumDistanceToDifferentBoundary(point, constMinStartingDistance);
+                            if (tempSafeDistance != null && tempSafeDistance > constMinSafeDistance)
+                            {
                                 tempLine.SpaceLinePoints.Add(new SpaceLinePoint
                                 {
                                     BoundaryPoint = point,
