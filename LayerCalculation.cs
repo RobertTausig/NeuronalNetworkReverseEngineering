@@ -23,7 +23,7 @@ namespace NeuronalNetworkReverseEngineering
         private int saltIncreasePerUsage = 1_000;
 
         private int stdMaxMagnitude = 8;
-        private int stdNumTestPoints = 500;
+        private int stdNumTestPoints = 100;
         private int stdNumTestLines = 30;
 
         public SpaceLineBundle DriveLinesThroughSpace(int numLines, double minSpacedApartDistance)
@@ -91,18 +91,19 @@ namespace NeuronalNetworkReverseEngineering
         public List<List<Hyperplane>> SpaceLinesToHyperplanes(SpaceLineBundle bundle)
         {
             var retVal = new List<List<Hyperplane>>();
-            for (int i = 0; i < bundle.SpaceLines.Count(); i++)
+
+            Parallel.For(0, bundle.SpaceLines.Count, index =>
             {
-                var tempModel = model.Copy(salt + i);
+                var tempModel = model.Copy(salt + index);
 
                 var hyperPlanes = new List<Hyperplane>();
-                foreach (var l in bundle.SpaceLines[i].SpaceLinePoints)
+                foreach (var l in bundle.SpaceLines[index].SpaceLinePoints)
                 {
                     hyperPlanes.Add(new Hyperplane(tempModel, l.BoundaryPoint, (double)l.SafeDistance / 15, hasIntercept: false));
                 }
 
                 retVal.Add(hyperPlanes);
-            }
+            });
 
             salt+= saltIncreasePerUsage;
             return retVal;

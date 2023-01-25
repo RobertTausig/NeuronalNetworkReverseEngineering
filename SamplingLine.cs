@@ -85,18 +85,14 @@ namespace NeuronalNetworkReverseEngineering
         }
         public bool IsPointInRangeOfBoundary(Matrix startPoint, Matrix directionVector)
         {
-            var positiveInput = Matrix.Addition(startPoint, directionVector);
-            var negativeInput = Matrix.Substraction(startPoint, directionVector);
-
-            var positiveOutput = model.Use(positiveInput);
+            var positiveOutput = model.Use(Matrix.Addition(startPoint, directionVector));
             var startOutput = model.Use(startPoint);
-            var negativeOutput = model.Use(negativeInput);
+            var negativeOutput = model.Use(Matrix.Substraction(startPoint, directionVector));
 
             var positiveDiff = Matrix.Substraction(positiveOutput, startOutput);
             var negativeDiff = Matrix.Substraction(startOutput, negativeOutput);
 
-            var retVal = !(bool)Matrix.ApproxEqual(positiveDiff, negativeDiff);
-            return retVal;
+            return !(bool)Matrix.ApproxEqual(positiveDiff, negativeDiff);
         }
 
 
