@@ -130,6 +130,11 @@ namespace NeuronalNetworkReverseEngineering
             var intercept = new Matrix(1, 1);
             intercept.SetValue(0, 0, (double)planeIdentity.intercept);
 
+            var tempPoint = Matrix.ConcatHorizontally(xCoords, Matrix.Addition(yCoord, intercept));
+            var norm = Matrix.GetEuclideanNormForVector(tempPoint) / approxRadius;
+            xCoords = Matrix.Multiplication(xCoords, 1.0 / (double)norm);
+            yCoord = Matrix.Multiplication(xCoords, planeIdentity.parameters);
+
             return Matrix.ConcatHorizontally(xCoords, Matrix.Addition(yCoord, intercept));
         }
 
