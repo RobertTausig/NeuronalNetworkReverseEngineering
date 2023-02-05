@@ -142,7 +142,49 @@ namespace NeuronalNetworkReverseEngineering
                 throw new Exception("KQ35");
             }
         }
-        
+        public List<Hyperplane> CorrectIntercepts(List<Hyperplane> hyperPlanes, double radius)
+        {
+            var retVal = new List<Hyperplane>();
+            var conc = new ConcurrentDictionary<int, List<Matrix>>();
+
+            var result = Parallel.For(0, hyperPlanes.Count, index =>
+            {
+                var tempModel = model.Copy(index + salt);
+                var tempSampler = new SamplingLine(tempModel);
+                var plane = hyperPlanes[index];
+                var bb = new List<Matrix>();
+
+                while (bb.Count < plane.spaceDim)
+                {
+                    var genPoint = plane.GenerateRandomPointOnPlane(radius);
+                    var norm = Matrix.GetEuclideanNormForVector(genPoint);
+
+                    var directionVector = new Matrix(genPoint.numRow, genPoint.numCol);
+                    directionVector.PopulateAllRandomlyFarFromZero(tempModel.RandomGenerator);
+                    directionVector = Matrix.NormalizeVector(directionVector, (double)norm / radius / 32);
+                    var aa = tempSampler.LinearRegionChanges(genPoint, directionVector, 8);
+                    if (aa.Count == 1)
+                    {
+                        bb.Add(aa.First());
+                    }
+                }
+                conc.TryAdd(index, bb);
+            });
+
+            salt += saltIncreasePerUsage;
+            if (result.IsCompleted)
+            {
+                foreach (var points in conc.Values)
+                {
+                    retVal.Add(new Hyperplane(model, points));
+                }
+                return retVal;
+            }
+            else
+            {
+                throw new Exception("KQ35");
+            }
+        }
 
 
     }

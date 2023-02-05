@@ -28,6 +28,7 @@ namespace NeuronalNetworkReverseEngineering
             var initialBundle = layer.DriveLinesThroughSpace(numLines: numLines, minSpacedApartDistance: 100);
             var initialHyperplanesColl = layer.SpaceLinesToHyperplanes(initialBundle);
             var firstLayerPlanes = layer.GetFirstLayer(initialHyperplanesColl, 1_000);
+            firstLayerPlanes = sphere.CorrectIntercepts(firstLayerPlanes, 1_000);
 
             foreach (var flp in firstLayerPlanes)
             {
