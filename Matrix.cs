@@ -1,9 +1,11 @@
 ﻿using MathNet.Numerics;
+using MathNet.Numerics.Random;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using DecimalMath;
 
 namespace NeuronalNetworkReverseEngineering
 {
@@ -11,16 +13,16 @@ namespace NeuronalNetworkReverseEngineering
     {
         public Matrix(int numRow, int numCol)
         {
-            content = new double[numRow, numCol];
+            content = new decimal[numRow, numCol];
             this.numRow = numRow;
             this.numCol = numCol;
         }
 
-        private double[,] content { get; }
+        private decimal[,] content { get; }
         public int numRow { get; }
         public int numCol { get; }
 
-        public void SetValue(int rowIndex, int colIndex, double value)
+        public void SetValue(int rowIndex, int colIndex, decimal value)
         {
             content[rowIndex, colIndex] = value;
         }
@@ -30,7 +32,7 @@ namespace NeuronalNetworkReverseEngineering
             {
                 for (int j = 0; j < numCol; j++)
                 {
-                    content[i, j] = (rand.NextDouble() - 0.5) * 2;
+                    content[i, j] = (rand.NextDecimal() - 0.5M) * 2;
                 }
             }
         }
@@ -41,7 +43,7 @@ namespace NeuronalNetworkReverseEngineering
                 for (int j = 0; j < numCol; j++)
                 {
                     var temp = rand.Next(4_000, 10_000);
-                    content[i, j] = temp % 2 == 0 ? temp/10_000.0 : -temp/10_000.0;
+                    content[i, j] = temp % 2 == 0 ? temp / 10_000.0M : -temp / 10_000.0M;
                 }
             }
         }
@@ -75,7 +77,7 @@ namespace NeuronalNetworkReverseEngineering
             {
                 for (int j = 0; j < rightMatrix.numCol; j++)
                 {
-                    double tempVal = 0;
+                    decimal tempVal = 0;
                     for (int n = 0; n < leftMatrix.numCol; n++)
                     {
                         tempVal += leftContent[i, n] * rightContent[n, j];
@@ -86,7 +88,7 @@ namespace NeuronalNetworkReverseEngineering
 
             return retMatrix;
         }
-        public static Matrix Multiplication(Matrix matrix, double factor)
+        public static Matrix Multiplication(Matrix matrix, decimal factor)
         {
             var retMatrix = new Matrix(matrix.numRow, matrix.numCol);
             var content = matrix.content;
@@ -172,15 +174,15 @@ namespace NeuronalNetworkReverseEngineering
             return retMatrix;
         }
 
-        public static bool? ApproxEqual(Matrix leftMatrix, Matrix rightMatrix, double accuracy = 0.05)
+        public static bool? ApproxEqual(Matrix leftMatrix, Matrix rightMatrix, decimal accuracy = 0.05M)
         {
             if (leftMatrix.numRow != rightMatrix.numRow || leftMatrix.numCol != rightMatrix.numCol)
             {
                 return null;
             }
 
-            double upperLimit = 1 + accuracy;
-            double lowerLimit = 1 / upperLimit;
+            decimal upperLimit = 1 + accuracy;
+            decimal lowerLimit = 1 / upperLimit;
             var leftContent = leftMatrix.content;
             var rightContent = rightMatrix.content;
 
@@ -188,8 +190,16 @@ namespace NeuronalNetworkReverseEngineering
             {
                 for (int j = 0; j < leftMatrix.numCol; j++)
                 {
+                    if (leftContent[i, j] == rightContent[i, j])
+                    {
+                        continue;
+                    }
+                    else if (rightContent[i, j] == decimal.Zero)
+                    {
+                        return false;
+                    }
                     var temp = leftContent[i, j] / rightContent[i, j];
-                    if (!((lowerLimit < temp && temp < upperLimit) || leftContent[i, j] == rightContent[i, j]))
+                    if (!(lowerLimit < temp && temp < upperLimit))
                     {
                         return false;
                     }
@@ -199,7 +209,7 @@ namespace NeuronalNetworkReverseEngineering
             return true;
         }
 
-        public static Matrix NormalizeVector(Matrix matrix, double norm = 1)
+        public static Matrix NormalizeVector(Matrix matrix, decimal norm = 1M)
         {
             var currentNorm = GetEuclideanNormForVector(matrix);
             if (currentNorm == null)
@@ -207,7 +217,7 @@ namespace NeuronalNetworkReverseEngineering
                 return null;
             }
 
-            double stretchFactor = norm / (double)currentNorm;
+            decimal stretchFactor = norm / (decimal)currentNorm;
             var retMatrix = new Matrix(matrix.numRow, matrix.numCol);
             var content = matrix.content;
             for (int i = 0; i < matrix.numRow; i++)
@@ -221,24 +231,24 @@ namespace NeuronalNetworkReverseEngineering
             return retMatrix;
         }
 
-        public static double? GetEuclideanNormForVector(Matrix matrix)
+        public static decimal? GetEuclideanNormForVector(Matrix matrix)
         {
             if (!(matrix.numRow == 1 || matrix.numCol == 1))
             {
                 return null;
             }
 
-            double euclidianNorm = 0;
+            decimal euclidianNorm = 0;
             var content = matrix.content;
             for (int i = 0; i < matrix.numRow; i++)
             {
                 for (int j = 0; j < matrix.numCol; j++)
                 {
-                    euclidianNorm += Math.Pow(content[i, j], 2);
+                    euclidianNorm += DecimalEx.Pow(content[i, j], 2);
                 }
             }
 
-            return Math.Sqrt(euclidianNorm);
+            return DecimalEx.Sqrt(euclidianNorm);
         }
         public static Matrix GetRandomlyJitteredVector(Matrix matrix, Random rand)
         {
@@ -253,7 +263,7 @@ namespace NeuronalNetworkReverseEngineering
             {
                 for (int j = 0; j < matrix.numCol; j++)
                 {
-                    retMatrix.SetValue(i, j, content[i, j] * (0.95 + rand.NextDouble() / 10));
+                    retMatrix.SetValue(i, j, content[i, j] * (decimal)(0.95 + rand.NextDouble() / 10));
                 }
             }
 
@@ -273,14 +283,14 @@ namespace NeuronalNetworkReverseEngineering
                 for (int j = 0; j < matrix.numCol; j++)
                 {
                     var temp = rand.Next(4_000, 10_000);
-                    var jitterFactor = temp % 2 == 0 ? 1 + temp / 200_000.0 : 1 - temp / 200_000.0;
+                    var jitterFactor = temp % 2 == 0 ? 1 + temp / 200_000.0M : 1 - temp / 200_000.0M;
                     retMatrix.SetValue(i, j, content[i, j] * jitterFactor);
                 }
             }
 
             return retMatrix;
         }
-        public static double[] FlattenVector (Matrix matrix)
+        public static decimal[] FlattenVector (Matrix matrix)
         {
             if (!(matrix.numRow == 1 || matrix.numCol == 1))
             {
@@ -288,7 +298,7 @@ namespace NeuronalNetworkReverseEngineering
             }
 
             var content = matrix.content;
-            double[] retVal = new double[matrix.numRow + matrix.numCol - 1];
+            decimal[] retVal = new decimal[matrix.numRow + matrix.numCol - 1];
             for (int i = 0; i < matrix.numRow; i++)
             {
                 for (int j = 0; j < matrix.numCol; j++)
@@ -313,7 +323,7 @@ namespace NeuronalNetworkReverseEngineering
             }
             return retVal;
         }
-        public static (Matrix parameters, double? intercept) CalculateLinearRegression(List<Matrix> points, bool hasIntercept)
+        public static (Matrix parameters, decimal? intercept) CalculateLinearRegression(List<Matrix> points, bool hasIntercept)
         {
             //--- Start: Working Example ---
             //double[] parameters = new[] { 2.37, -3.8, -0.22, 7.19 };
@@ -339,12 +349,12 @@ namespace NeuronalNetworkReverseEngineering
             double[] yArr = new double[points.Count];
             for (int i = 0; i < points.Count; i++)
             {
-                var flat = FlattenVector(points[i]);
+                var flat = FlattenVector(points[i]).Select(x => (double)x).ToArray();
                 xArr[i] = flat[..^1];
                 yArr[i] = flat[^1];
             }
 
-            var temp = Fit.MultiDim(xArr, yArr, intercept: hasIntercept);
+            var temp = Fit.MultiDim(xArr, yArr, intercept: hasIntercept).Select(x => (decimal)x).ToArray(); ;
             var parameters = new Matrix(temp.Length - (hasIntercept ? 1 : 0), 1);
             for (int i = 0; i < temp.Length - (hasIntercept ? 1 : 0); i++)
             {

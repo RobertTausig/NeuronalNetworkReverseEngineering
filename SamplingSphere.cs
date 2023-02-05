@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DecimalMath;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,14 +24,14 @@ namespace NeuronalNetworkReverseEngineering
         private int salt;
         private int saltIncreasePerUsage = 1_000;
 
-        public double? MinimumDistanceToDifferentBoundary(Matrix boundaryPoint, double startingDistance)
+        public decimal? MinimumDistanceToDifferentBoundary(Matrix boundaryPoint, decimal startingDistance)
         {
             var retVal = new List<Matrix>();
 
-            double directionNorm = startingDistance / Math.Pow(2, stdMaxMagnitude);
+            decimal directionNorm = startingDistance / DecimalEx.Pow(2, stdMaxMagnitude);
             var spaceDim = boundaryPoint.numRow + boundaryPoint.numCol - 1;
             var iterations = (spaceDim + 1) * 30;
-            var iterationGrowth = Math.Pow(10_000, 1.0 / iterations);
+            var iterationGrowth = DecimalEx.Pow(10_000, 1.0M / iterations);
 
             var conc = new ConcurrentDictionary<int, List<Matrix>>();
             var result = Parallel.For(0, iterations, (index, state) =>
@@ -40,7 +41,7 @@ namespace NeuronalNetworkReverseEngineering
 
                 var directionVector = new Matrix(boundaryPoint.numRow, boundaryPoint.numCol);
                 directionVector.PopulateAllRandomlyFarFromZero(tempModel.RandomGenerator);
-                directionVector = Matrix.NormalizeVector(directionVector, directionNorm * Math.Pow(iterationGrowth, index));
+                directionVector = Matrix.NormalizeVector(directionVector, directionNorm * DecimalEx.Pow(iterationGrowth, index));
 
                 var samplePoints = tempSampler.BidirectionalLinearRegionChanges(boundaryPoint, directionVector, stdMaxMagnitude);
                 conc.TryAdd(index, samplePoints);
@@ -62,7 +63,7 @@ namespace NeuronalNetworkReverseEngineering
                 var directionVector = Matrix.Substraction(conc[(int)boundaryIndex].First(), boundaryPoint);
                 while (true)
                 {
-                    directionVector = Matrix.NormalizeVector(directionVector, directionNorm * Math.Pow(iterationGrowth, (long)boundaryIndex - shrinkIndex));
+                    directionVector = Matrix.NormalizeVector(directionVector, directionNorm * DecimalEx.Pow(iterationGrowth, (long)boundaryIndex - shrinkIndex));
                     var samplePoints = sampler.BidirectionalLinearRegionChanges(boundaryPoint, directionVector, stdMaxMagnitude);
                     if(samplePoints.Count < 2)
                     {
@@ -70,14 +71,14 @@ namespace NeuronalNetworkReverseEngineering
                     }
                     shrinkIndex++;
                 }
-                return startingDistance * Math.Pow(iterationGrowth, (long)boundaryIndex - shrinkIndex);
+                return startingDistance * DecimalEx.Pow(iterationGrowth, (long)boundaryIndex - shrinkIndex);
             }
         }
 
-        public SpaceLine MinimumDistanceToDifferentBoundary(List<Matrix> boundaryPoints, double startingDistance)
+        public SpaceLine MinimumDistanceToDifferentBoundary(List<Matrix> boundaryPoints, decimal startingDistance)
         {
             var retVal = new SpaceLine();
-            var conc = new ConcurrentDictionary<int, double?>();
+            var conc = new ConcurrentDictionary<int, decimal?>();
 
             var result = Parallel.For(0, boundaryPoints.Count, index =>
             {
@@ -106,7 +107,7 @@ namespace NeuronalNetworkReverseEngineering
             }
         }
 
-        public List<bool> FirstLayerTest(Hyperplane plane, int numTestPoints, double radius)
+        public List<bool> FirstLayerTest(Hyperplane plane, int numTestPoints, decimal radius)
         {
             var retVal = new List<Matrix>();
             var maxTestLines = (plane.spaceDim + 1) * 5;
@@ -123,7 +124,7 @@ namespace NeuronalNetworkReverseEngineering
                 {
                     var directionVector = new Matrix(genPoint.numRow, genPoint.numCol);
                     directionVector.PopulateAllRandomlyFarFromZero(tempModel.RandomGenerator);
-                    directionVector = Matrix.NormalizeVector(directionVector, (double)norm / radius * 8);
+                    directionVector = Matrix.NormalizeVector(directionVector, (decimal)norm / radius * 8);
                     if (tempSampler.IsPointInRangeOfBoundary(genPoint, directionVector))
                     {
                         conc.TryAdd(index, true);
@@ -142,7 +143,7 @@ namespace NeuronalNetworkReverseEngineering
                 throw new Exception("KQ35");
             }
         }
-        public List<Hyperplane> CorrectIntercepts(List<Hyperplane> hyperPlanes, double radius)
+        public List<Hyperplane> CorrectIntercepts(List<Hyperplane> hyperPlanes, decimal radius)
         {
             var retVal = new List<Hyperplane>();
             var conc = new ConcurrentDictionary<int, List<Matrix>>();
@@ -161,7 +162,7 @@ namespace NeuronalNetworkReverseEngineering
 
                     var directionVector = new Matrix(genPoint.numRow, genPoint.numCol);
                     directionVector.PopulateAllRandomlyFarFromZero(tempModel.RandomGenerator);
-                    directionVector = Matrix.NormalizeVector(directionVector, (double)norm / radius / 32);
+                    directionVector = Matrix.NormalizeVector(directionVector, (decimal)norm / radius / 32);
                     var aa = tempSampler.LinearRegionChanges(genPoint, directionVector, 8);
                     if (aa.Count == 1)
                     {

@@ -5,15 +5,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using DecimalMath;
 
 namespace NeuronalNetworkReverseEngineering
 {
     class Hyperplane
     {
-        public Hyperplane(Model model, Matrix boundaryPoint, double displacementNorm = 1, bool hasIntercept = true)
+        public Hyperplane(Model model, Matrix boundaryPoint, decimal displacementNorm = 1, bool hasIntercept = true)
         {
             int maxMagnitude = 8;
-            double directionNorm = 6.0 * displacementNorm / Math.Pow(2, maxMagnitude);
+            decimal directionNorm = 6.0M * displacementNorm / DecimalEx.Pow(2, maxMagnitude);
 
             this.model = model;
             this.originalBoundaryPoint = boundaryPoint;
@@ -33,14 +34,14 @@ namespace NeuronalNetworkReverseEngineering
         private Model model { get; }
         public List<Matrix> pointsOnPlane { get; } = new List<Matrix>();
         private List<Matrix> temporaryPointsOnPlane = new List<Matrix>();
-        public (Matrix parameters, double? intercept) planeIdentity { get; }
+        public (Matrix parameters, decimal? intercept) planeIdentity { get; }
         public int spaceDim { get; }
         public Matrix originalBoundaryPoint { get; }
 
         private const int saltIncreasePerRecursion = 1_000;
         private const int maxSalt = 4*saltIncreasePerRecursion;
 
-        private List<Matrix> SupportPointsOnBoundary(Matrix boundaryPoint, int salt, double displacementNorm, double directionNorm, int maxMagnitude)
+        private List<Matrix> SupportPointsOnBoundary(Matrix boundaryPoint, int salt, decimal displacementNorm, decimal directionNorm, int maxMagnitude)
         {
             if (!(boundaryPoint.numRow == 1 || boundaryPoint.numRow == 1))
             {
@@ -102,13 +103,13 @@ namespace NeuronalNetworkReverseEngineering
                     if (overshootSample.Count() > undershootSample.Count())
                     {
                         salt += saltIncreasePerRecursion;
-                        double normCorrectionFactor = (double)overshootSample.Count() / iterations + 1;
+                        decimal normCorrectionFactor = (decimal)overshootSample.Count() / iterations + 1;
                         return SupportPointsOnBoundary(boundaryPoint, salt, displacementNorm / normCorrectionFactor, directionNorm / normCorrectionFactor, maxMagnitude);
                     }
                     else
                     {
                         salt += saltIncreasePerRecursion;
-                        double normCorrectionFactor = (double)undershootSample.Count() / iterations + 1;
+                        decimal normCorrectionFactor = (decimal)undershootSample.Count() / iterations + 1;
                         return SupportPointsOnBoundary(boundaryPoint, salt, displacementNorm * normCorrectionFactor, directionNorm * normCorrectionFactor, maxMagnitude);
                     }
                 }
@@ -121,33 +122,33 @@ namespace NeuronalNetworkReverseEngineering
 
         }
 
-        public Matrix GenerateRandomPointOnPlane(double approxRadius)
+        public Matrix GenerateRandomPointOnPlane(decimal approxRadius)
         {
             var xCoords = new Matrix(1, spaceDim - 1);
             xCoords.PopulateAllRandomlyFarFromZero(model.RandomGenerator);
             xCoords = Matrix.NormalizeVector(xCoords, approxRadius);
             var yCoord = Matrix.Multiplication(xCoords, planeIdentity.parameters);
             var intercept = new Matrix(1, 1);
-            intercept.SetValue(0, 0, (double)planeIdentity.intercept);
+            intercept.SetValue(0, 0, (decimal)planeIdentity.intercept);
 
             var tempPoint = Matrix.ConcatHorizontally(xCoords, Matrix.Addition(yCoord, intercept));
             var norm = Matrix.GetEuclideanNormForVector(tempPoint) / approxRadius;
-            xCoords = Matrix.Multiplication(xCoords, 1.0 / (double)norm);
+            xCoords = Matrix.Multiplication(xCoords, 1.0M / (decimal)norm);
             yCoord = Matrix.Multiplication(xCoords, planeIdentity.parameters);
 
             return Matrix.ConcatHorizontally(xCoords, Matrix.Addition(yCoord, intercept));
         }
 
         //Probability for a random point to return "true" with accuracy 0.1: ~2%
-        public bool? IsPointOnPlane (Matrix point, double accuracy = 0.05)
+        public bool? IsPointOnPlane (Matrix point, decimal accuracy = 0.05M)
         {
             if (point.numRow != 1)
             {
                 return null;
             }
 
-            double upperLimit = 1 + accuracy;
-            double lowerLimit = 1 / upperLimit;
+            decimal upperLimit = 1 + accuracy;
+            decimal lowerLimit = 1 / upperLimit;
 
             var flattenPoint = Matrix.FlattenVector(point);
             var xCoords = new Matrix(1, spaceDim - 1);

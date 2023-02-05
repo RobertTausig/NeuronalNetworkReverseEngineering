@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DecimalMath;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
@@ -26,14 +27,14 @@ namespace NeuronalNetworkReverseEngineering
         private int stdNumTestPoints = 100;
         private int stdNumTestLines = 30;
 
-        public SpaceLineBundle DriveLinesThroughSpace(int numLines, double minSpacedApartDistance)
+        public SpaceLineBundle DriveLinesThroughSpace(int numLines, decimal minSpacedApartDistance)
         {
             int sumHiddenLayerDims = model.topology[1..^1].Sum(x => x);
-            double constRadius = Math.Pow(sumHiddenLayerDims, 2) * Math.Sqrt(minSpacedApartDistance);
-            double constMinSpacedApartDistance = minSpacedApartDistance;
-            double constMinSafeDistance = constMinSpacedApartDistance / 2;
-            double constMinStartingDistance = constMinSafeDistance / 10;
-            double constMinPointDistance = constMinStartingDistance / 10;
+            decimal constRadius = DecimalEx.Pow(sumHiddenLayerDims, 2) * DecimalEx.Sqrt(minSpacedApartDistance);
+            decimal constMinSpacedApartDistance = minSpacedApartDistance;
+            decimal constMinSafeDistance = constMinSpacedApartDistance / 2;
+            decimal constMinStartingDistance = constMinSafeDistance / 10;
+            decimal constMinPointDistance = constMinStartingDistance / 10;
             int constMaxMagnitude = 24;
 
             var conc = new ConcurrentDictionary<int, SpaceLine>();
@@ -99,7 +100,7 @@ namespace NeuronalNetworkReverseEngineering
                 var hyperPlanes = new List<Hyperplane>();
                 foreach (var l in bundle.SpaceLines[index].SpaceLinePoints)
                 {
-                    hyperPlanes.Add(new Hyperplane(tempModel, l.BoundaryPoint, (double)l.SafeDistance / 15, hasIntercept: false));
+                    hyperPlanes.Add(new Hyperplane(tempModel, l.BoundaryPoint, (decimal)l.SafeDistance / 15, hasIntercept: false));
                 }
 
                 retVal.Add(hyperPlanes);
@@ -108,7 +109,7 @@ namespace NeuronalNetworkReverseEngineering
             salt+= saltIncreasePerUsage;
             return retVal;
         }
-        public List<Hyperplane> GetFirstLayer(List<List<Hyperplane>> hyperPlanesColl, double testRadius)
+        public List<Hyperplane> GetFirstLayer(List<List<Hyperplane>> hyperPlanesColl, decimal testRadius)
         {
             var conc = new ConcurrentDictionary<int, List<Hyperplane>>();
             var result = Parallel.For(0, hyperPlanesColl.Count, index =>
@@ -139,7 +140,7 @@ namespace NeuronalNetworkReverseEngineering
                     for (int j = 0; j < resultingHyperplanesColl[i].Count; j++)
                     {
                         var temp = resultingHyperplanesColl[i][j];
-                        if(!retVal.Any(x => true == Matrix.ApproxEqual(temp.planeIdentity.parameters, x.planeIdentity.parameters, 0.3)))
+                        if(!retVal.Any(x => true == Matrix.ApproxEqual(temp.planeIdentity.parameters, x.planeIdentity.parameters, 0.3M)))
                         {
                             retVal.Add(temp);
                         }
@@ -152,7 +153,7 @@ namespace NeuronalNetworkReverseEngineering
                 throw new Exception("IY26");
             }
         }
-        public static bool IsSpacedApart(List<Matrix> list, double minDistance)
+        public static bool IsSpacedApart(List<Matrix> list, decimal minDistance)
         {
             for (int i = 1; i < list.Count; i++)
             {

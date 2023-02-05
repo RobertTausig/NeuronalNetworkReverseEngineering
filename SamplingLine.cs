@@ -15,11 +15,11 @@ namespace NeuronalNetworkReverseEngineering
 
         private Model model { get; }
 
-        private const double stdRadius = 60;
-        private const double stdMinPointDistance = 0.1;
+        private const decimal stdRadius = 60;
+        private const decimal stdMinPointDistance = 0.1M;
         private const int stdMaxMagnitude = 20;
 
-        public (Matrix midPoint, Matrix directionVector) RandomSecantLine(double radius = stdRadius, double minPointDistance = stdMinPointDistance)
+        public (Matrix midPoint, Matrix directionVector) RandomSecantLine(decimal radius = stdRadius, decimal minPointDistance = stdMinPointDistance)
         {
             var retVal = new List<Matrix>();
 
@@ -31,7 +31,7 @@ namespace NeuronalNetworkReverseEngineering
             secondVector = Matrix.NormalizeVector(secondVector, radius);
 
             var directionVector = Matrix.Substraction(secondVector, firstVector);
-            var midPoint = Matrix.Addition(firstVector, Matrix.Multiplication(directionVector, 0.5));
+            var midPoint = Matrix.Addition(firstVector, Matrix.Multiplication(directionVector, 0.5M));
             directionVector = Matrix.NormalizeVector(directionVector, minPointDistance);
 
             return (midPoint, directionVector);
@@ -51,7 +51,7 @@ namespace NeuronalNetworkReverseEngineering
             var oldOutputDiff = Matrix.Substraction(model.Use(oldSamplePoint), model.Use(startPoint));
             for (int stretchMagnitude = 0; stretchMagnitude < maxMagnitude; stretchMagnitude++)
             {
-                var newSamplePoint = Matrix.Addition(oldSamplePoint, Matrix.Multiplication(directionVector, Math.Pow(2, stretchMagnitude)));
+                var newSamplePoint = Matrix.Addition(oldSamplePoint, Matrix.Multiplication(directionVector, (decimal)Math.Pow(2, stretchMagnitude)));
                 var newOutPutDiff = Matrix.Substraction(model.Use(newSamplePoint), model.Use(Matrix.Substraction(newSamplePoint, directionVector)));
                 switch(Matrix.ApproxEqual(newOutPutDiff, oldOutputDiff))
                 {
