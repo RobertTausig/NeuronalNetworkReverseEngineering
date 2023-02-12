@@ -313,7 +313,7 @@ namespace NeuronalNetworkReverseEngineering
             }
             return retVal;
         }
-        public static (Matrix parameters, double? intercept) CalculateLinearRegression(List<Matrix> points, bool hasIntercept)
+        public static HyperplaneIdentity CalculateLinearRegression(List<Matrix> points, bool hasIntercept)
         {
             //--- Start: Working Example ---
             //double[] parameters = new[] { 2.37, -3.8, -0.22, 7.19 };
@@ -332,7 +332,7 @@ namespace NeuronalNetworkReverseEngineering
 
             if (points.Count < 2)
             {
-                return (null, null);
+                return new HyperplaneIdentity { Parameters = null, Intercept = null };
             }
 
             double[][] xArr = new double[points.Count][];
@@ -350,7 +350,7 @@ namespace NeuronalNetworkReverseEngineering
             {
                 parameters.SetValue(i, 0, temp[i + (hasIntercept ? 1 : 0)]);
             }
-            return (parameters, (hasIntercept ? temp[0] : 0));
+            return new HyperplaneIdentity { Parameters = parameters, Intercept = hasIntercept ? temp[0] : 0 };
         }
 
 

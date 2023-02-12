@@ -139,7 +139,7 @@ namespace NeuronalNetworkReverseEngineering
                     for (int j = 0; j < resultingHyperplanesColl[i].Count; j++)
                     {
                         var temp = resultingHyperplanesColl[i][j];
-                        if(!retVal.Any(x => true == Matrix.ApproxEqual(temp.planeIdentity.parameters, x.planeIdentity.parameters, 0.3)))
+                        if(!retVal.Any(x => true == Matrix.ApproxEqual(temp.planeIdentity.Parameters, x.planeIdentity.Parameters, 0.3)))
                         {
                             retVal.Add(temp);
                         }

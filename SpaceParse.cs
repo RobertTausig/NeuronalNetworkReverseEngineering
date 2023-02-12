@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace NeuronalNetworkReverseEngineering
 {
-    record SpaceLineBundle
+    public record SpaceLineBundle
     {
 
         public SpaceLineBundle() { }
@@ -16,15 +16,21 @@ namespace NeuronalNetworkReverseEngineering
         }
         public IList<SpaceLine> SpaceLines { get; set; } = new List<SpaceLine>();
     }
-    record SpaceLine
+    public record SpaceLine
     {
         public IList<SpaceLinePoint> SpaceLinePoints { get; set; } = new List<SpaceLinePoint>();
     }
 
-    record SpaceLinePoint
+    public record SpaceLinePoint
     {
         public Matrix BoundaryPoint { set; get; }
         public double? SafeDistance { get; set; }
+    }
+
+    public record HyperplaneIdentity
+    {
+        public Matrix Parameters { get; set; }
+        public double? Intercept { get; set;}  
     }
 
 }

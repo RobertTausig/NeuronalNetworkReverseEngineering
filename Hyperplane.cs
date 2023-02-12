@@ -33,7 +33,7 @@ namespace NeuronalNetworkReverseEngineering
         private Model model { get; }
         public List<Matrix> pointsOnPlane { get; } = new List<Matrix>();
         private List<Matrix> temporaryPointsOnPlane = new List<Matrix>();
-        public (Matrix parameters, double? intercept) planeIdentity { get; }
+        public HyperplaneIdentity planeIdentity { get; }
         public int spaceDim { get; }
         public Matrix originalBoundaryPoint { get; }
 
@@ -126,14 +126,14 @@ namespace NeuronalNetworkReverseEngineering
             var xCoords = new Matrix(1, spaceDim - 1);
             xCoords.PopulateAllRandomlyFarFromZero(model.RandomGenerator);
             xCoords = Matrix.NormalizeVector(xCoords, approxRadius);
-            var yCoord = Matrix.Multiplication(xCoords, planeIdentity.parameters);
+            var yCoord = Matrix.Multiplication(xCoords, planeIdentity.Parameters);
             var intercept = new Matrix(1, 1);
-            intercept.SetValue(0, 0, (double)planeIdentity.intercept);
+            intercept.SetValue(0, 0, (double)planeIdentity.Intercept);
 
             var tempPoint = Matrix.ConcatHorizontally(xCoords, Matrix.Addition(yCoord, intercept));
             var norm = Matrix.GetEuclideanNormForVector(tempPoint) / approxRadius;
             xCoords = Matrix.Multiplication(xCoords, 1.0 / (double)norm);
-            yCoord = Matrix.Multiplication(xCoords, planeIdentity.parameters);
+            yCoord = Matrix.Multiplication(xCoords, planeIdentity.Parameters);
 
             return Matrix.ConcatHorizontally(xCoords, Matrix.Addition(yCoord, intercept));
         }
@@ -157,8 +157,8 @@ namespace NeuronalNetworkReverseEngineering
             }
             var yCoord = flattenPoint[^1];
 
-            var yCoordCalculated = Matrix.Multiplication(xCoords, planeIdentity.parameters);
-            var quotient = yCoord / (Matrix.FlattenVector(yCoordCalculated).First() + planeIdentity.intercept);
+            var yCoordCalculated = Matrix.Multiplication(xCoords, planeIdentity.Parameters);
+            var quotient = yCoord / (Matrix.FlattenVector(yCoordCalculated).First() + planeIdentity.Intercept);
 
             return (lowerLimit < quotient) && (upperLimit > quotient);
         }
@@ -167,8 +167,8 @@ namespace NeuronalNetworkReverseEngineering
             var printStr = new StringBuilder();
             printStr.AppendLine("// Hyperplane //:");
             printStr.AppendLine("parameters:");
-            printStr.Append(Matrix.PrintContent(planeIdentity.parameters));
-            printStr.AppendLine("intercept: " + planeIdentity.intercept.ToString());
+            printStr.Append(Matrix.PrintContent(planeIdentity.Parameters));
+            printStr.AppendLine("intercept: " + planeIdentity.Intercept.ToString());
             Console.Write(printStr);
         }
 
