@@ -23,7 +23,7 @@ namespace NeuronalNetworkReverseEngineering
 
     public record SpaceLinePoint
     {
-        public Matrix BoundaryPoint { set; get; }
+        public Matrix BoundaryPoint { get; set; }
         public double? SafeDistance { get; set; }
     }
 

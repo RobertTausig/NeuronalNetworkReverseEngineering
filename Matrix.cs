@@ -11,12 +11,18 @@ namespace NeuronalNetworkReverseEngineering
     {
         public Matrix(int numRow, int numCol)
         {
-            content = new double[numRow, numCol];
+            this.content = new double[numRow, numCol];
             this.numRow = numRow;
             this.numCol = numCol;
         }
+        public Matrix(double[,] content)
+        {
+            this.content = content;
+            this.numRow = content.GetLength(0);
+            this.numCol = content.GetLength(1);
+        }
 
-        private double[,] content { get; }
+        public double[,] content { get; }
         public int numRow { get; }
         public int numCol { get; }
 

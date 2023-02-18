@@ -38,7 +38,7 @@ namespace NeuronalNetworkReverseEngineering
         public Matrix originalBoundaryPoint { get; }
 
         private const int saltIncreasePerRecursion = 1_000;
-        private const int maxSalt = 4*saltIncreasePerRecursion;
+        private const int maxSalt = 4 * saltIncreasePerRecursion;
 
         private List<Matrix> SupportPointsOnBoundary(Matrix boundaryPoint, int salt, double displacementNorm, double directionNorm, int maxMagnitude)
         {
@@ -127,8 +127,7 @@ namespace NeuronalNetworkReverseEngineering
             xCoords.PopulateAllRandomlyFarFromZero(model.RandomGenerator);
             xCoords = Matrix.NormalizeVector(xCoords, approxRadius);
             var yCoord = Matrix.Multiplication(xCoords, planeIdentity.Parameters);
-            var intercept = new Matrix(1, 1);
-            intercept.SetValue(0, 0, (double)planeIdentity.Intercept);
+            Matrix intercept = new Matrix(new double[,] { { (double)planeIdentity.Intercept } });
 
             var tempPoint = Matrix.ConcatHorizontally(xCoords, Matrix.Addition(yCoord, intercept));
             var norm = Matrix.GetEuclideanNormForVector(tempPoint) / approxRadius;
