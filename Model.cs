@@ -71,6 +71,44 @@ namespace NeuronalNetworkReverseEngineering
             return new Model(this, randomSeed);
         }
 
+        /// <summary>
+        ///  Only for verification purposes. Checks how closely the weights and bias were calculated.
+        /// </summary>
+        /// <param name="layerNum">Zero-indexed number of layer to check the identity against</param>
+        /// <returns>Accuracy as factor. Null, when far off.</returns>
+        public double? ReverseEngineeredAccuracy (int layerNum, HyperplaneIdentity identity)
+        {
+            double abortAccuracyFactor = 1.15;
+            var weightMatrix = weigthMatrices[layerNum];
+            var weights = weightMatrix.content;
+            var parameters = identity.Parameters.content;
+
+            var ratios = new List<double>();
+            for (int j = 0; j < weightMatrix.numCol; j++)
+            {
+                for (int i = 0; i < weightMatrix.numRow - 1; i++)
+                {
+                    ratios.Add(parameters[i, 0] / weights[i, j]);
+                    if (!(ratios.Count == 1 || (ratios[i] < ratios[i - 1] * abortAccuracyFactor && ratios[i] > ratios[i - 1] / abortAccuracyFactor))) {
+                        ratios.Clear();
+                        break;
+                    }
+                }
+                if (ratios.Count > 0)
+                {
+                    break;
+                }
+            }
+
+            if (ratios.Count == 0)
+            {
+                return null;
+            }
+            else
+            {
+                return ratios.Max() / ratios.Min();
+            }
+        }
 
     }
 }

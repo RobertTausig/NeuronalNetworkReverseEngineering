@@ -33,9 +33,8 @@ namespace NeuronalNetworkReverseEngineering
             foreach (var flp in firstLayerPlanes)
             {
                 flp.Print();
+                var aa = model.ReverseEngineeredAccuracy(0, flp.planeIdentity);
             }
-
-
 
 
             clock.Stop();
