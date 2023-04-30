@@ -64,6 +64,16 @@ namespace NeuronalNetworkReverseEngineering
                 }
             }
         }
+        public void Zeros()
+        {
+            for (int i = 0; i < numRow; i++)
+            {
+                for (int j = 0; j < numCol; j++)
+                {
+                    content[i, j] = 0;
+                }
+            }
+        }
 
 
         public static Matrix Multiplication(Matrix leftMatrix, Matrix rightMatrix)

@@ -8,7 +8,7 @@ namespace NeuronalNetworkReverseEngineering
 {
     class Model
     {
-        public Model(int[] topology)
+        public Model(int[] topology, bool hasBias)
         {
             if (topology.Length < 3)
             {
@@ -23,7 +23,14 @@ namespace NeuronalNetworkReverseEngineering
                 weigthMatrices.Add(tempMat);
 
                 var tempVec = new Matrix(1, topology[i + 1]);
-                tempVec.PopulateAllRandomly(RandomGenerator);
+                if (hasBias)
+                {
+                    tempVec.PopulateAllRandomly(RandomGenerator);
+                }
+                else
+                {
+                    tempVec.Zeros();
+                }
                 biasVectors.Add(tempVec);
             }
             this.topology = topology;

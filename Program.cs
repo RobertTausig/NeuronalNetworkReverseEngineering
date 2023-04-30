@@ -19,7 +19,7 @@ namespace NeuronalNetworkReverseEngineering
             clock.Start();
 
 
-            var model = new Model(new int[4] { inputDim, firstLayerDim, secondLayerDim, outputDim });
+            var model = new Model(new int[4] { inputDim, firstLayerDim, secondLayerDim, outputDim }, hasBias: false);
             var sampler = new SamplingLine(model);
             var sphere = new SamplingSphere(model);
             var layer = new LayerCalculation(model, sphere);
