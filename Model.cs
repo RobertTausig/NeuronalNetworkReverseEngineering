@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MathNet.Numerics.Statistics;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -96,7 +97,14 @@ namespace NeuronalNetworkReverseEngineering
                 for (int i = 0; i < weightMatrix.numRow - 1; i++)
                 {
                     ratios.Add(parameters[i, 0] / weights[i, j]);
-                    if (!(ratios.Count == 1 || (ratios[i] < ratios[i - 1] * abortAccuracyFactor && ratios[i] > ratios[i - 1] / abortAccuracyFactor))) {
+                    if (ratios.Count == 1)
+                    {
+                        continue;
+                    }
+                    bool withinUpperLimit = Math.Abs(ratios[i]) < Math.Abs(ratios[i - 1]) * abortAccuracyFactor;
+                    bool withinLowerLimit = Math.Abs(ratios[i]) > Math.Abs(ratios[i - 1]) / abortAccuracyFactor;
+                    bool hasSameSign = ratios[i] * ratios[i - 1] > 0 ? true : false;
+                    if (!(withinUpperLimit && withinLowerLimit && hasSameSign)) {
                         ratios.Clear();
                         break;
                     }
@@ -113,7 +121,7 @@ namespace NeuronalNetworkReverseEngineering
             }
             else
             {
-                return ratios.Max() / ratios.Min();
+                return ratios.MaximumAbsolute() / ratios.MinimumAbsolute();
             }
         }
 
