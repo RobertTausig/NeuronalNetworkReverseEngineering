@@ -26,7 +26,7 @@ namespace NeuronalNetworkReverseEngineering
         private int stdNumTestPoints = 100;
         private int stdNumTestLines = 30;
 
-        public SpaceLineBundle DriveLinesThroughSpace(int numLines, double minSpacedApartDistance)
+        public SpaceLineBundle DriveLinesThroughSpace(int numLines, double minSpacedApartDistance, bool enableSafeDistance = true)
         {
             int sumHiddenLayerDims = model.topology[1..^1].Sum(x => x);
             double constRadius = Math.Pow(sumHiddenLayerDims, 2) * Math.Sqrt(minSpacedApartDistance);
@@ -53,23 +53,35 @@ namespace NeuronalNetworkReverseEngineering
                     var boundaryPointsSuggestion = tempSampler.BidirectionalLinearRegionChanges(midPoint, directionVector, constMaxMagnitude);
                     if (IsSpacedApart(boundaryPointsSuggestion, constMinSafeDistance))
                     {
-                        foreach (var point in boundaryPointsSuggestion)
+                        if (!enableSafeDistance)
                         {
-                            var tempSafeDistance = tempSphere.MinimumDistanceToDifferentBoundary(point, constMinStartingDistance);
-                            if (tempSafeDistance != null && tempSafeDistance > constMinSafeDistance)
+                            tempLine.SpaceLinePoints = boundaryPointsSuggestion.Select(x => new SpaceLinePoint
                             {
-                                tempLine.SpaceLinePoints.Add(new SpaceLinePoint
+                                BoundaryPoint = x,
+                                SafeDistance = 0
+                            }).ToList();
+                            loopCondition = false;
+                        }
+                        else
+                        {
+                            foreach (var point in boundaryPointsSuggestion)
+                            {
+                                var tempSafeDistance = tempSphere.MinimumDistanceToDifferentBoundary(point, constMinStartingDistance);
+                                if (tempSafeDistance != null && tempSafeDistance > constMinSafeDistance)
                                 {
-                                    BoundaryPoint = point,
-                                    SafeDistance = tempSafeDistance
-                                });
-                                loopCondition = false;
-                            }
-                            else
-                            {
-                                tempLine.SpaceLinePoints.Clear();
-                                loopCondition = true;
-                                break;
+                                    tempLine.SpaceLinePoints.Add(new SpaceLinePoint
+                                    {
+                                        BoundaryPoint = point,
+                                        SafeDistance = tempSafeDistance
+                                    });
+                                    loopCondition = false;
+                                }
+                                else
+                                {
+                                    tempLine.SpaceLinePoints.Clear();
+                                    loopCondition = true;
+                                    break;
+                                }
                             }
                         }
                     }
