@@ -29,41 +29,12 @@ namespace NeuronalNetworkReverseEngineering
             var firstLayerPlanes = layer.GetFirstLayer(initialHyperplanesColl, 1_000);
             //firstLayerPlanes = sphere.CorrectIntercepts(firstLayerPlanes, 1_000);
 
-            var gg = new List<Hyperplane>();
-            var precisionBundle = layer.DriveLinesThroughSpace(numLines: 3*firstLayerDim, minSpacedApartDistance: 100, enableSafeDistance: false);
-            foreach (var plane in firstLayerPlanes)
-            {
-                var zzz = new List<Matrix>();
-                for (int i = 0; i < precisionBundle.SpaceLines.Count; i++)
-                {
-                    var tempi = precisionBundle.SpaceLines[i].SpaceLinePoints.Where(y => true == plane.IsPointOnPlane(y.BoundaryPoint, accuracy: 0.05));
-                    if (tempi.Count() == 1)
-                    {
-                        zzz.Add(tempi.First().BoundaryPoint);
-                    }
-                }
-                gg.Add(new Hyperplane(model, zzz, hasIntercept: false));
-
-
-                /*var aa = precisionBundle.SpaceLines.SelectMany(x => x.SpaceLinePoints.Where(y => true == plane.IsPointOnPlane(y.BoundaryPoint, accuracy: 0.02))).Select(z => z.BoundaryPoint).ToList();
-                gg.Add(new Hyperplane(model, aa, hasIntercept: false));*/
-            }
-
-
             foreach (var flp in firstLayerPlanes)
             {
                 flp.Print();
                 var aa = model.ReverseEngineeredAccuracy(0, flp.planeIdentity);
                 Console.WriteLine(@$"r.e. accuracy: {aa}");
             }
-            Console.WriteLine("###########################");
-            foreach (var flp in gg)
-            {
-                flp.Print();
-                var aa = model.ReverseEngineeredAccuracy(0, flp.planeIdentity);
-                Console.WriteLine(@$"r.e. accuracy: {aa}");
-            }
-
 
             clock.Stop();
             Console.WriteLine("Time passed: " + clock.Elapsed.TotalMilliseconds);
@@ -73,21 +44,6 @@ namespace NeuronalNetworkReverseEngineering
 
 
         
-
-        public static List<List<Hyperplane>> SampleLinePointsToHyperplanes(List<List<Matrix>> lineCollection, Model model)
-        {
-            var retVal = new List<List<Hyperplane>>();
-            foreach (var lines in lineCollection)
-            {
-                var temp = new List<Hyperplane>();
-                foreach (var point in lines)
-                {
-                    temp.Add(new Hyperplane(model, point));
-                }
-                retVal.Add(temp);
-            }
-            return retVal;
-        }
 
     }
 }

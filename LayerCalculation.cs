@@ -107,11 +107,16 @@ namespace NeuronalNetworkReverseEngineering
             Parallel.For(0, bundle.SpaceLines.Count, index =>
             {
                 var tempModel = model.Copy(salt + index);
+                var tempRansac = new RansacAlgorithm(tempModel);
 
                 var hyperPlanes = new List<Hyperplane>();
                 foreach (var l in bundle.SpaceLines[index].SpaceLinePoints)
                 {
-                    hyperPlanes.Add(new Hyperplane(tempModel, l.BoundaryPoint, (double)l.SafeDistance / 15, hasIntercept: false));
+                    var tempPlane = new Hyperplane(tempModel, tempRansac, l.BoundaryPoint, (double)l.SafeDistance / 15, hasIntercept: false);
+                    if (tempPlane.pointsOnPlane.Count > 0)
+                    {
+                        hyperPlanes.Add(tempPlane);
+                    }
                 }
 
                 retVal.Add(hyperPlanes);

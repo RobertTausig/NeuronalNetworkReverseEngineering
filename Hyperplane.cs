@@ -10,12 +10,13 @@ namespace NeuronalNetworkReverseEngineering
 {
     class Hyperplane
     {
-        public Hyperplane(Model model, Matrix boundaryPoint, double displacementNorm = 1, bool hasIntercept = true)
+        public Hyperplane(Model model, RansacAlgorithm ransacAlgorithm, Matrix boundaryPoint, double displacementNorm = 1, bool hasIntercept = true)
         {
             int maxMagnitude = 8;
             double directionNorm = 6.0 * displacementNorm / Math.Pow(2, maxMagnitude);
 
             this.model = model;
+            this.ransacAlgorithm = ransacAlgorithm;
             this.originalBoundaryPoint = boundaryPoint;
             this.spaceDim = boundaryPoint.numRow + boundaryPoint.numCol - 1;
             this.pointsOnPlane = SupportPointsOnBoundary(boundaryPoint, 0, displacementNorm, directionNorm, maxMagnitude);
@@ -31,6 +32,7 @@ namespace NeuronalNetworkReverseEngineering
 
 
         private Model model { get; }
+        private RansacAlgorithm ransacAlgorithm { get; }
         public List<Matrix> pointsOnPlane { get; } = new List<Matrix>();
         private List<Matrix> temporaryPointsOnPlane = new List<Matrix>();
         public HyperplaneIdentity planeIdentity { get; }
@@ -48,7 +50,7 @@ namespace NeuronalNetworkReverseEngineering
             }
             if (salt >= maxSalt)
             {
-                return new List<Matrix>();
+                throw new Exception("KR09");
             }
 
             var retVal = new List<Matrix>();
@@ -90,7 +92,7 @@ namespace NeuronalNetworkReverseEngineering
                     }
                     retVal.AddRange(temporaryPointsOnPlane);
                     temporaryPointsOnPlane.Clear();
-                    return retVal;
+                    return ransacAlgorithm.Ransac(retVal, 3 * spaceDim, 500, 1.0/200, 0.8);
                 }
                 else
                 {
@@ -157,9 +159,29 @@ namespace NeuronalNetworkReverseEngineering
             var yCoord = flattenPoint[^1];
 
             var yCoordCalculated = Matrix.Multiplication(xCoords, planeIdentity.Parameters);
-            var quotient = yCoord / (Matrix.FlattenVector(yCoordCalculated).First() + planeIdentity.Intercept);
+            var quotient = yCoord / (Matrix.FlattenVector(yCoordCalculated).First() + planeIdentity.Intercept ?? 0);
 
             return (lowerLimit < quotient) && (upperLimit > quotient);
+        }
+        public double? AbsPointDeviationOfPlane(Matrix point)
+        {
+            if (point.numRow != 1)
+            {
+                return null;
+            }
+
+            var flattenPoint = Matrix.FlattenVector(point);
+            var xCoords = new Matrix(1, spaceDim - 1);
+            for (int i = 0; i < flattenPoint.Length - 1; i++)
+            {
+                xCoords.SetValue(0, i, flattenPoint[i]);
+            }
+            var yCoord = flattenPoint[^1];
+
+            var yCoordCalculated = Matrix.Multiplication(xCoords, planeIdentity.Parameters);
+            var quotient = yCoord / (Matrix.FlattenVector(yCoordCalculated).First() + planeIdentity.Intercept ?? 0);
+
+            return Math.Abs(1 - quotient);
         }
         public void Print()
         {
