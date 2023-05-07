@@ -12,7 +12,7 @@ namespace NeuronalNetworkReverseEngineering
     {
         public Hyperplane(Model model, RansacAlgorithm ransacAlgorithm, Matrix boundaryPoint, double displacementNorm = 1, bool hasIntercept = true)
         {
-            int maxMagnitude = 8;
+            int maxMagnitude = 12;
             double directionNorm = 6.0 * displacementNorm / Math.Pow(2, maxMagnitude);
 
             this.model = model;
@@ -92,7 +92,7 @@ namespace NeuronalNetworkReverseEngineering
                     }
                     retVal.AddRange(temporaryPointsOnPlane);
                     temporaryPointsOnPlane.Clear();
-                    return ransacAlgorithm.Ransac(retVal, 3 * spaceDim, 500, 1.0/200, 0.8);
+                    return ransacAlgorithm.Ransac(retVal, 3 * spaceDim, 500, 1.0 / 1_000, 0.67);
                 }
                 else
                 {

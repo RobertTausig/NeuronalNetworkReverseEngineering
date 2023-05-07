@@ -19,14 +19,14 @@ namespace NeuronalNetworkReverseEngineering
 
         public List<Matrix> Ransac(List<Matrix> data, int sampleSize, int maxIterations, double maxDeviation, double percentageInliersForBreak)
         {
-            var bestInliers = new List<Matrix>();
-            int bestInlierCount = 0;
+            var retVal = new List<Matrix>();
 
             for (int i = 0; i < maxIterations; i++)
             {
+                var tempModel = model.Copy(i);
                 var inliers = new List<Matrix>();
                 var sample = Sample(data, sampleSize);
-                (var errorThreshold, var hyperplane) = StdFittingFunction(sample, false);
+                (var errorThreshold, var hyperplane) = StdFittingFunction(tempModel, sample, false);
                 if (errorThreshold > maxDeviation)
                 {
                     continue;
@@ -35,25 +35,20 @@ namespace NeuronalNetworkReverseEngineering
                 foreach (Matrix item in data)
                 {
                     double error = (double)hyperplane.AbsPointDeviationOfPlane(item);
-                    if (error < errorThreshold)
+                    if (error < maxDeviation)
                     {
                         inliers.Add(item);
                     }
                 }
 
-                if (inliers.Count > bestInlierCount)
+                if (inliers.Count >= data.Count * percentageInliersForBreak)
                 {
-                    bestInliers = inliers;
-                    bestInlierCount = inliers.Count;
-                }
-
-                if (bestInlierCount >= data.Count * percentageInliersForBreak)
-                {
+                    retVal = inliers;
                     break;
                 }
             }
 
-            return bestInliers;
+            return retVal;
         }
 
         private static List<Matrix> Sample(List<Matrix> data, int sampleSize)
@@ -72,10 +67,10 @@ namespace NeuronalNetworkReverseEngineering
             return sample;
         }
 
-        private Tuple<double, Hyperplane> StdFittingFunction(List<Matrix> points, bool hasIntercept)
+        private Tuple<double, Hyperplane> StdFittingFunction(Model model, List<Matrix> points, bool hasIntercept)
         {
             double maxDeviation = -1;
-            var plane = new Hyperplane(this.model, points, hasIntercept);
+            var plane = new Hyperplane(model, points, hasIntercept);
 
             foreach (var point in points)
             {
