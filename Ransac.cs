@@ -23,10 +23,9 @@ namespace NeuronalNetworkReverseEngineering
 
             for (int i = 0; i < maxIterations; i++)
             {
-                var tempModel = model.Copy(i);
                 var inliers = new List<Matrix>();
                 var sample = Sample(data, sampleSize);
-                (var errorThreshold, var hyperplane) = StdFittingFunction(tempModel, sample, false);
+                (var errorThreshold, var hyperplane) = StdFittingFunction(sample, false);
                 if (errorThreshold > maxDeviation)
                 {
                     continue;
@@ -51,13 +50,12 @@ namespace NeuronalNetworkReverseEngineering
             return retVal;
         }
 
-        private static List<Matrix> Sample(List<Matrix> data, int sampleSize)
+        private List<Matrix> Sample(List<Matrix> data, int sampleSize)
         {
             var sample = new List<Matrix>();
-            Random random = new Random();
             while (sample.Count < sampleSize)
             {
-                int index = random.Next(data.Count);
+                int index = model.RandomGenerator.Next(data.Count);
                 var item = data[index];
                 if (!sample.Contains(item))
                 {
@@ -67,7 +65,7 @@ namespace NeuronalNetworkReverseEngineering
             return sample;
         }
 
-        private Tuple<double, Hyperplane> StdFittingFunction(Model model, List<Matrix> points, bool hasIntercept)
+        private Tuple<double, Hyperplane> StdFittingFunction(List<Matrix> points, bool hasIntercept)
         {
             double maxDeviation = -1;
             var plane = new Hyperplane(model, points, hasIntercept);
