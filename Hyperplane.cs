@@ -19,6 +19,7 @@ namespace NeuronalNetworkReverseEngineering
             this.ransacAlgorithm = ransacAlgorithm;
             this.originalBoundaryPoint = boundaryPoint;
             this.spaceDim = boundaryPoint.numRow + boundaryPoint.numCol - 1;
+            this.ransacSampleSize = 3 * spaceDim;
             this.pointsOnPlane = SupportPointsOnBoundary(boundaryPoint, 0, displacementNorm, directionNorm, maxMagnitude);
             this.planeIdentity = Matrix.CalculateLinearRegression(pointsOnPlane, hasIntercept);
         }
@@ -32,7 +33,6 @@ namespace NeuronalNetworkReverseEngineering
 
 
         private Model model { get; }
-        private RansacAlgorithm ransacAlgorithm { get; }
         public List<Matrix> pointsOnPlane { get; } = new List<Matrix>();
         private List<Matrix> temporaryPointsOnPlane = new List<Matrix>();
         public HyperplaneIdentity planeIdentity { get; }
@@ -41,6 +41,12 @@ namespace NeuronalNetworkReverseEngineering
 
         private const int saltIncreasePerRecursion = 1_000;
         private const int maxSalt = 4 * saltIncreasePerRecursion;
+
+        private RansacAlgorithm ransacAlgorithm { get; }
+        private int ransacSampleSize { get; }
+        private int ransacMaxIterations = 500;
+        private double ransacMaxDeviation = 1.0 / 1_000;
+        private double ransacPercentageInliersForBreak = 2.0 / 3;
 
         private List<Matrix> SupportPointsOnBoundary(Matrix boundaryPoint, int salt, double displacementNorm, double directionNorm, int maxMagnitude)
         {
@@ -53,7 +59,7 @@ namespace NeuronalNetworkReverseEngineering
                 throw new Exception("KR09");
             }
 
-            var retVal = new List<Matrix>();
+            var supportPoints = new List<Matrix>();
             var bag = new ConcurrentBag<List<Matrix>>();
             var iterations = 20 * spaceDim + 6;
             var result = Parallel.For(0, iterations, index =>
@@ -88,11 +94,11 @@ namespace NeuronalNetworkReverseEngineering
                 {
                     foreach (var item in fineSample)
                     {
-                        retVal.AddRange(item);
+                        supportPoints.AddRange(item);
                     }
-                    retVal.AddRange(temporaryPointsOnPlane);
+                    supportPoints.AddRange(temporaryPointsOnPlane);
                     temporaryPointsOnPlane.Clear();
-                    return ransacAlgorithm.Ransac(retVal, 3 * spaceDim, 500, 1.0 / 1_000, 0.67);
+                    return ransacAlgorithm.Ransac(supportPoints, ransacSampleSize, ransacMaxIterations, ransacMaxDeviation, ransacPercentageInliersForBreak);
                 }
                 else
                 {
