@@ -187,7 +187,7 @@ namespace NeuronalNetworkReverseEngineering
             var yCoordCalculated = Matrix.Multiplication(xCoords, planeIdentity.Parameters);
             var quotient = yCoord / (Matrix.FlattenVector(yCoordCalculated).First() + planeIdentity.Intercept ?? 0);
 
-            return Math.Abs(1 - quotient);
+            return quotient >= 1 ? quotient - 1 : (1 / quotient) - 1;
         }
         public void Print()
         {
