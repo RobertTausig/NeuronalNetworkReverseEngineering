@@ -169,6 +169,11 @@ namespace NeuronalNetworkReverseEngineering
 
             return (lowerLimit < quotient) && (upperLimit > quotient);
         }
+        /// <summary>
+        /// Gives deviation of a point from plane equation.
+        /// </summary>
+        /// <param name="point"></param>
+        /// <returns>Positive double (Smaller ist better), or Double.MaxValue when deviation with changing sign</returns>
         public double? AbsPointDeviationOfPlane(Matrix point)
         {
             if (point.numRow != 1)
@@ -186,6 +191,10 @@ namespace NeuronalNetworkReverseEngineering
 
             var yCoordCalculated = Matrix.Multiplication(xCoords, planeIdentity.Parameters);
             var quotient = yCoord / (Matrix.FlattenVector(yCoordCalculated).First() + planeIdentity.Intercept ?? 0);
+            if (quotient < 0)
+            {
+                return Double.MaxValue;
+            }
 
             return quotient >= 1 ? quotient - 1 : (1 / quotient) - 1;
         }

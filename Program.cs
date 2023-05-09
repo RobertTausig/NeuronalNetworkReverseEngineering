@@ -32,17 +32,19 @@ namespace NeuronalNetworkReverseEngineering
             /*var first = firstLayerPlanes[0];
             var second = firstLayerPlanes[1];
             var coll = new List<Matrix>();
-            for (int i = 0; i < 107; i++)
+            for (int i = 0; i < 200; i++)
             {
-                coll.Add(first.GenerateRandomPointOnPlane(20 + i));
+                coll.Add(first.GenerateRandomPointOnPlane(50 + 2 * i));
             }
-            for (int j = 0; j < 8; j++)
+            for (int j = 0; j < 30; j++)
             {
-                coll.Add(second.GenerateRandomPointOnPlane(10 + 20 * j));
+                coll.Add(second.GenerateRandomPointOnPlane(42 + 20 * j));
             }
             var ransac = new RansacAlgorithm(model);
-            var result = ransac.Ransac(coll, 18, 200, 1.0 / 200, 0.8);*/
-
+            var result = ransac.Ransac(coll, 20, 2_000, 1.0 / 100, 0.72);
+            var bb = new Hyperplane(model, result, false);
+            var aa = model.ReverseEngineeredAccuracy(0, bb.planeIdentity);
+            Console.WriteLine(@$"r.e. accuracy: {aa}");*/
 
             foreach (var flp in firstLayerPlanes)
             {
