@@ -49,6 +49,43 @@ namespace NeuronalNetworkReverseEngineering
 
             return retVal;
         }
+        public bool Test()
+        {
+            int spaceDim = 18;
+            int parameterDim = spaceDim - 1;
+            bool retVal = false;
+
+            var randomParameters = new Matrix(parameterDim, 1);
+            randomParameters.PopulateAllRandomly(this.model.RandomGenerator);
+            var planeIdentity = new HyperplaneIdentity();
+            planeIdentity.Parameters = randomParameters;
+            planeIdentity.Intercept = 0;
+
+            var plane = new Hyperplane(model, planeIdentity, false);
+            var inliers = new List<Matrix>();
+            var outliers = new List<Matrix>();
+            var data = new List<Matrix>();
+
+            for (int i = 0; i < 1_800; i++)
+            {
+                inliers.Add(plane.GenerateRandomPointOnPlane(200 + i));
+            }
+            var outlierPoint = new Matrix(1, spaceDim);
+            for (int i = 0; i < 200; i++)
+            {
+                outlierPoint.PopulateAllRandomly(this.model.RandomGenerator);
+                outliers.Add(Matrix.Multiplication(outlierPoint, (300 + 2 * i) / Math.Sqrt(spaceDim)));
+            }
+            data.AddRange(inliers);
+            data.AddRange(outliers);
+
+            var result = Ransac(data, 3 * spaceDim, 5_000, 1.0 / 1_000, 2.0 / 3);
+            if (result.Count > 0)
+            {
+                retVal = !result.Any(x => outliers.Contains(x));
+            }
+            return retVal;
+        }
 
         private List<Matrix> Sample(List<Matrix> data, int sampleSize)
         {

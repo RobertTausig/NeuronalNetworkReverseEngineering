@@ -30,6 +30,12 @@ namespace NeuronalNetworkReverseEngineering
             this.pointsOnPlane = pointsOnPlane;
             this.planeIdentity = Matrix.CalculateLinearRegression(pointsOnPlane, hasIntercept);
         }
+        public Hyperplane(Model model, HyperplaneIdentity planeIdentity, bool hasIntercept = true)
+        {
+            this.model = model;
+            this.spaceDim = planeIdentity.Parameters.numRow + planeIdentity.Parameters.numCol;
+            this.planeIdentity = planeIdentity;
+        }
 
 
         private Model model { get; }
