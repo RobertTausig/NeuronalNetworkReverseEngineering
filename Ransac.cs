@@ -25,7 +25,7 @@ namespace NeuronalNetworkReverseEngineering
             {
                 var inliers = new List<Matrix>();
                 var sample = Sample(data, sampleSize);
-                (var errorThreshold, var hyperplane) = StdFittingFunction(sample, false);
+                (var errorThreshold, var hyperplane) = FittingFunction(sample, false, maxDeviation);
                 if (errorThreshold > maxDeviation)
                 {
                     continue;
@@ -51,8 +51,10 @@ namespace NeuronalNetworkReverseEngineering
         }
         public bool Test()
         {
-            int spaceDim = 18;
+            int spaceDim = 26;
             int parameterDim = spaceDim - 1;
+            int numInliers = 1_800;
+            int numOutliers = 200;
             bool retVal = false;
 
             var randomParameters = new Matrix(parameterDim, 1);
@@ -66,12 +68,12 @@ namespace NeuronalNetworkReverseEngineering
             var outliers = new List<Matrix>();
             var data = new List<Matrix>();
 
-            for (int i = 0; i < 1_800; i++)
+            for (int i = 0; i < numInliers; i++)
             {
                 inliers.Add(plane.GenerateRandomPointOnPlane(200 + i));
             }
             var outlierPoint = new Matrix(1, spaceDim);
-            for (int i = 0; i < 200; i++)
+            for (int i = 0; i < numOutliers; i++)
             {
                 outlierPoint.PopulateAllRandomly(this.model.RandomGenerator);
                 outliers.Add(Matrix.Multiplication(outlierPoint, (300 + 2 * i) / Math.Sqrt(spaceDim)));
@@ -80,7 +82,7 @@ namespace NeuronalNetworkReverseEngineering
             data.AddRange(outliers);
 
             var result = Ransac(data, 3 * spaceDim, 5_000, 1.0 / 1_000, 2.0 / 3);
-            if (result.Count > 0)
+            if (result.Count == numInliers)
             {
                 retVal = !result.Any(x => outliers.Contains(x));
             }
@@ -102,9 +104,9 @@ namespace NeuronalNetworkReverseEngineering
             return sample;
         }
 
-        private Tuple<double, Hyperplane> StdFittingFunction(List<Matrix> points, bool hasIntercept)
+        private Tuple<double, Hyperplane> FittingFunction(List<Matrix> points, bool hasIntercept, double maxDeviation)
         {
-            double maxDeviation = -1;
+            double retDeviation = -1;
             var plane = new Hyperplane(model, points, hasIntercept);
 
             foreach (var point in points)
@@ -115,13 +117,17 @@ namespace NeuronalNetworkReverseEngineering
                     throw new Exception("CE74");
                 }
 
-                if (currentDeviation > maxDeviation)
+                if (currentDeviation > retDeviation)
                 {
-                    maxDeviation = (double)currentDeviation;
+                    retDeviation = (double)currentDeviation;
+                    if(currentDeviation > maxDeviation)
+                    {
+                        break;
+                    }
                 }
             }
 
-            return new Tuple<double, Hyperplane>(maxDeviation, plane);
+            return new Tuple<double, Hyperplane>(retDeviation, plane);
         }
 
     }
