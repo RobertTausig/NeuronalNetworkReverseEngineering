@@ -17,7 +17,7 @@ namespace NeuronalNetworkReverseEngineering
         private Model model { get; }
 
 
-        public List<Matrix> Ransac(List<Matrix> data, int sampleSize, int maxIterations, double maxDeviation, double percentageInliersForBreak)
+        public List<Matrix> Ransac(List<Matrix> data, int sampleSize, int maxIterations, double maxDeviation, double ransacInliersForBreakPercentage)
         {
             var retVal = new List<Matrix>();
 
@@ -40,7 +40,7 @@ namespace NeuronalNetworkReverseEngineering
                     }
                 }
 
-                if (inliers.Count >= data.Count * percentageInliersForBreak)
+                if (inliers.Count >= data.Count * ransacInliersForBreakPercentage)
                 {
                     retVal = inliers;
                     break;

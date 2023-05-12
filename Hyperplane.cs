@@ -14,12 +14,15 @@ namespace NeuronalNetworkReverseEngineering
         {
             int maxMagnitude = 12;
             double directionNorm = 6.0 * displacementNorm / Math.Pow(2, maxMagnitude);
+            double assumedRansacOutlierPercentage = 0.1;
 
             this.model = model;
             this.ransacAlgorithm = ransacAlgorithm;
             this.originalBoundaryPoint = boundaryPoint;
             this.spaceDim = boundaryPoint.numRow + boundaryPoint.numCol - 1;
             this.ransacSampleSize = 3 * spaceDim;
+            //Math.Pow(10, -9) is the probability that the algorithm does not result in a successful hyperplane estimation for the assumed outlier percentage:
+            this.ransacMaxIterations = (int)(Math.Log(Math.Pow(10, -9)) / Math.Log(1 - Math.Pow((1 - assumedRansacOutlierPercentage), ransacSampleSize)));
             this.pointsOnPlane = SupportPointsOnBoundary(boundaryPoint, 0, displacementNorm, directionNorm, maxMagnitude);
             this.planeIdentity = Matrix.CalculateLinearRegression(pointsOnPlane, hasIntercept);
         }
@@ -50,9 +53,9 @@ namespace NeuronalNetworkReverseEngineering
 
         private RansacAlgorithm ransacAlgorithm { get; }
         private int ransacSampleSize { get; }
-        private int ransacMaxIterations = 500;
+        private int ransacMaxIterations { get; }
         private double ransacMaxDeviation = 1.0 / 1_000;
-        private double ransacPercentageInliersForBreak = 2.0 / 3;
+        private double ransacInliersForBreakPercentage = 2.0 / 3;
 
         private List<Matrix> SupportPointsOnBoundary(Matrix boundaryPoint, int salt, double displacementNorm, double directionNorm, int maxMagnitude)
         {
@@ -104,7 +107,7 @@ namespace NeuronalNetworkReverseEngineering
                     }
                     supportPoints.AddRange(temporaryPointsOnPlane);
                     temporaryPointsOnPlane.Clear();
-                    return ransacAlgorithm.Ransac(supportPoints, ransacSampleSize, ransacMaxIterations, ransacMaxDeviation, ransacPercentageInliersForBreak);
+                    return ransacAlgorithm.Ransac(supportPoints, ransacSampleSize, ransacMaxIterations, ransacMaxDeviation, ransacInliersForBreakPercentage);
                 }
                 else
                 {
