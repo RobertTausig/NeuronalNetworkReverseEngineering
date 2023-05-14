@@ -28,16 +28,17 @@ namespace NeuronalNetworkReverseEngineering
             int numLines = 5;
             var initialBundle = layer.DriveLinesThroughSpace(numLines: numLines, minSpacedApartDistance: 100);
             var initialHyperplanesColl = layer.SpaceLinesToHyperplanes(initialBundle);
-            var firstLayerPlanes = layer.GetFirstLayer(initialHyperplanesColl, 1_000);
+            var distinctHyperplanes = layer.DistinctHyperplanes(initialHyperplanesColl);
+            var firstLayerPlanes = layer.GetFirstLayer(distinctHyperplanes, 1_000);
 
-            //foreach (var flp in firstLayerPlanes)
-            //{
-            //    flp.Print();
-            //    var aa = model.ReverseEngineeredAccuracy(0, flp.planeIdentity);
-            //    Console.WriteLine(@$"r.e. accuracy: {aa}");
-            //}
+            foreach (var flp in firstLayerPlanes)
+            {
+                flp.Print();
+                var aa = model.ReverseEngineeredAccuracy(0, flp.planeIdentity);
+                Console.WriteLine(@$"r.e. accuracy: {aa}");
+            }
 
-            var outermostSecondLayerPlanes = layer.GetOutermostSecondLayer(initialHyperplanesColl, firstLayerPlanes);
+            var outermostSecondLayerPlanes = distinctHyperplanes.Where(x => !firstLayerPlanes.Contains(x)).ToList();
             foreach (var slp in outermostSecondLayerPlanes)
             {
                 slp.Print();

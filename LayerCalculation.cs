@@ -125,51 +125,7 @@ namespace NeuronalNetworkReverseEngineering
             salt+= saltIncreasePerUsage;
             return retVal;
         }
-        public List<Hyperplane> GetFirstLayer(List<List<Hyperplane>> hyperPlanesColl, double testRadius)
-        {
-            var conc = new ConcurrentDictionary<int, List<Hyperplane>>();
-            var result = Parallel.For(0, hyperPlanesColl.Count, index =>
-            {
-                var tempModel = model.Copy(index + salt);
-                var tempSphere = new SamplingSphere(tempModel);
-
-                var resultingHyperplanes = new List<Hyperplane>();
-                foreach (var plane in hyperPlanesColl[index])
-                {
-                    var temp = tempSphere.FirstLayerTest(plane, stdNumTestPoints, testRadius);
-                    if (temp.Count > 0.8 * stdNumTestPoints)
-                    {
-                        resultingHyperplanes.Add(plane);
-                    }
-                }
-                conc.TryAdd(index, resultingHyperplanes);
-            });
-
-            salt += saltIncreasePerUsage;
-            if (result.IsCompleted)
-            {
-                var retVal = new List<Hyperplane>();
-                var resultingHyperplanesColl = conc.Values.ToList();
-                retVal.AddRange(resultingHyperplanesColl[0]);
-                for (int i = 0; i < resultingHyperplanesColl.Count; i++)
-                {
-                    for (int j = 0; j < resultingHyperplanesColl[i].Count; j++)
-                    {
-                        var temp = resultingHyperplanesColl[i][j];
-                        if(!retVal.Any(x => true == Matrix.ApproxEqual(temp.planeIdentity.Parameters, x.planeIdentity.Parameters, 0.2)))
-                        {
-                            retVal.Add(temp);
-                        }
-                    }
-                }
-                return retVal;
-            }
-            else
-            {
-                throw new Exception("IY26");
-            }
-        }
-        public List<Hyperplane> GetOutermostSecondLayer(List<List<Hyperplane>> hyperPlanesColl, List<Hyperplane> firstLayerPlanes)
+        public List<Hyperplane> DistinctHyperplanes(List<List<Hyperplane>> hyperPlanesColl)
         {
             var retVal = new List<Hyperplane>();
 
@@ -178,16 +134,39 @@ namespace NeuronalNetworkReverseEngineering
                 for (int j = 0; j < hyperPlanesColl[i].Count; j++)
                 {
                     var temp = hyperPlanesColl[i][j];
-                    if (
-                        !firstLayerPlanes.Any(x => true == Matrix.ApproxEqual(temp.planeIdentity.Parameters, x.planeIdentity.Parameters, 0.2))
-                        && !retVal.Any(x => true == Matrix.ApproxEqual(temp.planeIdentity.Parameters, x.planeIdentity.Parameters, 0.2))
-                        )
+                    if (!retVal.Any(x => true == Matrix.ApproxEqual(temp.planeIdentity.Parameters, x.planeIdentity.Parameters, 0.2)))
                     {
                         retVal.Add(temp);
                     }
                 }
             }
             return retVal;
+        }
+        public List<Hyperplane> GetFirstLayer(List<Hyperplane> distinctHyperplanes, double testRadius)
+        {
+            var conc = new ConcurrentDictionary<int, Hyperplane>();
+            var result = Parallel.For(0, distinctHyperplanes.Count, index =>
+            {
+                var tempModel = model.Copy(index + salt);
+                var tempSphere = new SamplingSphere(tempModel);
+                var plane = distinctHyperplanes[index];
+
+                var temp = tempSphere.FirstLayerTest(plane, stdNumTestPoints, testRadius);
+                if (temp.Count > 0.8 * stdNumTestPoints)
+                {
+                    conc.TryAdd(index, plane);
+                }
+            });
+
+            salt += saltIncreasePerUsage;
+            if (result.IsCompleted)
+            {
+                return conc.Values.ToList();
+            }
+            else
+            {
+                throw new Exception("IY26");
+            }
         }
         public static bool IsSpacedApart(List<Matrix> list, double minDistance)
         {
