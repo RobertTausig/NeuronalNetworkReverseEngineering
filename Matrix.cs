@@ -323,7 +323,7 @@ namespace NeuronalNetworkReverseEngineering
             {
                 for (int j = 0; j < matrix.numCol; j++)
                 {
-                     retVal.Append(content[i, j] + ", ");
+                     retVal.Append(content[i, j]);
                 }
                 retVal.AppendLine();
             }

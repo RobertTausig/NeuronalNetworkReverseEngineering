@@ -169,6 +169,25 @@ namespace NeuronalNetworkReverseEngineering
                 throw new Exception("IY26");
             }
         }
+        public List<Hyperplane> GetOutermostSecondLayer(List<List<Hyperplane>> hyperPlanesColl, List<Hyperplane> firstLayerPlanes)
+        {
+            var retVal = new List<Hyperplane>();
+
+            for (int i = 0; i < hyperPlanesColl.Count; i++)
+            {
+                for (int j = 0; j < hyperPlanesColl[i].Count; j++)
+                {
+                    var temp = hyperPlanesColl[i][j];
+                    if (
+                        !firstLayerPlanes.Any(x => true == Matrix.ApproxEqual(temp.planeIdentity.Parameters, x.planeIdentity.Parameters, 0.3))
+                        && !retVal.Any(x => true == Matrix.ApproxEqual(temp.planeIdentity.Parameters, x.planeIdentity.Parameters, 0.3)))
+                    {
+                        retVal.Add(temp);
+                    }
+                }
+            }
+            return retVal;
+        }
         public static bool IsSpacedApart(List<Matrix> list, double minDistance)
         {
             for (int i = 1; i < list.Count; i++)
