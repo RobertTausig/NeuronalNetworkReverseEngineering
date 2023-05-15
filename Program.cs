@@ -28,8 +28,8 @@ namespace NeuronalNetworkReverseEngineering
             int numLines = 5;
             var initialBundle = layer.DriveLinesThroughSpace(numLines: numLines, minSpacedApartDistance: 100);
             var initialHyperplanesColl = layer.SpaceLinesToHyperplanes(initialBundle);
-            var distinctHyperplanes = layer.DistinctHyperplanes(initialHyperplanesColl);
-            var firstLayerPlanes = layer.GetFirstLayer(distinctHyperplanes, 1_000);
+            var initialDistinctHyperplanes = layer.DistinctHyperplanes(initialHyperplanesColl);
+            var firstLayerPlanes = layer.GetFirstLayer(initialDistinctHyperplanes, 1_000);
 
             foreach (var flp in firstLayerPlanes)
             {
@@ -38,13 +38,7 @@ namespace NeuronalNetworkReverseEngineering
                 Console.WriteLine(@$"r.e. accuracy: {aa}");
             }
 
-            var outermostSecondLayerPlanes = distinctHyperplanes.Where(x => !firstLayerPlanes.Contains(x)).ToList();
-            foreach (var slp in outermostSecondLayerPlanes)
-            {
-                slp.Print();
-                var aa = model.ReverseEngineeredAccuracy(1, slp.planeIdentity);
-                Console.WriteLine(@$"r.e. accuracy: {aa}");
-            }
+            var outermostSecondLayerPlanes = initialDistinctHyperplanes.Except(firstLayerPlanes).ToList();
 
             clock.Stop();
             Console.WriteLine("Time passed: " + clock.Elapsed.TotalMilliseconds);
