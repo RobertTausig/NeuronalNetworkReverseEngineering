@@ -26,5 +26,24 @@ namespace NeuronalNetworkReverseEngineering
             }
             return retVal;
         }
+
+        public static LinAlg.Vector<double> MatrixToVector(Matrix input)
+        {
+            if (!(input.numRow == 1 || input.numCol == 1))
+            {
+                return null;
+            }
+            var retVal = LinAlg.Vector<double>.Build.Dense(input.numRow + input.numCol - 1);
+
+            for (int i = 0; i < input.numRow; i++)
+            {
+                for (int j = 0; j < input.numCol; j++)
+                {
+                    retVal[i + j] = input.content[i, j];
+                }
+            }
+            return retVal;
+        }
+
     }
 }
