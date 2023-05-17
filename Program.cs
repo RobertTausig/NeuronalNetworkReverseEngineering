@@ -40,6 +40,13 @@ namespace NeuronalNetworkReverseEngineering
 
             var outermostSecondLayerPlanes = initialDistinctHyperplanes.Except(firstLayerPlanes).ToList();
 
+            var bb = firstLayerPlanes[0];
+            var cc = firstLayerPlanes[1];
+            var dd = HyperplaneIntersection.FindIntersection(bb, cc);
+
+
+
+
             clock.Stop();
             Console.WriteLine("Time passed: " + clock.Elapsed.TotalMilliseconds);
             Console.ReadLine();
