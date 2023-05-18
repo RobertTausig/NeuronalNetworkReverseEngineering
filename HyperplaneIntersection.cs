@@ -47,6 +47,22 @@ namespace NeuronalNetworkReverseEngineering
             return x;
         }
 
+        //Just an attempt:
+        private static LinAlg.Vector<double> MinimiseDistanceToIntersection(LinAlg.Matrix<double> A, LinAlg.Vector<double> b, LinAlg.Vector<double> p_given)
+        {
+            var svd = A.Svd();
+            var U = svd.U;
+            var S = svd.S;
+            var VT = svd.VT;
+
+            var SInverse = DenseMatrix.OfDiagonalVector(
+                Vector.Build.DenseOfArray(
+                    S.Select(s => s != 0 ? 1 / s : 0).ToArray()));
+            var AInverse = VT.Transpose().SubMatrix(0, A.ColumnCount, 0, A.RowCount) * SInverse * U.Transpose().SubMatrix(0, A.RowCount, 0, A.RowCount);
+
+            var xMinDistance = AInverse * (b + A * p_given);
+            return xMinDistance;
+        }
 
 
     }
