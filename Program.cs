@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using LinAlg = MathNet.Numerics.LinearAlgebra;
 
 namespace NeuronalNetworkReverseEngineering
 {
@@ -42,9 +43,12 @@ namespace NeuronalNetworkReverseEngineering
 
             var bb = firstLayerPlanes[0];
             var cc = firstLayerPlanes[1];
-            var dd = HyperplaneIntersection.FindIntersection(bb, cc);
-
-
+            var p_given = LinAlg.Vector<double>.Build.Dense(new double[] { 50, 20, 50, 20, 50, 20, 50 });
+            var interSect = HyperplaneIntersection.FindIntersection(bb, cc, p_given);
+            var refDistance = (interSect - p_given).L2Norm();
+            var CoordOriginDistance = (p_given).L2Norm();
+            var isPOP1 = bb.IsPointOnPlane(MathConvert.VectorToMatrix(interSect));
+            var isPOP2 = cc.IsPointOnPlane(MathConvert.VectorToMatrix(interSect));
 
 
             clock.Stop();
