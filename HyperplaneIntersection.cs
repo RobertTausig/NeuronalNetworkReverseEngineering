@@ -5,15 +5,44 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using MathNet.Numerics.LinearAlgebra.Double;
+using System.Collections.Concurrent;
 
 namespace NeuronalNetworkReverseEngineering
 {
     class HyperplaneIntersection
     {
-        public static LinAlg.Vector<double> FindIntersection(Hyperplane h1, Hyperplane h2, LinAlg.Vector<double> closestPointToIntersection)
+        public static (int intersectIndex, Matrix intersectPoint) FindClosestIntersection(Hyperplane currentPlane, Matrix pointOnCurrentPlane, List<Hyperplane> intersectPlanes)
+        {
+            if (true != currentPlane.IsPointOnPlane(pointOnCurrentPlane))
+            {
+                return (-1, null);
+            }
+
+            var conc = new ConcurrentDictionary<int, Matrix>();
+            var result = Parallel.For(0, intersectPlanes.Count, index =>
+            {
+                conc.TryAdd(index, FindClosestIntersection(currentPlane, intersectPlanes[index], pointOnCurrentPlane));
+            });
+
+            if (result.IsCompleted)
+            {
+                var closestIntersection = conc.MinBy(x => Matrix.GetEuclideanNormForVector(Matrix.Substraction(x.Value, pointOnCurrentPlane)));
+                if (currentPlane.IsPointOnPlane(closestIntersection.Value) != true || intersectPlanes[closestIntersection.Key].IsPointOnPlane(closestIntersection.Value) != true)
+                {
+                    throw new Exception("The calculated point doesn't lie on the expected intersection.");
+                }
+                return (closestIntersection.Key, closestIntersection.Value);
+            }
+            else
+            {
+                throw new Exception("AI17");
+            }
+        }
+        public static Matrix FindClosestIntersection(Hyperplane h1, Hyperplane h2, Matrix closestPointToIntersection)
         {
             var params1 = MathConvert.MatrixToVector(h1.planeIdentity.Parameters);
             var params2 = MathConvert.MatrixToVector(h2.planeIdentity.Parameters);
+            var closestPoint = MathConvert.MatrixToVector(closestPointToIntersection);
             var intercept1 = h1.planeIdentity.Intercept ?? 0;
             var intercept2 = h2.planeIdentity.Intercept ?? 0;
             // Add "-1" to left-hand-side of equation system to also solve for last coordinate (That otherwise is implicitly a result of the constraints of the hyperplane).
@@ -22,9 +51,9 @@ namespace NeuronalNetworkReverseEngineering
 
             var paramMatrix = LinAlg.Matrix<double>.Build.DenseOfRowVectors(extendedParams1, extendedParams2);
             var interceptVector = LinAlg.Vector<double>.Build.Dense(new double[] { intercept1, intercept2 });
-            var x = MinimiseDistanceToIntersection(paramMatrix, interceptVector, closestPointToIntersection);
+            var x = MinimiseDistanceToIntersection(paramMatrix, interceptVector, closestPoint);
 
-            return (closestPointToIntersection - x);
+            return MathConvert.VectorToMatrix(closestPoint - x);
         }
 
         /// <summary>

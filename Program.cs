@@ -41,14 +41,10 @@ namespace NeuronalNetworkReverseEngineering
 
             var outermostSecondLayerPlanes = initialDistinctHyperplanes.Except(firstLayerPlanes).ToList();
 
-            var bb = firstLayerPlanes[0];
-            var cc = firstLayerPlanes[1];
-            var p_given = LinAlg.Vector<double>.Build.Dense(new double[] { 50, 20, 50, 20, 50, 20, 50 });
-            var interSect = HyperplaneIntersection.FindIntersection(bb, cc, p_given);
-            var refDistance = (interSect - p_given).L2Norm();
-            var CoordOriginDistance = (p_given).L2Norm();
-            var isPOP1 = bb.IsPointOnPlane(MathConvert.VectorToMatrix(interSect));
-            var isPOP2 = cc.IsPointOnPlane(MathConvert.VectorToMatrix(interSect));
+            var p_given = outermostSecondLayerPlanes[0].originalBoundaryPoint;
+            var interSect = HyperplaneIntersection.FindClosestIntersection(outermostSecondLayerPlanes[0], p_given, firstLayerPlanes);
+            var refDistance = Matrix.GetEuclideanNormForVector(Matrix.Substraction(interSect.intersectPoint, p_given));
+            var CoordOriginDistance = Matrix.GetEuclideanNormForVector(p_given);
 
 
             clock.Stop();
