@@ -155,9 +155,13 @@ namespace NeuronalNetworkReverseEngineering
         }
         public Matrix GenerateRandomNormalizedVectorOnPlane()
         {
-            var firstPoint = GenerateRandomPointOnPlane(1);
-            var secondPoint = GenerateRandomPointOnPlane(2);
-            var vector = Matrix.Substraction(secondPoint, firstPoint);
+            var zeroPoint = new Matrix(1, spaceDim - 1);
+            zeroPoint.Zeros();
+            Matrix intercept = new Matrix(new double[,] { { (double)planeIdentity.Intercept } });
+            var zeroPointWithIntercept = Matrix.ConcatHorizontally(zeroPoint, intercept);
+
+            var point = GenerateRandomPointOnPlane(1);
+            var vector = Matrix.Substraction(point, zeroPointWithIntercept);
             return Matrix.NormalizeVector(vector);
         }
 
