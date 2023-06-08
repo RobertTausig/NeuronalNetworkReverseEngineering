@@ -153,6 +153,13 @@ namespace NeuronalNetworkReverseEngineering
 
             return Matrix.ConcatHorizontally(xCoords, Matrix.Addition(yCoord, intercept));
         }
+        public Matrix GenerateRandomNormalizedVectorOnPlane()
+        {
+            var firstPoint = GenerateRandomPointOnPlane(1);
+            var secondPoint = GenerateRandomPointOnPlane(2);
+            var vector = Matrix.Substraction(secondPoint, firstPoint);
+            return Matrix.NormalizeVector(vector);
+        }
 
         //Probability for a random point to return "true" with accuracy 0.1: ~2%
         public bool? IsPointOnPlane (Matrix point, double accuracy = 0.05)
