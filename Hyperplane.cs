@@ -26,6 +26,19 @@ namespace NeuronalNetworkReverseEngineering
             this.pointsOnPlane = SupportPointsOnBoundary(boundaryPoint, 0, displacementNorm, directionNorm, maxMagnitude);
             this.planeIdentity = Matrix.CalculateLinearRegression(pointsOnPlane, hasIntercept);
         }
+        public Hyperplane(Model model, RansacAlgorithm ransacAlgorithm, List<Matrix> potentialPointsOnPlane, bool hasIntercept = true)
+        {
+            double assumedRansacOutlierPercentage = 0.1;
+
+            this.model = model;
+            this.ransacAlgorithm = ransacAlgorithm;
+            this.spaceDim = potentialPointsOnPlane.First().numRow + potentialPointsOnPlane.First().numCol - 1;
+            this.ransacSampleSize = 3 * spaceDim;
+            //Math.Pow(10, -9) is the probability that the algorithm does not result in a successful hyperplane estimation for the assumed outlier percentage:
+            this.ransacMaxIterations = (int)(Math.Log(Math.Pow(10, -9)) / Math.Log(1 - Math.Pow((1 - assumedRansacOutlierPercentage), ransacSampleSize)));
+            this.pointsOnPlane = this.ransacAlgorithm.Ransac(potentialPointsOnPlane, ransacSampleSize, ransacMaxIterations, ransacMaxDeviation, ransacInliersForBreakPercentage);
+            this.planeIdentity = Matrix.CalculateLinearRegression(potentialPointsOnPlane, hasIntercept);
+        }
         public Hyperplane(Model model, List<Matrix> pointsOnPlane, bool hasIntercept = true)
         {
             this.model = model;

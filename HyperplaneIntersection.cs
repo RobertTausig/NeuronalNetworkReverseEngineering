@@ -38,7 +38,7 @@ namespace NeuronalNetworkReverseEngineering
                 throw new Exception("AI17");
             }
         }
-        public static Matrix FindClosestIntersection(Hyperplane h1, Hyperplane h2, Matrix closestPointToIntersection)
+        private static Matrix FindClosestIntersection(Hyperplane h1, Hyperplane h2, Matrix closestPointToIntersection)
         {
             var params1 = MathConvert.MatrixToVector(h1.planeIdentity.Parameters);
             var params2 = MathConvert.MatrixToVector(h2.planeIdentity.Parameters);

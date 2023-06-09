@@ -41,10 +41,8 @@ namespace NeuronalNetworkReverseEngineering
 
             var outermostSecondLayerPlanes = initialDistinctHyperplanes.Except(firstLayerPlanes).ToList();
 
-            var p_given = outermostSecondLayerPlanes[0].originalBoundaryPoint;
-            var interSect = HyperplaneIntersection.FindClosestIntersection(outermostSecondLayerPlanes[0], p_given, firstLayerPlanes);
-            var refDistance = Matrix.GetEuclideanNormForVector(Matrix.Substraction(interSect.intersectPoint, p_given));
-            var CoordOriginDistance = Matrix.GetEuclideanNormForVector(p_given);
+            var bender = new HyperplaneBending(model);
+            var bb = bender.FindClosestBoundaryBend(outermostSecondLayerPlanes[0], firstLayerPlanes);
 
 
             clock.Stop();
