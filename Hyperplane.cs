@@ -37,7 +37,7 @@ namespace NeuronalNetworkReverseEngineering
             //Math.Pow(10, -9) is the probability that the algorithm does not result in a successful hyperplane estimation for the assumed outlier percentage:
             this.ransacMaxIterations = (int)(Math.Log(Math.Pow(10, -9)) / Math.Log(1 - Math.Pow((1 - assumedRansacOutlierPercentage), ransacSampleSize)));
             this.pointsOnPlane = this.ransacAlgorithm.Ransac(potentialPointsOnPlane, ransacSampleSize, ransacMaxIterations, ransacMaxDeviation, ransacInliersForBreakPercentage);
-            this.planeIdentity = Matrix.CalculateLinearRegression(potentialPointsOnPlane, hasIntercept);
+            this.planeIdentity = Matrix.CalculateLinearRegression(this.pointsOnPlane, hasIntercept);
         }
         public Hyperplane(Model model, List<Matrix> pointsOnPlane, bool hasIntercept = true)
         {

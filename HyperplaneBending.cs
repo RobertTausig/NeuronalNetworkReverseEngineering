@@ -22,12 +22,21 @@ namespace NeuronalNetworkReverseEngineering
         private Model model { get; }
         private SamplingLine sampler { get; }
         private RansacAlgorithm ransac { get; }
-        private int stdMaxMagnitude = 6;
+        private int stdMaxMagnitude = 10;
         private int salt;
         private int saltIncreasePerUsage = 1_000;
 
-        
-        public (Hyperplane afterBendPlane, int intersectionIndex)  FindClosestBoundaryBend(Hyperplane beforeBendPlane, List<Hyperplane> firstLayerPlanes)
+        public List<Hyperplane> MoveAlongBend(Hyperplane startPlane, List<Hyperplane> firstLayerPlanes)
+        {
+            var first = FindClosestBoundaryBend(startPlane, firstLayerPlanes);
+            firstLayerPlanes.RemoveAt(first.intersectionIndex);
+            var second = FindClosestBoundaryBend(first.afterBendPlane, firstLayerPlanes);
+
+
+
+            return null;
+        }
+        private (Hyperplane afterBendPlane, int intersectionIndex)  FindClosestBoundaryBend(Hyperplane beforeBendPlane, List<Hyperplane> firstLayerPlanes)
         {
             /* Step 1: Find intersection.
              * Step 2: Overstep intersection by a small amount, from the direction of the startPlane. The new point is called "anchorPoint".
@@ -41,15 +50,15 @@ namespace NeuronalNetworkReverseEngineering
              */
 
             // 1
-            var startPoint = beforeBendPlane.originalBoundaryPoint;
+            var startPoint = beforeBendPlane.originalBoundaryPoint ?? beforeBendPlane.pointsOnPlane.First();
             var spaceDim = startPoint.numRow + startPoint.numCol - 1;
-            var iterations = (spaceDim + 1) * 4;
+            var iterations = (spaceDim + 1) * 8;
 
             var intersection = HyperplaneIntersection.FindClosestIntersection(beforeBendPlane, startPoint, firstLayerPlanes);
             double overStepDistance = (double)Matrix.GetEuclideanNormForVector(intersection.intersectPoint) / 250;
 
             // 2
-            var directionVector = Matrix.Substraction(intersection.intersectPoint, beforeBendPlane.originalBoundaryPoint);
+            var directionVector = Matrix.Substraction(intersection.intersectPoint, startPoint);
             directionVector = Matrix.NormalizeVector(directionVector, (double)Matrix.GetEuclideanNormForVector(directionVector) + overStepDistance);
             var anchorPoint = Matrix.Addition(startPoint, directionVector);
 
@@ -67,7 +76,7 @@ namespace NeuronalNetworkReverseEngineering
                 tempDirectionVector = Matrix.NormalizeVector(tempDirectionVector, overStepDistance / 4);
                 var variedAnchorPoint = Matrix.Addition(anchorPoint, tempDirectionVector);
 
-                var samplePoints = tempSampler.BidirectionalLinearRegionChanges(variedAnchorPoint, Matrix.NormalizeVector(tempDirectionVector, overStepDistance / Math.Pow(2, stdMaxMagnitude-1)), stdMaxMagnitude);
+                var samplePoints = tempSampler.BidirectionalLinearRegionChanges(variedAnchorPoint, Matrix.NormalizeVector(randomParallelDirectionVector, overStepDistance / Math.Pow(2, stdMaxMagnitude - 3)), stdMaxMagnitude);
                 if(samplePoints.Count == 1)
                 {
                     bag.Add(samplePoints);
@@ -85,17 +94,18 @@ namespace NeuronalNetworkReverseEngineering
             }
             else
             {
-                var samples = bag.Where(x => x.Count == 1).SelectMany(y => y).ToList();
+                var samples = bag.SelectMany(y => y).ToList();
                 // 5.1
                 foreach(var sample in samples.ToArray())
                 {
-                    if (true == intersectionPlane.IsPointOnPlane(sample))
+                    if (true == intersectionPlane.IsPointOnPlane(sample, 0.05))
                     {
                         samples.Remove(sample);
                     }
                 }
                 // 5.2&6
-                return (new Hyperplane(model, ransac, samples, false), intersection.intersectIndex);
+                var newPlane = new Hyperplane(model, ransac, samples, false);
+                return (newPlane, intersection.intersectIndex);
             }
         }
 

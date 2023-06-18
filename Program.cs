@@ -41,8 +41,8 @@ namespace NeuronalNetworkReverseEngineering
 
             var outermostSecondLayerPlanes = initialDistinctHyperplanes.Except(firstLayerPlanes).ToList();
 
-            var bender = new HyperplaneBending(model);
-            var bb = bender.FindClosestBoundaryBend(outermostSecondLayerPlanes[0], firstLayerPlanes);
+            //var bender = new HyperplaneBending(model);
+            //var bb = bender.MoveAlongBend(outermostSecondLayerPlanes[0], firstLayerPlanes);
 
 
             clock.Stop();
