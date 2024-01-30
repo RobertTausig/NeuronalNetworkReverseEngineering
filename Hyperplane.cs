@@ -20,7 +20,7 @@ namespace NeuronalNetworkReverseEngineering
             this.ransacAlgorithm = ransacAlgorithm;
             this.originalBoundaryPoint = boundaryPoint;
             this.spaceDim = boundaryPoint.numRow + boundaryPoint.numCol - 1;
-            this.ransacSampleSize = 3 * spaceDim;
+            this.ransacSampleSize = spaceDim;
             //Math.Pow(10, -9) is the probability that the algorithm does not result in a successful hyperplane estimation for the assumed outlier percentage:
             this.ransacMaxIterations = (int)(Math.Log(Math.Pow(10, -9)) / Math.Log(1 - Math.Pow((1 - assumedRansacOutlierPercentage), ransacSampleSize)));
             this.pointsOnPlane = SupportPointsOnBoundary(boundaryPoint, 0, displacementNorm, directionNorm, maxMagnitude);
@@ -33,7 +33,7 @@ namespace NeuronalNetworkReverseEngineering
             this.model = model;
             this.ransacAlgorithm = ransacAlgorithm;
             this.spaceDim = potentialPointsOnPlane.First().numRow + potentialPointsOnPlane.First().numCol - 1;
-            this.ransacSampleSize = 3 * spaceDim;
+            this.ransacSampleSize = spaceDim;
             //Math.Pow(10, -9) is the probability that the algorithm does not result in a successful hyperplane estimation for the assumed outlier percentage:
             this.ransacMaxIterations = (int)(Math.Log(Math.Pow(10, -9)) / Math.Log(1 - Math.Pow((1 - assumedRansacOutlierPercentage), ransacSampleSize)));
             this.pointsOnPlane = this.ransacAlgorithm.Ransac(potentialPointsOnPlane, ransacSampleSize, ransacMaxIterations, ransacMaxDeviation, ransacInliersForBreakPercentage);
@@ -83,7 +83,7 @@ namespace NeuronalNetworkReverseEngineering
 
             var supportPoints = new List<Matrix>();
             var bag = new ConcurrentBag<List<Matrix>>();
-            var iterations = 20 * spaceDim + 6;
+            int iterations = 2 * spaceDim + 6;
             var result = Parallel.For(0, iterations, index =>
             {
                 var tempModel = model.Copy(index + salt);
@@ -110,9 +110,9 @@ namespace NeuronalNetworkReverseEngineering
 
                 if (undershootSample.Count() > iterations * 0.9)
                 {
-                    return new List<Matrix>();
+                    throw new Exception("KC81");
                 }
-                else if (fineSample.Count() + temporaryPointsOnPlane.Count > iterations * 0.5)
+                else if (fineSample.Count() + temporaryPointsOnPlane.Count() >= 2 * spaceDim)
                 {
                     foreach (var item in fineSample)
                     {
