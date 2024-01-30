@@ -27,12 +27,11 @@ namespace NeuronalNetworkReverseEngineering
         {
             var retVal = new List<Matrix>();
 
-            double directionNorm = startingDistance / Math.Pow(2, stdMaxMagnitude);
             var spaceDim = boundaryPoint.numRow + boundaryPoint.numCol - 1;
             var iterations = (spaceDim + 1) * 30;
             var iterationGrowth = Math.Pow(10_000, 1.0 / iterations);
 
-            var conc = new ConcurrentDictionary<int, List<Matrix>>();
+            var conc = new ConcurrentDictionary<int, Matrix>();
             var result = Parallel.For(0, iterations, (index, state) =>
             {
                 var tempModel = model.Copy(index + salt);
@@ -40,12 +39,21 @@ namespace NeuronalNetworkReverseEngineering
 
                 var directionVector = new Matrix(boundaryPoint.numRow, boundaryPoint.numCol);
                 directionVector.PopulateAllRandomlyFarFromZero(tempModel.RandomGenerator);
-                directionVector = Matrix.NormalizeVector(directionVector, directionNorm * Math.Pow(iterationGrowth, index));
+                directionVector = Matrix.NormalizeVector(directionVector, startingDistance * Math.Pow(iterationGrowth, index));
 
-                var samplePoints = tempSampler.BidirectionalLinearRegionChanges(boundaryPoint, directionVector, stdMaxMagnitude);
-                conc.TryAdd(index, samplePoints);
-                if(samplePoints.Count > 1)
+                //This will later lead to
+                //      Matrix.Multiplication(conc[(int)boundaryIndex], 3.0 / Math.Pow(2, stdMaxMagnitude));
+                var isInPositiveRange = tempSampler.IsPointInRangeOfBoundary(Matrix.Addition(boundaryPoint, Matrix.Multiplication(directionVector, 2)), directionVector);
+                var isInNegativeRange = tempSampler.IsPointInRangeOfBoundary(Matrix.Substraction(boundaryPoint, Matrix.Multiplication(directionVector, 2)), directionVector);
+                conc.TryAdd(index, null);
+                if (isInPositiveRange)
                 {
+                    conc[index] = directionVector;
+                    state.Break();
+                }
+                else if (isInNegativeRange)
+                {
+                    conc[index] = Matrix.Multiplication(directionVector, -1);
                     state.Break();
                 }
             });
@@ -59,18 +67,18 @@ namespace NeuronalNetworkReverseEngineering
             else
             {
                 int shrinkIndex = 1;
-                var directionVector = Matrix.Substraction(conc[(int)boundaryIndex].First(), boundaryPoint);
+                var directionVector = Matrix.Multiplication(conc[(int)boundaryIndex], 3.0 / Math.Pow(2, stdMaxMagnitude));
                 while (true)
                 {
-                    directionVector = Matrix.NormalizeVector(directionVector, directionNorm * Math.Pow(iterationGrowth, (long)boundaryIndex - shrinkIndex));
-                    var samplePoints = sampler.BidirectionalLinearRegionChanges(boundaryPoint, directionVector, stdMaxMagnitude);
+                    directionVector = Matrix.Multiplication(directionVector, 1.0 / iterationGrowth);
+                    var samplePoints = sampler.LinearRegionChanges(boundaryPoint, directionVector, stdMaxMagnitude);
                     if(samplePoints.Count < 2)
                     {
                         break;
                     }
                     shrinkIndex++;
                 }
-                return startingDistance * Math.Pow(iterationGrowth, (long)boundaryIndex - shrinkIndex);
+                return Matrix.GetEuclideanNormForVector(Matrix.Multiplication(directionVector, Math.Pow(2, stdMaxMagnitude)));
             }
         }
 
