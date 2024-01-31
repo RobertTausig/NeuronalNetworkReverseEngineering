@@ -29,12 +29,11 @@ namespace NeuronalNetworkReverseEngineering
         public SpaceLineBundle DriveLinesThroughSpace(int numLines, double minSpacedApartDistance, bool enableSafeDistance = true)
         {
             int sumHiddenLayerDims = model.topology[1..^1].Sum(x => x);
-            double constRadius = Math.Pow(sumHiddenLayerDims, 2) * Math.Sqrt(minSpacedApartDistance);
-            double constMinSpacedApartDistance = minSpacedApartDistance;
-            double constMinSafeDistance = constMinSpacedApartDistance / 2;
+            double constRadius = Math.Pow(sumHiddenLayerDims, 2) * Math.Sqrt(minSpacedApartDistance) * sumHiddenLayerDims;
+            double constMinSafeDistance = constRadius / Math.Pow(sumHiddenLayerDims, 2);
             double constMinStartingDistance = constMinSafeDistance / 10;
             double constMinPointDistance = constMinStartingDistance / 10;
-            int constMaxMagnitude = 24;
+            int constMaxMagnitude = 16;
 
             var conc = new ConcurrentDictionary<int, SpaceLine>();
             // Why doing this:

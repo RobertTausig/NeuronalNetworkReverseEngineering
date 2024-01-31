@@ -29,7 +29,7 @@ namespace NeuronalNetworkReverseEngineering
 
             var spaceDim = boundaryPoint.numRow + boundaryPoint.numCol - 1;
             var iterations = (spaceDim + 1) * 30;
-            var iterationGrowth = Math.Pow(10_000, 1.0 / iterations);
+            var iterationGrowth = Math.Pow(50_000, 1.0 / iterations);
 
             var conc = new ConcurrentDictionary<int, Matrix>();
             var result = Parallel.For(0, iterations, (index, state) =>

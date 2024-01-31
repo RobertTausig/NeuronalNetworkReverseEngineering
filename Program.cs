@@ -26,12 +26,21 @@ namespace NeuronalNetworkReverseEngineering
             var sphere = new SamplingSphere(model);
             var layer = new LayerCalculation(model, sphere);
 
-            int numLines = 5;
+            int geometricArithmeticMean = (int)((Math.Sqrt(firstLayerDim * secondLayerDim) + (firstLayerDim + secondLayerDim) / 2) / 2);
+            int numLines = geometricArithmeticMean;
             var initialBundle = layer.DriveLinesThroughSpace(numLines: numLines, minSpacedApartDistance: 100);
             var initialHyperplanesColl = layer.SpaceLinesToHyperplanes(initialBundle);
             var initialDistinctHyperplanes = layer.DistinctHyperplanes(initialHyperplanesColl);
             var firstLayerPlanes = layer.GetFirstLayer(initialDistinctHyperplanes, 1_000);
 
+            if (firstLayerPlanes.Count == firstLayerDim)
+            {
+                Console.WriteLine("All flp found.");
+            }
+            else
+            {
+                Console.WriteLine("Not all flp found.");
+            }
             foreach (var flp in firstLayerPlanes)
             {
                 flp.Print();
@@ -39,7 +48,7 @@ namespace NeuronalNetworkReverseEngineering
                 Console.WriteLine(@$"r.e. accuracy: {aa}");
             }
 
-            var outermostSecondLayerPlanes = initialDistinctHyperplanes.Except(firstLayerPlanes).ToList();
+            //var outermostSecondLayerPlanes = initialDistinctHyperplanes.Except(firstLayerPlanes).ToList();
 
             //var bender = new HyperplaneBending(model);
             //var bb = bender.MoveAlongBend(outermostSecondLayerPlanes[0], firstLayerPlanes);
