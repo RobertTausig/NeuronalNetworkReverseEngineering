@@ -26,12 +26,13 @@ namespace NeuronalNetworkReverseEngineering
         private int stdNumTestPoints = 100;
         private int stdNumTestLines = 30;
 
-        public SpaceLineBundle DriveLinesThroughSpace(int numLines, double minSpacedApartDistance, bool enableSafeDistance = true)
+        public SpaceLineBundle DriveLinesThroughSpace(int numLines, bool enableSafeDistance = true)
         {
             int sumHiddenLayerDims = model.topology[1..^1].Sum(x => x);
-            double constRadius = Math.Pow(sumHiddenLayerDims, 2) * Math.Sqrt(minSpacedApartDistance) * sumHiddenLayerDims;
-            double constMinSafeDistance = constRadius / Math.Pow(sumHiddenLayerDims, 2);
-            double constMinStartingDistance = constMinSafeDistance / 10;
+            double constRadius = Math.Pow(sumHiddenLayerDims, 2) * sumHiddenLayerDims;
+            double constMinIsApartDistance = constRadius / Math.Pow(sumHiddenLayerDims, 2);
+            double constMinSafeDistance = constMinIsApartDistance / 4;
+            double constMinStartingDistance = constMinSafeDistance / 4;
             double constMinPointDistance = constMinStartingDistance / 10;
             int constMaxMagnitude = 16;
 
@@ -50,7 +51,7 @@ namespace NeuronalNetworkReverseEngineering
                 {
                     var (midPoint, directionVector) = tempSampler.RandomSecantLine(radius: constRadius, minPointDistance: constMinPointDistance);
                     var boundaryPointsSuggestion = tempSampler.BidirectionalLinearRegionChanges(midPoint, directionVector, constMaxMagnitude);
-                    if (IsSpacedApart(boundaryPointsSuggestion, constMinSafeDistance))
+                    if (IsSpacedApart(boundaryPointsSuggestion, constMinIsApartDistance))
                     {
                         if (!enableSafeDistance)
                         {
