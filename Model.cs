@@ -5,6 +5,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using analyzeResult = (bool allFound, double recoveryRatio, double medianAccuracy, double meanAccuracy, double stdDeviationAccuracy);
+
 namespace NeuronalNetworkReverseEngineering
 {
     class Model
@@ -79,12 +81,34 @@ namespace NeuronalNetworkReverseEngineering
             return new Model(this, randomSeed);
         }
 
+        public analyzeResult AnalyzeFirstLayerResults(List<Hyperplane> firstLayerPlanes)
+        {
+            analyzeResult retVal;
+            int firstLayerDim = topology[1];
+
+            var accuracies = new List<double?>();
+            foreach (var plane in firstLayerPlanes)
+            {
+                accuracies.Add(ReverseEngineeredAccuracy(0, plane.planeIdentity));
+            }
+
+            var notNullCount = accuracies.Count(x => x != null);
+
+            retVal.allFound = (notNullCount == accuracies.Count) && (firstLayerPlanes.Count == firstLayerDim);
+            retVal.recoveryRatio = (double)notNullCount / firstLayerDim;
+            retVal.medianAccuracy = accuracies.Median();
+            retVal.meanAccuracy = accuracies.Mean();
+            retVal.stdDeviationAccuracy = accuracies.StandardDeviation();
+
+            return retVal;
+        }
+
         /// <summary>
         ///  Only for verification purposes. Checks how closely the weights and bias were calculated.
         /// </summary>
         /// <param name="layerNum">Zero-indexed number of layer to check the identity against</param>
         /// <returns>Accuracy as factor. Null, when far off.</returns>
-        public double? ReverseEngineeredAccuracy (int layerNum, HyperplaneIdentity identity)
+        private double? ReverseEngineeredAccuracy (int layerNum, HyperplaneIdentity identity)
         {
             double abortAccuracyFactor = 1.15;
             var weightMatrix = weigthMatrices[layerNum];
@@ -124,6 +148,8 @@ namespace NeuronalNetworkReverseEngineering
                 return ratios.MaximumAbsolute() / ratios.MinimumAbsolute();
             }
         }
+
+
 
     }
 }

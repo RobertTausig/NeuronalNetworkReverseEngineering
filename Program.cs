@@ -33,20 +33,7 @@ namespace NeuronalNetworkReverseEngineering
             var initialDistinctHyperplanes = layer.DistinctHyperplanes(initialHyperplanesColl);
             var firstLayerPlanes = layer.GetFirstLayer(initialDistinctHyperplanes, 1_000);
 
-            if (firstLayerPlanes.Count == firstLayerDim)
-            {
-                Console.WriteLine("All flp found.");
-            }
-            else
-            {
-                Console.WriteLine("Not all flp found.");
-            }
-            foreach (var flp in firstLayerPlanes)
-            {
-                flp.Print();
-                var aa = model.ReverseEngineeredAccuracy(0, flp.planeIdentity);
-                Console.WriteLine(@$"r.e. accuracy: {aa}");
-            }
+            var analyzeResult = model.AnalyzeFirstLayerResults(firstLayerPlanes);
 
             //var outermostSecondLayerPlanes = initialDistinctHyperplanes.Except(firstLayerPlanes).ToList();
 
