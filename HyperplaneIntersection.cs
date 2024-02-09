@@ -53,7 +53,7 @@ namespace NeuronalNetworkReverseEngineering
             var interceptVector = LinAlg.Vector<double>.Build.Dense(new double[] { intercept1, intercept2 });
             var x = MinimiseDistanceToIntersection(paramMatrix, interceptVector, closestPoint);
 
-            return MathConvert.VectorToMatrix(closestPoint - x);
+            return MathConvert.VectorToRowMatrix(closestPoint - x);
         }
 
         /// <summary>

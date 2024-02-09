@@ -1,4 +1,5 @@
 ﻿using MathNet.Numerics;
+using MathNet.Numerics.LinearAlgebra;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -329,7 +330,8 @@ namespace NeuronalNetworkReverseEngineering
             }
             return retVal;
         }
-        public static HyperplaneIdentity CalculateLinearRegression(List<Matrix> points, bool hasIntercept)
+        [ObsoleteAttribute("Use only when necessary. It is recommended to use 'CalculateLinearRegression_PseudoInverse' instead.", false)]
+        public static HyperplaneIdentity CalculateLinearRegression_OrdinaryLeastSquares(List<Matrix> points, bool hasIntercept)
         {
             //--- Start: Working Example ---
             //double[] parameters = new[] { 2.37, -3.8, -0.22, 7.19 };
@@ -367,6 +369,48 @@ namespace NeuronalNetworkReverseEngineering
                 parameters.SetValue(i, 0, temp[i + (hasIntercept ? 1 : 0)]);
             }
             return new HyperplaneIdentity { Parameters = parameters, Intercept = hasIntercept ? temp[0] : 0 };
+        }
+
+        public static HyperplaneIdentity CalculateLinearRegression_PseudoInverse(List<Matrix> points, bool hasIntercept)
+        {
+            if (points.Count < 2)
+            {
+                return new HyperplaneIdentity { Parameters = null, Intercept = null };
+            }
+
+            double[][] xArr = new double[points.Count][];
+            double[] yArr = new double[points.Count];
+            for (int i = 0; i < points.Count; i++)
+            {
+                var flat = FlattenVector(points[i]);
+                xArr[i] = flat[..^1];
+                yArr[i] = flat[^1];
+            }
+
+            var X = Matrix<double>.Build.DenseOfRowArrays(xArr);
+
+            if (hasIntercept)
+            {
+                //Add a column of ones for the intercept:
+                var ones = Vector<double>.Build.Dense(X.RowCount, 1);
+                X = X.InsertColumn(0, ones);
+            }
+
+            var y = Vector<double>.Build.Dense(yArr);
+            var X_pseudoInverse = X.PseudoInverse();
+            var coefficients = X_pseudoInverse * y;
+
+            if (hasIntercept)
+            {
+                var parameters = coefficients.SubVector(0, coefficients.Count - 1);
+                var intercept = coefficients[coefficients.Count - 1];
+                return new HyperplaneIdentity { Parameters = MathConvert.VectorToColumnMatrix(parameters), Intercept = intercept };
+            }
+            else
+            {
+                return new HyperplaneIdentity { Parameters = MathConvert.VectorToColumnMatrix(coefficients), Intercept = 0 };
+            }
+
         }
 
 

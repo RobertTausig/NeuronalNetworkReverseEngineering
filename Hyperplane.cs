@@ -24,7 +24,7 @@ namespace NeuronalNetworkReverseEngineering
             //Math.Pow(10, -9) is the probability that the algorithm does not result in a successful hyperplane estimation for the assumed outlier percentage:
             this.ransacMaxIterations = (int)(Math.Log(Math.Pow(10, -9)) / Math.Log(1 - Math.Pow((1 - assumedRansacOutlierPercentage), ransacSampleSize)));
             this.pointsOnPlane = SupportPointsOnBoundary(boundaryPoint, 0, displacementNorm, directionNorm, maxMagnitude);
-            this.planeIdentity = Matrix.CalculateLinearRegression(pointsOnPlane, hasIntercept);
+            this.planeIdentity = Matrix.CalculateLinearRegression_PseudoInverse(pointsOnPlane, hasIntercept);
         }
         public Hyperplane(Model model, RansacAlgorithm ransacAlgorithm, List<Matrix> potentialPointsOnPlane, bool hasIntercept = true)
         {
@@ -37,14 +37,14 @@ namespace NeuronalNetworkReverseEngineering
             //Math.Pow(10, -9) is the probability that the algorithm does not result in a successful hyperplane estimation for the assumed outlier percentage:
             this.ransacMaxIterations = (int)(Math.Log(Math.Pow(10, -9)) / Math.Log(1 - Math.Pow((1 - assumedRansacOutlierPercentage), ransacSampleSize)));
             this.pointsOnPlane = this.ransacAlgorithm.Ransac(potentialPointsOnPlane, ransacSampleSize, ransacMaxIterations, ransacMaxDeviation, ransacInliersForBreakPercentage);
-            this.planeIdentity = Matrix.CalculateLinearRegression(this.pointsOnPlane, hasIntercept);
+            this.planeIdentity = Matrix.CalculateLinearRegression_PseudoInverse(this.pointsOnPlane, hasIntercept);
         }
         public Hyperplane(Model model, List<Matrix> pointsOnPlane, bool hasIntercept = true)
         {
             this.model = model;
             this.spaceDim = pointsOnPlane.First().numRow + pointsOnPlane.First().numCol - 1;
             this.pointsOnPlane = pointsOnPlane;
-            this.planeIdentity = Matrix.CalculateLinearRegression(pointsOnPlane, hasIntercept);
+            this.planeIdentity = Matrix.CalculateLinearRegression_PseudoInverse(pointsOnPlane, hasIntercept);
         }
         public Hyperplane(Model model, HyperplaneIdentity planeIdentity, bool hasIntercept = true)
         {

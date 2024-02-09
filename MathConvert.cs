@@ -61,13 +61,23 @@ namespace NeuronalNetworkReverseEngineering
             }
             return retVal;
         }
-        public static Matrix VectorToMatrix(LinAlg.Vector<double> input)
+        public static Matrix VectorToRowMatrix(LinAlg.Vector<double> input)
         {
             var retVal = new Matrix(1, input.Count);
 
             for (int i = 0; i < input.Count; i++)
             {
                 retVal.content[0, i] = input[i];
+            }
+            return retVal;
+        }
+        public static Matrix VectorToColumnMatrix(LinAlg.Vector<double> input)
+        {
+            var retVal = new Matrix(input.Count, 1);
+
+            for (int i = 0; i < input.Count; i++)
+            {
+                retVal.content[i, 0] = input[i];
             }
             return retVal;
         }
