@@ -18,6 +18,7 @@ namespace NeuronalNetworkReverseEngineering
         private const double stdRadius = 60;
         private const double stdMinPointDistance = 0.1;
         private const int stdMaxMagnitude = 20;
+        private const int stdMaxPointLimit = 7;
 
         public (Matrix midPoint, Matrix directionVector) RandomSecantLine(double radius = stdRadius, double minPointDistance = stdMinPointDistance)
         {
@@ -36,20 +37,20 @@ namespace NeuronalNetworkReverseEngineering
 
             return (midPoint, directionVector);
         }
-        public List<Matrix> BidirectionalLinearRegionChanges(Matrix startPoint, Matrix directionVector, int maxMagnitude = stdMaxMagnitude)
+        public List<Matrix> BidirectionalLinearRegionChanges(Matrix startPoint, Matrix directionVector, int maxMagnitude = stdMaxMagnitude, bool hasPointLimit = false)
         {
             var positivePath = LinearRegionChanges(startPoint, directionVector, maxMagnitude);
             var negativePath = LinearRegionChanges(startPoint, Matrix.Multiplication(directionVector, -1), maxMagnitude);
             positivePath.Reverse();
             return positivePath.Concat(negativePath).ToList();
         }
-        public List<Matrix> LinearRegionChanges(Matrix startPoint, Matrix directionVector, int maxMagnitude = stdMaxMagnitude)
+        public List<Matrix> LinearRegionChanges(Matrix startPoint, Matrix directionVector, int maxMagnitude = stdMaxMagnitude, bool hasPointLimit = false)
         {
             var retVal = new List<Matrix>();
 
             var oldSamplePoint = Matrix.Addition(startPoint, directionVector);
             var oldOutputDiff = Matrix.Substraction(model.Use(oldSamplePoint), model.Use(startPoint));
-            for (int stretchMagnitude = 0; stretchMagnitude < maxMagnitude; stretchMagnitude++)
+            for (int stretchMagnitude = 0; stretchMagnitude < maxMagnitude && (hasPointLimit? retVal.Count < stdMaxPointLimit : true); stretchMagnitude++)
             {
                 var newSamplePoint = Matrix.Addition(oldSamplePoint, Matrix.Multiplication(directionVector, Math.Pow(2, stretchMagnitude)));
                 var newOutPutDiff = Matrix.Substraction(model.Use(newSamplePoint), model.Use(Matrix.Substraction(newSamplePoint, directionVector)));

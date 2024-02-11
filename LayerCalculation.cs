@@ -23,18 +23,18 @@ namespace NeuronalNetworkReverseEngineering
         private int saltIncreasePerUsage = 1_000;
 
         private int stdMaxMagnitude = 8;
-        private int stdNumTestPoints = 100;
+        private int stdNumTestPoints = 50;
         private int stdNumTestLines = 30;
 
         public SpaceLineBundle DriveLinesThroughSpace(int numLines, bool enableSafeDistance = true)
         {
             int sumHiddenLayerDims = model.topology[1..^1].Sum(x => x);
-            double constRadius = Math.Pow(sumHiddenLayerDims, 2) * sumHiddenLayerDims;
-            double constMinIsApartDistance = constRadius / Math.Pow(sumHiddenLayerDims, 2);
+            double constRadius = 250 * sumHiddenLayerDims;
+            double constMinIsApartDistance = sumHiddenLayerDims / 4;
             double constMinSafeDistance = constMinIsApartDistance / 4;
             double constMinStartingDistance = constMinSafeDistance / 4;
             double constMinPointDistance = constMinStartingDistance / 10;
-            int constMaxMagnitude = 16;
+            int constMaxMagnitude = 18;
 
             var conc = new ConcurrentDictionary<int, SpaceLine>();
             // Why doing this:
@@ -50,7 +50,11 @@ namespace NeuronalNetworkReverseEngineering
                 while (loopCondition)
                 {
                     var (midPoint, directionVector) = tempSampler.RandomSecantLine(radius: constRadius, minPointDistance: constMinPointDistance);
-                    var boundaryPointsSuggestion = tempSampler.BidirectionalLinearRegionChanges(midPoint, directionVector, constMaxMagnitude);
+                    var boundaryPointsSuggestion = tempSampler.BidirectionalLinearRegionChanges(midPoint, directionVector, constMaxMagnitude, hasPointLimit: true);
+                    if (boundaryPointsSuggestion.Count < 3)
+                    {
+                        continue;
+                    }
                     if (IsSpacedApart(boundaryPointsSuggestion, constMinIsApartDistance))
                     {
                         if (!enableSafeDistance)
@@ -64,6 +68,8 @@ namespace NeuronalNetworkReverseEngineering
                         }
                         else
                         {
+                            boundaryPointsSuggestion.RemoveAt(0);
+                            boundaryPointsSuggestion.RemoveAt(boundaryPointsSuggestion.Count - 1);
                             foreach (var point in boundaryPointsSuggestion)
                             {
                                 var tempSafeDistance = tempSphere.MinimumDistanceToDifferentBoundary(point, constMinStartingDistance);

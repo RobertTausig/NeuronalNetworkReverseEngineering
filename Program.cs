@@ -27,19 +27,19 @@ namespace NeuronalNetworkReverseEngineering
             var layer = new LayerCalculation(model, sphere);
 
             int geometricArithmeticMean = (int)((Math.Sqrt(firstLayerDim * secondLayerDim) + (firstLayerDim + secondLayerDim) / 2) / 2);
-            int numLines = geometricArithmeticMean;
+            int numLines = geometricArithmeticMean + 5;
             var initialBundle = layer.DriveLinesThroughSpace(numLines: numLines);
+            // For debugging:
+            //var averageLinePoints = initialBundle.SpaceLines.Average(x => x.SpaceLinePoints.Count);
             var initialHyperplanesColl = layer.SpaceLinesToHyperplanes(initialBundle);
             var initialDistinctHyperplanes = layer.DistinctHyperplanes(initialHyperplanesColl);
-            var firstLayerPlanes = layer.GetFirstLayer(initialDistinctHyperplanes, 1_000);
+            var firstLayerPlanes = layer.GetFirstLayer(initialDistinctHyperplanes, 5_000);
 
             var analyzeResult = model.AnalyzeFirstLayerResults(firstLayerPlanes);
 
             //var outermostSecondLayerPlanes = initialDistinctHyperplanes.Except(firstLayerPlanes).ToList();
-
             //var bender = new HyperplaneBending(model);
             //var bb = bender.MoveAlongBend(outermostSecondLayerPlanes[0], firstLayerPlanes);
-
 
             clock.Stop();
             Console.WriteLine("Time passed: " + clock.Elapsed.TotalMilliseconds);
