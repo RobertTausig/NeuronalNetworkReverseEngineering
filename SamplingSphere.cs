@@ -117,7 +117,10 @@ namespace NeuronalNetworkReverseEngineering
         public List<bool> FirstLayerTest(Hyperplane plane, int numTestPoints, double radius)
         {
             var retVal = new List<Matrix>();
-            var maxTestLines = (plane.spaceDim + 1) * 5;
+            //Why so few maxTestLines?
+            //  It was found that a high number increases the likelihood of false positives vastly more than the likelihood if true positives.
+            //  In other words: Points of first-layer-planes will fulfill the test quickly, typically at j=(0 to 2).
+            int maxTestLines = (int)Math.Sqrt(plane.spaceDim) + 6;
             var conc = new ConcurrentDictionary<int, bool>();
 
             var result = Parallel.For(0, numTestPoints, index =>
