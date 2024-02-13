@@ -28,7 +28,7 @@ namespace NeuronalNetworkReverseEngineering
             var retVal = new List<Matrix>();
 
             var spaceDim = boundaryPoint.numRow + boundaryPoint.numCol - 1;
-            var iterations = (spaceDim + 1) * 30;
+            var iterations = 200;
             var iterationGrowth = Math.Pow(50_000, 1.0 / iterations);
 
             var conc = new ConcurrentDictionary<int, Matrix>();
