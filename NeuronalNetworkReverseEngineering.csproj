@@ -4,10 +4,10 @@
     <OutputType>Exe</OutputType>
     <TargetFramework>net8.0</TargetFramework>
     <Authors>Armin Lohse</Authors>
-    <Version>1.0.240214</Version>
-    <FileVersion>1.0.240214</FileVersion>
-    <AssemblyVersion>1.0.240214</AssemblyVersion>
+    <Version>1.24.0214</Version>
     <RepositoryUrl>https://github.com/RobertTausig/NeuronalNetworkReverseEngineering</RepositoryUrl>
+    <FileVersion>1.24.0214</FileVersion>
+    <AssemblyVersion>1.24.0214</AssemblyVersion>
   </PropertyGroup>
 
   <ItemGroup>
