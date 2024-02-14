@@ -114,13 +114,14 @@ namespace NeuronalNetworkReverseEngineering
             }
         }
 
-        public List<bool> FirstLayerTest(Hyperplane plane, int numTestPoints, double radius)
+        public List<bool> FirstLayerTest(Hyperplane plane, int numTestPoints, (double minRadius, double maxRadius) radiusRange)
         {
             var retVal = new List<Matrix>();
             //Why so few maxTestLines?
             //  It was found that a high number increases the likelihood of false positives vastly more than the likelihood if true positives.
             //  In other words: Points of first-layer-planes will fulfill the test quickly, typically at j=(0 to 2).
             int maxTestLines = (int)Math.Sqrt(plane.spaceDim) + 6;
+            double radiusStep = (radiusRange.maxRadius - radiusRange.minRadius) / numTestPoints;
             var conc = new ConcurrentDictionary<int, bool>();
 
             var result = Parallel.For(0, numTestPoints, index =>
@@ -128,13 +129,13 @@ namespace NeuronalNetworkReverseEngineering
                 var tempModel = model.Copy(index + salt);
                 var tempSampler = new SamplingLine(tempModel);
 
+                var radius = radiusRange.minRadius + radiusStep * index;
                 var genPoint = plane.GenerateRandomPointOnPlane(radius);
-                var norm = Matrix.GetEuclideanNormForVector(genPoint);
                 for (int j = 0; j < maxTestLines; j++)
                 {
                     var directionVector = new Matrix(genPoint.numRow, genPoint.numCol);
                     directionVector.PopulateAllRandomlyFarFromZero(tempModel.RandomGenerator);
-                    directionVector = Matrix.NormalizeVector(directionVector, (double)norm / radius * 8);
+                    directionVector = Matrix.NormalizeVector(directionVector, radius / 1_000);
                     if (tempSampler.IsPointInRangeOfBoundary(genPoint, directionVector))
                     {
                         conc.TryAdd(index, true);

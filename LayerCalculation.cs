@@ -26,6 +26,9 @@ namespace NeuronalNetworkReverseEngineering
         private int stdNumTestPoints = 50;
         private int stdNumTestLines = 30;
 
+        private double stdMinRadius = 1_000;
+        private double stdMaxRadius = 25_000;
+
         public SpaceLineBundle DriveLinesThroughSpace(int numLines, bool enableSafeDistance = true)
         {
             int sumHiddenLayerDims = model.topology[1..^1].Sum(x => x);
@@ -148,7 +151,7 @@ namespace NeuronalNetworkReverseEngineering
             }
             return retVal;
         }
-        public List<Hyperplane> GetFirstLayer(List<Hyperplane> distinctHyperplanes, double testRadius)
+        public List<Hyperplane> GetFirstLayer(List<Hyperplane> distinctHyperplanes)
         {
             var conc = new ConcurrentDictionary<int, Hyperplane>();
             var result = Parallel.For(0, distinctHyperplanes.Count, index =>
@@ -157,7 +160,7 @@ namespace NeuronalNetworkReverseEngineering
                 var tempSphere = new SamplingSphere(tempModel);
                 var plane = distinctHyperplanes[index];
 
-                var temp = tempSphere.FirstLayerTest(plane, stdNumTestPoints, testRadius);
+                var temp = tempSphere.FirstLayerTest(plane, stdNumTestPoints, (stdMinRadius, stdMaxRadius));
                 if (temp.Count > 0.8 * stdNumTestPoints)
                 {
                     conc.TryAdd(index, plane);
