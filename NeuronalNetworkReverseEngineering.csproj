@@ -5,6 +5,9 @@
     <TargetFramework>net8.0</TargetFramework>
     <Authors>Armin Lohse</Authors>
     <Version>1.0.240214</Version>
+    <FileVersion>1.0.240214</FileVersion>
+    <AssemblyVersion>1.0.240214</AssemblyVersion>
+    <RepositoryUrl>https://github.com/RobertTausig/NeuronalNetworkReverseEngineering</RepositoryUrl>
   </PropertyGroup>
 
   <ItemGroup>
