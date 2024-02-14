@@ -3,6 +3,8 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>net8.0</TargetFramework>
+    <Authors>Armin Lohse</Authors>
+    <Version>1.0.240214</Version>
   </PropertyGroup>
 
   <ItemGroup>
