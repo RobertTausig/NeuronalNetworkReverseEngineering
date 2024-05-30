@@ -39,7 +39,7 @@ namespace NeuronalNetworkReverseEngineering
             var initialBundle = layer.DriveLinesThroughSpace(numLines: numLines);
             var initialHyperplanesColl = layer.SpaceLinesToHyperplanes(initialBundle);
             var initialDistinctHyperplanes = layer.DistinctHyperplanes(initialHyperplanesColl);
-            var firstLayerPlanes = layer.GetFirstLayer(initialDistinctHyperplanes);
+            var (firstLayerPlanes, otherLayerPlanes) = layer.DistinguishBySampleability(initialDistinctHyperplanes);
 
             var analyzeResult = model.AnalyzeFirstLayerResults(firstLayerPlanes);
 

@@ -15,6 +15,8 @@ namespace NeuronalNetworkReverseEngineering
             this.model = model;
             this.sphere = sphere;
             this.salt = model.RandomGenerator.Next();
+            this.stdMinRadius = 250 * model.topology[1..^1].Sum(x => x);
+            this.stdMaxRadius = stdMinRadius * 8;
         }
 
         private Model model { get; }
@@ -26,14 +28,12 @@ namespace NeuronalNetworkReverseEngineering
         private int stdNumTestPoints = 50;
         private int stdNumTestLines = 30;
 
-        private double stdMinRadius = 1_000;
-        private double stdMaxRadius = 25_000;
+        private double stdMinRadius;
+        private double stdMaxRadius;
 
         public SpaceLineBundle DriveLinesThroughSpace(int numLines, bool enableSafeDistance = true)
         {
-            int sumHiddenLayerDims = model.topology[1..^1].Sum(x => x);
-            double constRadius = 250 * sumHiddenLayerDims;
-            double constMinIsApartDistance = sumHiddenLayerDims / 4;
+            double constMinIsApartDistance = stdMinRadius / 1_000;
             double constMinSafeDistance = constMinIsApartDistance / 4;
             double constMinStartingDistance = constMinSafeDistance / 4;
             double constMinPointDistance = constMinStartingDistance / 10;
@@ -52,7 +52,7 @@ namespace NeuronalNetworkReverseEngineering
                 bool loopCondition = true;
                 while (loopCondition)
                 {
-                    var (midPoint, directionVector) = tempSampler.RandomSecantLine(radius: constRadius, minPointDistance: constMinPointDistance);
+                    var (midPoint, directionVector) = tempSampler.RandomSecantLine(radius: stdMinRadius, minPointDistance: constMinPointDistance);
                     var boundaryPointsSuggestion = tempSampler.BidirectionalLinearRegionChanges(midPoint, directionVector, constMaxMagnitude, hasPointLimit: true);
                     if (boundaryPointsSuggestion.Count < 3)
                     {
@@ -151,9 +151,10 @@ namespace NeuronalNetworkReverseEngineering
             }
             return retVal;
         }
-        public List<Hyperplane> GetFirstLayer(List<Hyperplane> distinctHyperplanes)
+        public (List<Hyperplane> firstLayerPlanes, List<Hyperplane> otherLayerPlanes) DistinguishBySampleability(List<Hyperplane> distinctHyperplanes)
         {
-            var conc = new ConcurrentDictionary<int, Hyperplane>();
+            var s_One = new ConcurrentDictionary<int, Hyperplane>();
+            var s_ZeroToHalf = new ConcurrentDictionary<int, Hyperplane>();
             var result = Parallel.For(0, distinctHyperplanes.Count, index =>
             {
                 var tempModel = model.Copy(index + salt);
@@ -161,16 +162,25 @@ namespace NeuronalNetworkReverseEngineering
                 var plane = distinctHyperplanes[index];
 
                 var temp = tempSphere.FirstLayerTest(plane, stdNumTestPoints, (stdMinRadius, stdMaxRadius));
-                if (temp.Count > 0.8 * stdNumTestPoints)
+                if (temp.Count + 1 > 0.90 * stdNumTestPoints)
                 {
-                    conc.TryAdd(index, plane);
+                    s_One.TryAdd(index, plane);
+                }
+                else if (temp.Count - 1 < 0.50 * stdNumTestPoints)
+                {
+                    s_ZeroToHalf.TryAdd(index, plane);
+                }
+                else
+                {
+                    //TODO: Program runs frequently into this. This should never happen.
+                    throw new Exception("Could not assess sampleability of hyperplane unambiguously.");
                 }
             });
 
             salt += saltIncreasePerUsage;
             if (result.IsCompleted)
             {
-                return conc.Values.ToList();
+                return (s_One.Values.ToList(), s_ZeroToHalf.Values.ToList());
             }
             else
             {

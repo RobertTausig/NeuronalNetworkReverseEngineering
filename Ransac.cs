@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace NeuronalNetworkReverseEngineering
 {
-    class RansacAlgorithm
+    public class RansacAlgorithm
     {
         public RansacAlgorithm(Model model)
         {

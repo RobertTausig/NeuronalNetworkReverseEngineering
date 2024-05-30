@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace NeuronalNetworkReverseEngineering
 {
-    class Hyperplane
+    public class Hyperplane
     {
         public Hyperplane(Model model, RansacAlgorithm ransacAlgorithm, Matrix boundaryPoint, double displacementNorm = 1, bool hasIntercept = true)
         {

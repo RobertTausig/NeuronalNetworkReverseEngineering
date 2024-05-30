@@ -9,7 +9,7 @@ using analyzeResult = (bool allFound, double recoveryRatio, double medianAccurac
 
 namespace NeuronalNetworkReverseEngineering
 {
-    class Model
+    public class Model
     {
         public Model(int[] topology, bool hasBias)
         {
