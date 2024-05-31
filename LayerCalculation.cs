@@ -134,7 +134,7 @@ namespace NeuronalNetworkReverseEngineering
             salt+= saltIncreasePerUsage;
             return retVal;
         }
-        public List<Hyperplane> DistinctHyperplanes(List<List<Hyperplane>> hyperPlanesColl)
+        public List<Hyperplane> DistinctHyperplanes(List<List<Hyperplane>> hyperPlanesColl, double cosineSimilarityThreshold = 0.999)
         {
             var retVal = new List<Hyperplane>();
 
@@ -143,7 +143,7 @@ namespace NeuronalNetworkReverseEngineering
                 for (int j = 0; j < hyperPlanesColl[i].Count; j++)
                 {
                     var temp = hyperPlanesColl[i][j];
-                    if (!retVal.Any(x => true == Matrix.ApproxEqual(temp.planeIdentity.Parameters, x.planeIdentity.Parameters, 0.2)))
+                    if (!retVal.Any(x => cosineSimilarityThreshold < Math.Abs(Hyperplane.NormalVectorCosineSimilarity(temp, x))))
                     {
                         retVal.Add(temp);
                     }

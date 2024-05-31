@@ -240,7 +240,33 @@ namespace NeuronalNetworkReverseEngineering
             printStr.AppendLine("intercept: " + planeIdentity.Intercept.ToString());
             Console.Write(printStr);
         }
+        public static double NormalVectorCosineSimilarity(Hyperplane h1, Hyperplane h2)
+        {
+            var vectorA = Matrix.FlattenVector(h1.planeIdentity.Parameters);
+            var vectorB = Matrix.FlattenVector(h2.planeIdentity.Parameters);
+            if (vectorA.Length != vectorB.Length)
+            {
+                throw new ArgumentException("Hyperplanes must be of the same dimension.");
+            }
 
+            double dotProduct = 0.0;
+            double magnitudeA = 0.0;
+            double magnitudeB = 0.0;
+
+            for (int i = 0; i < vectorA.Length; i++)
+            {
+                dotProduct += vectorA[i] * vectorB[i];
+                magnitudeA += vectorA[i] * vectorA[i];
+                magnitudeB += vectorB[i] * vectorB[i];
+            }
+
+            if (magnitudeA == 0.0 || magnitudeB == 0.0)
+            {
+                throw new ArgumentException("One or both of the vectors contain only zeroes.");
+            }
+
+            return dotProduct / (Math.Sqrt(magnitudeA) * Math.Sqrt(magnitudeB));
+        }
 
     }
 }
