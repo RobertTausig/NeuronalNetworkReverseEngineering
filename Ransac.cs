@@ -45,6 +45,10 @@ namespace NeuronalNetworkReverseEngineering
                     retVal = inliers;
                     break;
                 }
+                if (i == maxIterations - 1)
+                {
+                    throw new Exception("Ransac couldn't converge.");
+                }
             }
 
             return retVal;
