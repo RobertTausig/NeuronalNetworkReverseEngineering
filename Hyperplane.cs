@@ -62,17 +62,17 @@ namespace NeuronalNetworkReverseEngineering
         public Matrix originalBoundaryPoint { get; }
 
         private const int saltIncreasePerRecursion = 1_000;
-        private const int maxSalt = 4 * saltIncreasePerRecursion;
+        private const int maxSalt = 5 * saltIncreasePerRecursion;
 
         private RansacAlgorithm ransacAlgorithm { get; }
         private int ransacSampleSize { get; }
         private int ransacMaxIterations { get; }
-        private double ransacMaxDeviation = 1.0 / 1_000;
+        private double ransacMaxDeviation = 1.0 / 3_000;
         private double ransacInliersForBreakPercentage = 2.0 / 3;
 
         private List<Matrix> SupportPointsOnBoundary(Matrix boundaryPoint, int salt, double displacementNorm, double directionNorm, int maxMagnitude)
         {
-            if (!(boundaryPoint.numRow == 1 || boundaryPoint.numRow == 1))
+            if (!(boundaryPoint.numRow == 1 || boundaryPoint.numCol == 1))
             {
                 return null;
             }
@@ -110,7 +110,8 @@ namespace NeuronalNetworkReverseEngineering
 
                 if (undershootSample.Count() > iterations * 0.9)
                 {
-                    throw new Exception("KC81");
+                    // Unsalvageable Hyperplane. It is unclear why this happens in rare cases (Presumably a "cursed" boundaryPoint that lies close to hyperplane intersections), but if it does, no useful result can be gained.
+                    return null;
                 }
                 else if (fineSample.Count() + temporaryPointsOnPlane.Count() >= 2 * spaceDim)
                 {

@@ -135,7 +135,7 @@ namespace NeuronalNetworkReverseEngineering
                 {
                     var directionVector = new Matrix(genPoint.numRow, genPoint.numCol);
                     directionVector.PopulateAllRandomlyFarFromZero(tempModel.RandomGenerator);
-                    directionVector = Matrix.NormalizeVector(directionVector, radius / 1_000);
+                    directionVector = Matrix.NormalizeVector(directionVector, radius / 500);
                     if (tempSampler.IsPointInRangeOfBoundary(genPoint, directionVector))
                     {
                         conc.TryAdd(index, true);

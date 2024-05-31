@@ -35,7 +35,7 @@ namespace NeuronalNetworkReverseEngineering
             var layer = new LayerCalculation(model, sphere);
 
             int geometricArithmeticMean = (int)((Math.Sqrt(firstLayerDim * secondLayerDim) + (firstLayerDim + secondLayerDim) / 2) / 2);
-            int numLines = geometricArithmeticMean + 5;
+            int numLines = geometricArithmeticMean + 10;
             var initialBundle = layer.DriveLinesThroughSpace(numLines: numLines);
             var initialHyperplanesColl = layer.SpaceLinesToHyperplanes(initialBundle);
             var initialDistinctHyperplanes = layer.DistinctHyperplanes(initialHyperplanesColl);

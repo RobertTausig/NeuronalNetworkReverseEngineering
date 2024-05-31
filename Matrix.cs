@@ -373,7 +373,7 @@ namespace NeuronalNetworkReverseEngineering
 
         public static HyperplaneIdentity CalculateLinearRegression_PseudoInverse(List<Matrix> points, bool hasIntercept)
         {
-            if (points.Count < 2)
+            if (points == null || points.Count < 2)
             {
                 return new HyperplaneIdentity { Parameters = null, Intercept = null };
             }

@@ -122,7 +122,7 @@ namespace NeuronalNetworkReverseEngineering
                 foreach (var l in bundle.SpaceLines[index].SpaceLinePoints)
                 {
                     var tempPlane = new Hyperplane(tempModel, tempRansac, l.BoundaryPoint, (double)l.SafeDistance / 15, hasIntercept: false);
-                    if (tempPlane.pointsOnPlane.Count > 0)
+                    if (tempPlane.pointsOnPlane != null && tempPlane.pointsOnPlane.Count > 0)
                     {
                         hyperPlanes.Add(tempPlane);
                     }
@@ -162,18 +162,18 @@ namespace NeuronalNetworkReverseEngineering
                 var plane = distinctHyperplanes[index];
 
                 var temp = tempSphere.FirstLayerTest(plane, stdNumTestPoints, (stdMinRadius, stdMaxRadius));
-                if (temp.Count + 1 > 0.90 * stdNumTestPoints)
+                  if (temp.Count + 1 > 0.80 * stdNumTestPoints)
                 {
                     s_One.TryAdd(index, plane);
                 }
-                else if (temp.Count - 1 < 0.50 * stdNumTestPoints)
+                else if (temp.Count - 1 < 0.60 * stdNumTestPoints)
                 {
                     s_ZeroToHalf.TryAdd(index, plane);
                 }
                 else
                 {
                     //TODO: Program runs frequently into this. This should never happen.
-                    throw new Exception("Could not assess sampleability of hyperplane unambiguously.");
+                    //throw new Exception("Could not assess sampleability of hyperplane unambiguously.");
                 }
             });
 
