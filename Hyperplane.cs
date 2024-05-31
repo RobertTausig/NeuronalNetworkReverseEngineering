@@ -12,9 +12,8 @@ namespace NeuronalNetworkReverseEngineering
     {
         public Hyperplane(Model model, RansacAlgorithm ransacAlgorithm, Matrix boundaryPoint, double displacementNorm = 1, bool hasIntercept = true)
         {
-            int maxMagnitude = 12;
+            int maxMagnitude = 14;
             double directionNorm = 6.0 * displacementNorm / Math.Pow(2, maxMagnitude);
-            double assumedRansacOutlierPercentage = 0.1;
 
             this.model = model;
             this.ransacAlgorithm = ransacAlgorithm;
@@ -28,8 +27,6 @@ namespace NeuronalNetworkReverseEngineering
         }
         public Hyperplane(Model model, RansacAlgorithm ransacAlgorithm, List<Matrix> potentialPointsOnPlane, bool hasIntercept = true)
         {
-            double assumedRansacOutlierPercentage = 0.1;
-
             this.model = model;
             this.ransacAlgorithm = ransacAlgorithm;
             this.spaceDim = potentialPointsOnPlane.First().numRow + potentialPointsOnPlane.First().numCol - 1;
@@ -67,8 +64,9 @@ namespace NeuronalNetworkReverseEngineering
         private RansacAlgorithm ransacAlgorithm { get; }
         private int ransacSampleSize { get; }
         private int ransacMaxIterations { get; }
-        private double ransacMaxDeviation = 1.0 / 3_000;
-        private double ransacInliersForBreakPercentage = 2.0 / 3;
+        private const double ransacMaxDeviation = 1.0 / 4_000;
+        private const double ransacInliersForBreakPercentage = 0.55;
+        private const double assumedRansacOutlierPercentage = 0.16;
 
         private List<Matrix> SupportPointsOnBoundary(Matrix boundaryPoint, int salt, double displacementNorm, double directionNorm, int maxMagnitude)
         {
@@ -83,7 +81,7 @@ namespace NeuronalNetworkReverseEngineering
 
             var supportPoints = new List<Matrix>();
             var bag = new ConcurrentBag<List<Matrix>>();
-            int iterations = 2 * spaceDim + 6;
+            int iterations = (int)(2.1 * spaceDim + 6);
             var result = Parallel.For(0, iterations, index =>
             {
                 var tempModel = model.Copy(index + salt);
