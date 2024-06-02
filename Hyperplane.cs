@@ -20,8 +20,8 @@ namespace NeuronalNetworkReverseEngineering
             this.originalBoundaryPoint = boundaryPoint;
             this.spaceDim = boundaryPoint.numRow + boundaryPoint.numCol - 1;
             this.ransacSampleSize = spaceDim;
-            //Math.Pow(10, -9) is the probability that the algorithm does not result in a successful hyperplane estimation for the assumed outlier percentage:
-            this.ransacMaxIterations = (int)(Math.Log(Math.Pow(10, -9)) / Math.Log(1 - Math.Pow((1 - assumedRansacOutlierPercentage), ransacSampleSize)));
+            //Math.Pow(10, -6) is the probability that the algorithm does not result in a successful hyperplane estimation for the assumed outlier percentage:
+            this.ransacMaxIterations = 2 + (int)(Math.Log(Math.Pow(10, -6)) / Math.Log(1 - Math.Pow((1 - assumedRansacOutlierPercentage), ransacSampleSize)));
             this.pointsOnPlane = SupportPointsOnBoundary(boundaryPoint, 0, displacementNorm, directionNorm, maxMagnitude);
             this.planeIdentity = Matrix.CalculateLinearRegression_PseudoInverse(pointsOnPlane, hasIntercept);
         }
@@ -31,8 +31,8 @@ namespace NeuronalNetworkReverseEngineering
             this.ransacAlgorithm = ransacAlgorithm;
             this.spaceDim = potentialPointsOnPlane.First().numRow + potentialPointsOnPlane.First().numCol - 1;
             this.ransacSampleSize = spaceDim;
-            //Math.Pow(10, -9) is the probability that the algorithm does not result in a successful hyperplane estimation for the assumed outlier percentage:
-            this.ransacMaxIterations = (int)(Math.Log(Math.Pow(10, -9)) / Math.Log(1 - Math.Pow((1 - assumedRansacOutlierPercentage), ransacSampleSize)));
+            //Math.Pow(10, -6) is the probability that the algorithm does not result in a successful hyperplane estimation for the assumed outlier percentage:
+            this.ransacMaxIterations = 2 + (int)(Math.Log(Math.Pow(10, -6)) / Math.Log(1 - Math.Pow((1 - assumedRansacOutlierPercentage), ransacSampleSize)));
             (this.ransacMaxDeviation, this.pointsOnPlane) = this.ransacAlgorithm.Ransac(potentialPointsOnPlane, ransacSampleSize, ransacMaxIterations, ransacMaxDeviation, ransacInliersForBreakPercentage, true);
             this.planeIdentity = Matrix.CalculateLinearRegression_PseudoInverse(this.pointsOnPlane, hasIntercept);
         }
@@ -66,7 +66,7 @@ namespace NeuronalNetworkReverseEngineering
         private int ransacMaxIterations { get; }
         private double ransacMaxDeviation = 1.0 / 8_000;
         private const double ransacInliersForBreakPercentage = 0.55;
-        private const double assumedRansacOutlierPercentage = 0.16;
+        private const double assumedRansacOutlierPercentage = 0.10;
 
         private List<Matrix> SupportPointsOnBoundary(Matrix boundaryPoint, int salt, double displacementNorm, double directionNorm, int maxMagnitude)
         {
