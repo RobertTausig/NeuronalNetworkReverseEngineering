@@ -64,7 +64,7 @@ namespace NeuronalNetworkReverseEngineering
         private RansacAlgorithm ransacAlgorithm { get; }
         private int ransacSampleSize { get; }
         private int ransacMaxIterations { get; }
-        private double ransacMaxDeviation = 1.0 / 6_000;
+        private double ransacMaxDeviation = 1.0 / 8_000;
         private const double ransacInliersForBreakPercentage = 0.55;
         private const double assumedRansacOutlierPercentage = 0.16;
 

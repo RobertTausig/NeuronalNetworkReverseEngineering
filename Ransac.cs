@@ -16,7 +16,16 @@ namespace NeuronalNetworkReverseEngineering
 
         private Model model { get; }
         private double maxForceConvergenceFactor = 20;
-
+        /// <summary>
+        /// Returns an empty List of Inliers if it couldn't converge (i.e. maxIterations were overstepped).
+        /// </summary>
+        /// <param name="data"></param>
+        /// <param name="sampleSize"></param>
+        /// <param name="maxIterations"></param>
+        /// <param name="maxDeviation"></param>
+        /// <param name="ransacInliersForBreakPercentage"></param>
+        /// <param name="forceConvergence"></param>
+        /// <returns></returns>
         public (double usedMaxDeviation, List<Matrix> Inliers) Ransac(List<Matrix> data, int sampleSize, int maxIterations, double maxDeviation, double ransacInliersForBreakPercentage, bool forceConvergence = false)
         {
             var retVal = new List<Matrix>();
@@ -49,10 +58,6 @@ namespace NeuronalNetworkReverseEngineering
                 {
                     retVal = inliers;
                     break;
-                }
-                if (i == maxIterations - 1)
-                {
-                    throw new Exception("Ransac couldn't converge.");
                 }
             }
 
