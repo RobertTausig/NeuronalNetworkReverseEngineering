@@ -76,7 +76,8 @@ namespace NeuronalNetworkReverseEngineering
             }
             if (salt >= maxSalt)
             {
-                throw new Exception("KR09");
+                // Unsalvageable Hyperplane. It is unclear why this happens in rare cases (Presumably a "cursed" boundaryPoint that lies close to hyperplane intersections), but if it does, no useful result can be gained.
+                return null;
             }
 
             var supportPoints = new List<Matrix>();
