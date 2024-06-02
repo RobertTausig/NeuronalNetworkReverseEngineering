@@ -15,14 +15,19 @@ namespace NeuronalNetworkReverseEngineering
         }
 
         private Model model { get; }
+        private double maxForceConvergenceFactor = 20;
 
-
-        public List<Matrix> Ransac(List<Matrix> data, int sampleSize, int maxIterations, double maxDeviation, double ransacInliersForBreakPercentage)
+        public (double usedMaxDeviation, List<Matrix> Inliers) Ransac(List<Matrix> data, int sampleSize, int maxIterations, double maxDeviation, double ransacInliersForBreakPercentage, bool forceConvergence = false)
         {
             var retVal = new List<Matrix>();
+            double scalingFactor = Math.Pow(maxForceConvergenceFactor, 1.0 / maxIterations);
 
             for (int i = 0; i < maxIterations; i++)
             {
+                if(forceConvergence)
+                {
+                    maxDeviation = maxDeviation * scalingFactor;
+                }
                 var inliers = new List<Matrix>();
                 var sample = Sample(data, sampleSize);
                 (var errorThreshold, var hyperplane) = FittingFunction(sample, false, maxDeviation);
@@ -51,7 +56,7 @@ namespace NeuronalNetworkReverseEngineering
                 }
             }
 
-            return retVal;
+            return (maxDeviation, retVal);
         }
         public bool Test()
         {
@@ -86,9 +91,9 @@ namespace NeuronalNetworkReverseEngineering
             data.AddRange(outliers);
 
             var result = Ransac(data, 3 * spaceDim, 5_000, 1.0 / 1_000, 2.0 / 3);
-            if (result.Count == numInliers)
+            if (result.Inliers.Count == numInliers)
             {
-                retVal = !result.Any(x => outliers.Contains(x));
+                retVal = !result.Inliers.Any(x => outliers.Contains(x));
             }
             return retVal;
         }

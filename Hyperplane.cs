@@ -33,7 +33,7 @@ namespace NeuronalNetworkReverseEngineering
             this.ransacSampleSize = spaceDim;
             //Math.Pow(10, -9) is the probability that the algorithm does not result in a successful hyperplane estimation for the assumed outlier percentage:
             this.ransacMaxIterations = (int)(Math.Log(Math.Pow(10, -9)) / Math.Log(1 - Math.Pow((1 - assumedRansacOutlierPercentage), ransacSampleSize)));
-            this.pointsOnPlane = this.ransacAlgorithm.Ransac(potentialPointsOnPlane, ransacSampleSize, ransacMaxIterations, ransacMaxDeviation, ransacInliersForBreakPercentage);
+            (this.ransacMaxDeviation, this.pointsOnPlane) = this.ransacAlgorithm.Ransac(potentialPointsOnPlane, ransacSampleSize, ransacMaxIterations, ransacMaxDeviation, ransacInliersForBreakPercentage, true);
             this.planeIdentity = Matrix.CalculateLinearRegression_PseudoInverse(this.pointsOnPlane, hasIntercept);
         }
         public Hyperplane(Model model, List<Matrix> pointsOnPlane, bool hasIntercept = true)
@@ -64,7 +64,7 @@ namespace NeuronalNetworkReverseEngineering
         private RansacAlgorithm ransacAlgorithm { get; }
         private int ransacSampleSize { get; }
         private int ransacMaxIterations { get; }
-        private const double ransacMaxDeviation = 1.0 / 4_000;
+        private double ransacMaxDeviation = 1.0 / 6_000;
         private const double ransacInliersForBreakPercentage = 0.55;
         private const double assumedRansacOutlierPercentage = 0.16;
 
@@ -119,7 +119,9 @@ namespace NeuronalNetworkReverseEngineering
                     }
                     supportPoints.AddRange(temporaryPointsOnPlane);
                     temporaryPointsOnPlane.Clear();
-                    return ransacAlgorithm.Ransac(supportPoints, ransacSampleSize, ransacMaxIterations, ransacMaxDeviation, ransacInliersForBreakPercentage);
+                    var ransacResult =  ransacAlgorithm.Ransac(supportPoints, ransacSampleSize, ransacMaxIterations, ransacMaxDeviation, ransacInliersForBreakPercentage, true);
+                    this.ransacMaxDeviation = ransacResult.usedMaxDeviation;
+                    return ransacResult.Inliers;
                 }
                 else
                 {
