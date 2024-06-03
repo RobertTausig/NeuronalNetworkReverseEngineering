@@ -85,11 +85,23 @@ namespace NeuronalNetworkReverseEngineering
         {
             analyzeResult retVal;
             int firstLayerDim = topology[1];
+            var weightMatrix = weigthMatrices[0];
+            var weights = weightMatrix.content;
+            var reducedWeightVectors = new List<double[]>();
+            for (int j = 0; j < weightMatrix.numCol; j++)
+            {
+                var tempVector = new double[weightMatrix.numRow - 1];
+                for (int i = 0; i < weightMatrix.numRow - 1; i++)
+                {
+                    tempVector[i] = weights[i, j];
+                }
+                reducedWeightVectors.Add(tempVector);
+            }
 
             var accuracies = new List<double?>();
             foreach (var plane in firstLayerPlanes)
             {
-                accuracies.Add(ReverseEngineeredAccuracy(0, plane.planeIdentity));
+                accuracies.Add(ReverseEngineeredAccuracy(reducedWeightVectors, plane.planeIdentity));
             }
 
             var notNullCount = accuracies.Count(x => x != null);
@@ -108,33 +120,21 @@ namespace NeuronalNetworkReverseEngineering
         /// </summary>
         /// <param name="layerNum">Zero-indexed number of layer to check the identity against</param>
         /// <returns>Accuracy as factor. Null, when far off.</returns>
-        private double? ReverseEngineeredAccuracy (int layerNum, HyperplaneIdentity identity)
+        private double? ReverseEngineeredAccuracy(List<double[]> weightVectors, HyperplaneIdentity identity)
         {
-            double abortAccuracyFactor = 1.15;
-            var weightMatrix = weigthMatrices[layerNum];
-            var weights = weightMatrix.content;
-            var parameters = identity.Parameters.content;
+            double similarityTreshold = 0.999;
+            var paramVector = Matrix.FlattenVector(identity.Parameters);
 
             var ratios = new List<double>();
-            for (int j = 0; j < weightMatrix.numCol; j++)
+            foreach (var vec in weightVectors)
             {
-                for (int i = 0; i < weightMatrix.numRow - 1; i++)
+                var aa = Hyperplane.NormalVectorCosineSimilarity(vec, paramVector);
+                if (Math.Abs(aa) > similarityTreshold)
                 {
-                    ratios.Add(parameters[i, 0] / weights[i, j]);
-                    if (ratios.Count == 1)
+                    ratios = vec.Zip(paramVector, (x, y) =>
                     {
-                        continue;
-                    }
-                    bool withinUpperLimit = Math.Abs(ratios[i]) < Math.Abs(ratios[i - 1]) * abortAccuracyFactor;
-                    bool withinLowerLimit = Math.Abs(ratios[i]) > Math.Abs(ratios[i - 1]) / abortAccuracyFactor;
-                    bool hasSameSign = ratios[i] * ratios[i - 1] > 0 ? true : false;
-                    if (!(withinUpperLimit && withinLowerLimit && hasSameSign)) {
-                        ratios.Clear();
-                        break;
-                    }
-                }
-                if (ratios.Count > 0)
-                {
+                        return x / y;
+                    }).ToList();
                     break;
                 }
             }

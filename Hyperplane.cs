@@ -246,9 +246,13 @@ namespace NeuronalNetworkReverseEngineering
         {
             var vectorA = Matrix.FlattenVector(h1.planeIdentity.Parameters);
             var vectorB = Matrix.FlattenVector(h2.planeIdentity.Parameters);
+            return NormalVectorCosineSimilarity(vectorA, vectorB);
+        }
+        public static double NormalVectorCosineSimilarity(double[] vectorA, double[] vectorB)
+        {
             if (vectorA.Length != vectorB.Length)
             {
-                throw new ArgumentException("Hyperplanes must be of the same dimension.");
+                throw new ArgumentException("Vectors must be of the same dimension.");
             }
 
             double dotProduct = 0.0;
